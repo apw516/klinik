@@ -1,7 +1,7 @@
 <input hidden type="text" id="idlayanan" value="{{ $idlayananheader }}">
 <input hidden type="text" id="idkunjungan" value="{{ $idkunjungan }}">
 <div class="row mt-2">
-    <div class="col-md-5">
+    {{-- <div class="col-md-5">
         <div class="card">
             <div class="card-header">Data Order Obat</div>
             <div class="card-body">
@@ -19,7 +19,7 @@
                     Resep</button>
             </div>
         </div>
-    </div>
+    </div> --}}
     <div class="col-md-7">
         <div class="card">
             <div class="card-header">
@@ -228,8 +228,8 @@
                     Swal.fire({
                         position: "top-end",
                         icon: "success",
-                        title: "Data sewa berhasil disimpan ...",
-                        text: "Silahkan cetak bukti penyewaan dengan klik tombol dibawah ...",
+                        title: "Data pembayaran berhasil disimpan ...",
+                        text: "Silahkan cetak bukti pembayaran dengan klik tombol dibawah ...",
                         showConfirmButton: false,
                         timer: 1500
                     });

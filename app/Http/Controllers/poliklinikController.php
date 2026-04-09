@@ -112,7 +112,7 @@ class poliklinikController extends Controller
             $index3 = $nama3['name'];
             $value3 = $nama3['value'];
             $dataSet3[$index3] = $value3;
-            if ($index3 == 'aturanpakai') {
+            if ($index3 == 'status_paket') {
                 $arrayobat[] = $dataSet3;
             }
         }
@@ -169,15 +169,70 @@ class poliklinikController extends Controller
             ];
             $rh = model_ts_resep_header::create($dataheader);
             foreach ($arrayobat as $b) {
+                if (data_get($b, 'is_paket', 0)) {
+                    $paket = 1;
+                } else {
+                   $paket = 0;
+                }
                 $data_detail = [
                     'id_header' => $rh->id,
                     'kode_barang' => $b['kodebarang'],
                     'qty' => $b['qty'],
                     'aturan_pakai' => $b['aturanpakai'],
                     'status_obat' => 1,
+                    'paket' => $paket,
                 ];
                 model_ts_resep_detail::create($data_detail);
             }
+            $idkunjungan = $dataSet['idkunjungan'];
+            $data_resep = db::select('select * from ts_resep_header a inner join ts_resep_detail b on a.id = b.id_header where a.id_kunjungan = ? and status_resep = 1 and b.status_obat = 1', [$idkunjungan]);
+            if (count($data_resep) == 0) {
+                $data2 = [
+                    'kode' => 500,
+                    'message' => 'Tidak ada resep yang diterima ...'
+                ];
+                echo json_encode($data2);
+                die;
+            }
+            $datenow = Carbon::now()->format('Y-m-d');
+            $KODE = $this->generateKodeLayanan();
+            $data_header = [
+                'id_kunjungan' => $idkunjungan,
+                'kode_layanan_header' => $KODE,
+                'total_tagihan' => 0,
+                'tgl_layanan' => $datenow,
+                'tgl_entry' => $datenow,
+                'pic' => auth()->user()->id,
+                'status_bayar' => '0',
+                'status_layanan' => '3'
+            ];
+            $h = model_ts_layanan_header::create($data_header);
+            $total_tagihan = 0;
+            foreach ($data_resep as $t) {
+                $mt_barang = db::select('select nama_barang,harga_jual,isi_konversi FROM master_barang where kode_barang = ?', [$t->kode_barang]);
+                $paketresep = $t->paket;
+                if ($paketresep == 1) {
+                    $harga = 0;
+                } else {
+                    $harga = $mt_barang[0]->harga_jual / $mt_barang[0]->isi_konversi;
+                }
+                $data_detail = [
+                    'id_header' => $h->id,
+                    'kode_barang' => $t->kode_barang,
+                    'nama_tarif' => $mt_barang[0]->nama_barang,
+                    'harga_satuan' => $harga,
+                    'jumlah' => $t->qty,
+                    'subtotal' => $harga * $t->qty,
+                    'status_layanan' => 1,
+                ];
+                $subtotal = $harga * $t->qty;
+                model_ts_layanan_detail::create($data_detail);
+                $total_tagihan = $total_tagihan + $subtotal;
+            }
+            model_ts_layanan_header::where('id', $h->id)->update(['total_tagihan' => $total_tagihan, 'status_layanan' => 1]);
+            model_ts_resep_header::where('id_kunjungan', $idkunjungan)
+                ->where('status_resep', 1) // Ini otomatis dianggap sebagai "AND"
+                ->update(['status_resep' => 2]);
         }
         $data2 = [
             'kode' => 200,
@@ -223,7 +278,7 @@ class poliklinikController extends Controller
             ->join('ts_resep_detail as b', 'a.id', '=', 'b.id_header')
             ->join('master_barang as c', 'b.kode_barang', '=', 'c.kode_barang')
             // Jika ingin spesifik untuk satu kunjungan
-            ->where('a.id_kunjungan', $id) 
+            ->where('a.id_kunjungan', $id)
             ->get();
         return view('Poliklinik.tabel_riwayat_resep', compact([
             'data'

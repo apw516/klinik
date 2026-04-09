@@ -80,7 +80,7 @@
          <div class="card mt-2">
              <div class="card-header">ALAMAT</div>
              <div class="card-body">
-                 <div class="row">
+                 {{-- <div class="row">
                      <div class="col-md-3">
                          <div class="mb-3">
                              <label for="exampleInputEmail1" class="form-label">Provinsi</label>
@@ -124,7 +124,7 @@
                                  aria-describedby="emailHelp" value="{{ $pasien[0]->desa }}">
                          </div>
                      </div>
-                 </div>
+                 </div> --}}
                  <div class="row">
                      <div class="col-md-5">
                          <div class="mb-3">

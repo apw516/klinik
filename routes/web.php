@@ -17,6 +17,7 @@ Route::get('/dashboard', [dashboardController::class, 'index']);
 
 
 Route::get('/indexmasterpasien', [dataMasterController::class, 'indexmasterpasien'])->name('indexmasterpasien');
+Route::post('/master-pasien/json', [dataMasterController::class, 'indexdatamasterpasien'])->name('masterpasien.json');
 Route::get('/indexmasterbarang', [dataMasterController::class, 'indexmasterbarang'])->name('indexmasterbarang');
 Route::get('/indexdataobatgenerik', [dataMasterController::class, 'indexdataobatgenerik'])->name('indexdataobatgenerik');
 Route::get('/indexdataicd10', [dataMasterController::class, 'indexdataicd10'])->name('indexdataicd10');
@@ -54,6 +55,7 @@ Route::post('/ambilinfosediaan', [dataMasterController::class, 'ambilinfosediaan
 Route::get('/indexdaftarpelayanan', [rekamedisController::class, 'indexdaftarpelayanan'])->name('indexdaftarpelayanan');
 Route::get('/indexriwayatpendaftaran', [rekamedisController::class, 'indexriwayatpendaftaran'])->name('indexriwayatpendaftaran');
 Route::post('/caridatapasien', [rekamedisController::class, 'caridatapasien'])->name('caridatapasien');
+Route::post('/master-pasien/data', [rekamedisController::class, 'getDataPasien'])->name('masterpasien.data');
 Route::post('/ambilformpendaftaran', [rekamedisController::class, 'ambilformpendaftaran'])->name('ambilformpendaftaran');
 Route::post('/simpanpendaftaranpasien', [rekamedisController::class, 'simpanpendaftaranpasien'])->name('simpanpendaftaranpasien');
 Route::post('/formeditkunjungan', [rekamedisController::class, 'formeditkunjungan'])->name('formeditkunjungan');
@@ -64,6 +66,7 @@ Route::post('/ambilriwayatpendaftaran', [rekamedisController::class, 'ambilriway
 Route::post('/ambilforminputlayanan', [rekamedisController::class, 'ambilforminputlayanan'])->name('ambilforminputlayanan');
 Route::post('/simpanbilling', [rekamedisController::class, 'simpanbilling'])->name('simpanbilling');
 Route::post('/simpanbatalkunjungan', [rekamedisController::class, 'simpanbatalkunjungan'])->name('simpanbatalkunjungan');
+Route::post('/simpanHasilLab', [rekamedisController::class, 'simpanHasilLab'])->name('simpanHasilLab');
 
 //antrian
 Route::get('/indexdataantrian', [rekamedisController::class, 'indexdataantrian'])->name('indexdataantrian');
@@ -95,4 +98,6 @@ Route::post('/terimaresep', [kasirFarmasiController::class, 'terimaresep'])->nam
 Route::post('/simpanpembayaran', [kasirFarmasiController::class, 'simpanpembayaran'])->name('simpanpembayaran');
 Route::post('/returorderobat', [kasirFarmasiController::class, 'returorderobat'])->name('returorderobat');
 Route::post('/returlayanan', [kasirFarmasiController::class, 'returlayanan'])->name('returlayanan');
+Route::post('/returpembayaran', [kasirFarmasiController::class, 'returpembayaran'])->name('returpembayaran');
+Route::post('/detailpembayaran', [kasirFarmasiController::class, 'detailpembayaran'])->name('detailpembayaran');
 Route::get('/kartu-stok.data', [kasirFarmasiController::class, 'getKartuStok'])->name('kartu-stok.data');

@@ -12,6 +12,7 @@ use App\Models\model_ts_stok_batch;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Yajra\DataTables\Facades\DataTables;
 
 class dataMasterController extends Controller
 {
@@ -19,17 +20,44 @@ class dataMasterController extends Controller
     {
         $menu_sub = 'indexmasterpasien';
         $menu = 'indexmasterpasien';
-        $data = db::select('SELECT a.*,b.`nama_jenis` AS nama_jenis_identitas,c.`jenis_asuransi`,c.`nama_asuransi`,d.`nama_status`,fc_nama_klinik(a.`id_klinik`) AS nama_klinik FROM master_pasien a 
-        LEFT OUTER JOIN master_jenis_identitas b ON a.jenis_identitas = b.id 
-        LEFT OUTER JOIN master_asuransi c ON a.`jenis_asuransi` = c.`id`
-        LEFT OUTER JOIN master_status_pernikahan d ON a.`status_pernikahan` = d.`id`
-        WHERE a.is_active = 1
-        ORDER BY id DESC');
+        // $data = db::select('SELECT a.*,b.`nama_jenis` AS nama_jenis_identitas,c.`jenis_asuransi`,c.`nama_asuransi`,d.`nama_status`,fc_nama_klinik(a.`id_klinik`) AS nama_klinik FROM master_pasien a 
+        // LEFT OUTER JOIN master_jenis_identitas b ON a.jenis_identitas = b.id 
+        // LEFT OUTER JOIN master_asuransi c ON a.`jenis_asuransi` = c.`id`
+        // LEFT OUTER JOIN master_status_pernikahan d ON a.`status_pernikahan` = d.`id`
+        // WHERE a.is_active = 1
+        // ORDER BY id DESC');
         return view('Master.index_master_pasien', compact([
             'menu',
-            'data',
+            // 'data',
             'menu_sub'
         ]));
+    }
+    public function indexdatamasterpasien(Request $request)
+    {
+        // dd('ok');
+        // if ($request->ajax()) {
+            $data = DB::table('master_pasien'); // Ganti dengan nama tabel Anda
+            return DataTables::of($data)
+                ->addIndexColumn()
+                ->addColumn('aksi', function ($row) {
+                    return '
+                <div class="btn-group btn-group-sm">
+                    <button type="button" class="btn btn-outline-warning" title="Edit"
+                        onclick="editpasien(\'' . $row->id . '\')" data-bs-toggle="modal" data-bs-target="#editmasterpasien">
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                    <button type="button" class="btn btn-outline-danger" title="Hapus"
+                        onclick="hapuspasien(\'' . $row->id . '\')">
+                        <i class="bi bi-x-circle"></i>
+                    </button>
+                </div>';
+                })
+                ->rawColumns(['aksi']) // Agar HTML tombol dirender
+                ->make(true);
+        // }
+        // return view('Master.tabel_pasien', compact([
+        //     'data'
+        // ])); // Sesuaikan path view Anda
     }
     public function indexmasterbarang()
     {
@@ -118,15 +146,19 @@ class dataMasterController extends Controller
     }
     public function ambilformeditpasien(Request $request)
     {
-       $id = $request->id;
-       $pasien = db::select('select * from master_pasien where id = ?',[$id]);
-       $provinsi = db::select('select * from mt_provinsi where code = ?',[$pasien[0]->provinsi]);
-       $kab = db::select('select * from mt_kabupaten_kota where bps_code = ?',[$pasien[0]->kabupaten]);
-       $kec = db::select('select * from mt_kecamatan where code = ?',[$pasien[0]->kecamatan]);
-       $desa = db::select('select * from mt_desa where bps_code = ?',[$pasien[0]->desa]);
-       return view('Master.formeditpasien',compact([
-        'pasien','desa','provinsi','kab','kec'
-       ]));
+        $id = $request->id;
+        $pasien = db::select('select * from master_pasien where id = ?', [$id]);
+        // $provinsi = db::select('select * from mt_provinsi where code = ?', [$pasien[0]->provinsi]);
+        // $kab = db::select('select * from mt_kabupaten_kota where bps_code = ?', [$pasien[0]->kabupaten]);
+        // $kec = db::select('select * from mt_kecamatan where code = ?', [$pasien[0]->kecamatan]);
+        // $desa = db::select('select * from mt_desa where bps_code = ?', [$pasien[0]->desa]);
+        return view('Master.formeditpasien', compact([
+            'pasien',
+            // 'desa',
+            // 'provinsi',
+            // 'kab',
+            // 'kec'
+        ]));
     }
     public function indexdataprovinsi()
     {
@@ -290,7 +322,6 @@ class dataMasterController extends Controller
         $data = DB::table('master_supplier')
             ->where('nama_supplier', 'LIKE', '%' . $term . '%')
             ->get();
-
         $results = [];
         foreach ($data as $row) {
             // Label: teks yang muncul di daftar, Value: teks yang masuk ke input setelah diklik
@@ -321,10 +352,10 @@ class dataMasterController extends Controller
             'tempat_lahir' => $dataSet['edittempatlahir'],
             'alamat_ktp' => $dataSet['editalamatlengkap'],
             'alamat_domisili' => $dataSet['editalamatlengkap'],
-            'provinsi' => $dataSet['editidprovinsi'],
-            'kabupaten' => $dataSet['editidkabupaten'],
-            'kecamatan' => $dataSet['editidkecamatan'],
-            'desa' => $dataSet['editiddesa'],
+            // 'provinsi' => $dataSet['editidprovinsi'],
+            // 'kabupaten' => $dataSet['editidkabupaten'],
+            // 'kecamatan' => $dataSet['editidkecamatan'],
+            // 'desa' => $dataSet['editiddesa'],
             'nomor_asuransi' => $dataSet['editnomorasuransi'],
             'jenis_asuransi' => 0,
             'status_pernikahan' => $dataSet['editstatus_pernikahan'],
@@ -334,7 +365,7 @@ class dataMasterController extends Controller
             'id_klinik' => 1,
             'tanggal_lahir' => $dataSet['edittanggallahir'],
         ];
-        model_master_pasien::where('id',$dataSet['idpasien'])->update($data_save);
+        model_master_pasien::where('id', $dataSet['idpasien'])->update($data_save);
         $data2 = [
             'kode' => 200,
             'message' => 'data berhasil disimpan'
@@ -351,9 +382,9 @@ class dataMasterController extends Controller
             $value =  $nama['value'];
             $dataSet[$index] = $value;
         }
-        $rm = $this->generateNoRM($dataSet['iddesa']);
+        $rm = $this->generateNoRM();
         $data_save = [
-            'nomor_rm' => $rm ,
+            'nomor_rm' => $rm,
             'nomor_identitas' => $dataSet['nomoridentitas'],
             'id_satu_sehat' => 0,
             'jenis_identitas' => $dataSet['jenisidentitas'],
@@ -362,10 +393,10 @@ class dataMasterController extends Controller
             'tempat_lahir' => $dataSet['tempatlahir'],
             'alamat_ktp' => $dataSet['alamatlengkap'],
             'alamat_domisili' => $dataSet['alamatlengkap'],
-            'provinsi' => $dataSet['idprovinsi'],
-            'kabupaten' => $dataSet['idkabupaten'],
-            'kecamatan' => $dataSet['idkecamatan'],
-            'desa' => $dataSet['iddesa'],
+            // 'provinsi' => $dataSet['idprovinsi'],
+            // 'kabupaten' => $dataSet['idkabupaten'],
+            // 'kecamatan' => $dataSet['idkecamatan'],
+            // 'desa' => $dataSet['iddesa'],
             'nomor_asuransi' => $dataSet['nomorasuransi'],
             'jenis_asuransi' => 0,
             'status_pernikahan' => $dataSet['status_pernikahan'],
@@ -441,11 +472,11 @@ class dataMasterController extends Controller
     }
     public function ambilinfosediaan(Request $request)
     {
-       $idbarang = $request->idbarang;
-       $data = db::select('select *,a.harga_beli as hg from ts_stok_batch a inner join master_barang b on a.kode_barang = b.kode_barang where a.kode_barang = ?',[$idbarang]);
-       return view('Master.tabel_sediaan',compact([
+        $idbarang = $request->idbarang;
+        $data = db::select('select *,a.harga_beli as hg from ts_stok_batch a inner join master_barang b on a.kode_barang = b.kode_barang where a.kode_barang = ?', [$idbarang]);
+        return view('Master.tabel_sediaan', compact([
             'data'
-       ]));
+        ]));
     }
     public function simpanmastergenerik(Request $request)
     {
@@ -667,27 +698,47 @@ class dataMasterController extends Controller
 
         return $newKode; // Hasil: B000001, B000002, dst.
     }
-    public function generateNoRM($idDesa)
+    public function generateNoRM()
     {
-        // Pastikan kode desa selalu 2 digit (misal: 1 jadi 01)
-        $prefix = str_pad($idDesa, 2, '0', STR_PAD_LEFT);
-        // Ambil nomor urut terakhir dari desa tersebut
-        $lastPatient = DB::table('master_pasien')
-            ->where('desa', 'LIKE', $prefix . '%')
-            ->lockForUpdate() // Mengunci baris agar tidak terjadi duplikasi saat traffic tinggi
-            ->orderBy('nomor_rm', 'desc')
+        // 1. Ambil kode terakhir yang diawali dengan 'B'
+        $lastRecord = DB::table('master_pasien')
+            ->orderBy('id', 'desc')
             ->first();
 
-        if ($lastPatient) {
-            // Ambil 5 digit terakhir dan tambah 1
-            $lastNumber = (int) substr($lastPatient->nomor_rm, 2);
-            $nextNumber = $lastNumber + 1;
+        if ($lastRecord) {
+            // 2. Ambil angka setelah huruf 'B' (karakter ke-2 sampai habis)
+            $lastNumber = substr($lastRecord->nomor_rm, 1);
+            $nextNumber = (int)$lastNumber + 1;
         } else {
-            // Jika pasien pertama di desa tersebut
+            // 3. Jika belum ada data sama sekali, mulai dari 1
             $nextNumber = 1;
         }
-        $mt_desa = db::select('select id from mt_desa where bps_code = ?',[$prefix]);
-        // Gabungkan kembali: KodeDesa + Urutan (5 digit)
-        return $mt_desa[0]->id . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        $datenow = Carbon::now()->format('ndy');
+        // 4. Gabungkan prefix dengan angka yang dipadding 6 digit
+        $newKode = $datenow . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+        return $newKode; // Hasil: B000001, B000002, dst.
     }
+    // public function generateNoRM($idDesa)
+    // {
+    //     // Pastikan kode desa selalu 2 digit (misal: 1 jadi 01)
+    //     $prefix = str_pad($idDesa, 2, '0', STR_PAD_LEFT);
+    //     // Ambil nomor urut terakhir dari desa tersebut
+    //     $lastPatient = DB::table('master_pasien')
+    //         ->where('desa', 'LIKE', $prefix . '%')
+    //         ->lockForUpdate() // Mengunci baris agar tidak terjadi duplikasi saat traffic tinggi
+    //         ->orderBy('nomor_rm', 'desc')
+    //         ->first();
+
+    //     if ($lastPatient) {
+    //         // Ambil 5 digit terakhir dan tambah 1
+    //         $lastNumber = (int) substr($lastPatient->nomor_rm, 2);
+    //         $nextNumber = $lastNumber + 1;
+    //     } else {
+    //         // Jika pasien pertama di desa tersebut
+    //         $nextNumber = 1;
+    //     }
+    //     $mt_desa = db::select('select id from mt_desa where bps_code = ?',[$prefix]);
+    //     // Gabungkan kembali: KodeDesa + Urutan (5 digit)
+    //     return $mt_desa[0]->id . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+    // }
 }

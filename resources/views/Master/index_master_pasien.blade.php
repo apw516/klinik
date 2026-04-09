@@ -23,48 +23,18 @@
             <div class="card mt-3">
                 <div class="card-header"><i class="bi bi-file-earmark-spreadsheet-fill"></i> Tabel Data Pasien</div>
                 <div class="card-body">
-                    <table id="tbmasterpasien" class="table table-sm table-bordered table-hover">
+                    <table id="tbmasterpasien" class="table table-sm table-bordered table-hover w-100">
                         <thead class="bg-light">
-                            <th class="bg-light">Nomor RM</th>
-                            <th class="bg-light">Nomor Identitas</th>
-                            <th class="bg-light">ID Satu Sehat</th>
-                            <th class="bg-light">Nama Pasien</th>
-                            <th class="bg-light">Tempat,Tanggal lahir & Jenis Kelamin</th>
-                            <th class="bg-light">Alamat Domisili</th>
-                            <th class="bg-light">Alamat Identitas</th>
-                            <th class="bg-light">Nomor Asuransi</th>
-                            <th class="bg-light">Nama Asuransi</th>
-                            <th class="bg-light">Nama Klinik</th>
-                            <th class="bg-light">Aksi</th>
+                            <tr>
+                                <th>Nomor RM</th>
+                                <th>Nomor Identitas</th>
+                                <th>Nama Pasien</th>
+                                <th>Info Lahir & JK</th>
+                                <th>Alamat Domisili</th>
+                                <th>Aksi</th>
+                            </tr>
                         </thead>
-                        <tbody>
-                            @foreach ($data as $d)
-                                <tr>
-                                    <td>{{ $d->nomor_rm }}</td>
-                                    <td>{{ $d->nomor_identitas }} | {{ $d->nama_jenis_identitas }}</td>
-                                    <td>{{ $d->id_satu_sehat }}</td>
-                                    <td>{{ $d->nama_pasien }}</td>
-                                    <td>{{ $d->tempat_lahir }}, {{ $d->tanggal_lahir }} , {{ $d->jenis_kelamin }}</td>
-                                    <td>{{ $d->alamat_domisili }}</td>
-                                    <td>{{ $d->alamat_ktp }}</td>
-                                    <td>{{ $d->nomor_asuransi }}</td>
-                                    <td>{{ $d->nama_asuransi }}</td>
-                                    <td>{{ $d->nama_klinik }}</td>
-                                    <td class="bg-light">
-                                        <div class="btn-group btn-group-sm">
-                                            <button type="button" class="btn btn-outline-warning" title="Edit pasien"
-                                                onclick="editpasien('{{ $d->id }}')" data-bs-toggle="modal" data-bs-target="#editmasterpasien">
-                                                <i class="bi bi-pencil-square"></i>
-                                            </button>
-                                            <button type="button" class="btn btn-outline-danger" title="Input Layanan"
-                                                onclick="hapuspasien('{{ $d->id }}')">
-                                                <i class="bi bi-x-circle"></i>
-                                            </button>
-                                        </div>
-                                    </td>
-                                </tr>
-                            @endforeach
-                        </tbody>
+                        <tbody></tbody>
                     </table>
                 </div>
             </div>
@@ -117,8 +87,8 @@
                             <div class="col-md-2">
                                 <div class="mb-3">
                                     <label for="exampleInputEmail1" class="form-label">Status Pernikahan</label>
-                                    <select class="form-select" aria-label="Default select example"
-                                        name="status_pernikahan" id="status_pernikahan">
+                                    <select class="form-select" aria-label="Default select example" name="status_pernikahan"
+                                        id="status_pernikahan">
                                         <option value="0">-</option>
                                         <option value="1">Menikah</option>
                                         <option value="2">Belum Menikah</option>
@@ -155,7 +125,7 @@
                         <div class="card mt-2">
                             <div class="card-header">ALAMAT</div>
                             <div class="card-body">
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-md-3">
                                         <div class="mb-3">
                                             <label for="exampleInputEmail1" class="form-label">Provinsi</label>
@@ -192,7 +162,7 @@
                                                 name="iddesa" aria-describedby="emailHelp">
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="mb-3">
@@ -214,7 +184,8 @@
         </div>
     </div>
     <!-- Modal -->
-    <div class="modal fade" id="editmasterpasien" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal fade" id="editmasterpasien" tabindex="-1" aria-labelledby="exampleModalLabel"
+        aria-hidden="true">
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
@@ -224,7 +195,7 @@
                 <div class="modal-body">
                     <div class="v_edit_pasien">
 
-                    </div>               
+                    </div>
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
@@ -234,16 +205,6 @@
         </div>
     </div>
     <script>
-        $(function() {
-            $("#tbmasterpasien").DataTable({
-                "responsive": true,
-                "lengthChange": false,
-                "autoWidth": false,
-                "pageLength": 12,
-                "searching": true,
-                "ordering": false,
-            })
-        });
         $(document).ready(function() {
             $("#provinsi").autocomplete({
                 source: function(request, response) {
@@ -349,6 +310,7 @@
                 }
             });
         }
+
         function simpanpasien() {
             Swal.fire({
                 title: "Data Pasien akan disimpan !",
@@ -410,6 +372,7 @@
                 }
             });
         }
+
         function simpanpasienx() {
             var data = $('.formmasterpasien').serializeArray();
             spinner = $('#loader')
@@ -518,6 +481,7 @@
                 });
             });
         }
+
         function editpasien(id) {
             spinner = $('#loader')
             spinner.show();
@@ -534,5 +498,54 @@
                 }
             });
         }
+    </script>
+    <script>
+        $(document).ready(function() {
+            $('#tbmasterpasien').DataTable({
+                processing: true,
+                serverSide: true,
+                ajax: {
+                    url: "{{ route('masterpasien.json') }}",
+                    type: 'POST',
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    }
+                },
+                columns: [{
+                        data: 'nomor_rm',
+                        name: 'nomor_rm'
+                    },
+                    {
+                        data: 'nomor_identitas',
+                        render: function(data, type, row) {
+                            return row.nomor_identitas;
+                        }
+                    },
+                    {
+                        data: 'nama_pasien',
+                        name: 'nama_pasien'
+                    },
+                    {
+                        data: 'tempat_lahir',
+                        render: function(data, type, row) {
+                            return data + ', ' + row.tanggal_lahir + ' | ' + row.jenis_kelamin;
+                        }
+                    },
+                    {
+                        data: 'alamat_domisili',
+                        name: 'alamat_domisili'
+                    },
+                    {
+                        data: 'aksi',
+                        name: 'aksi',
+                        orderable: false,
+                        searchable: false
+                    }
+                ],
+                language: {
+                    processing: '<div class="spinner-border text-primary" role="status"><span class="visually-hidden">Loading...</span></div>'
+                }
+            });
+        });
     </script>
 @endsection

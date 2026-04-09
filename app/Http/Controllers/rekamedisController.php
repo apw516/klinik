@@ -11,6 +11,7 @@ use App\Models\model_ts_resep_header;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
+use Yajra\DataTables\Facades\DataTables;
 
 class rekamedisController extends Controller
 {
@@ -33,6 +34,17 @@ class rekamedisController extends Controller
             'menu_sub',
             'datenow',
         ]));
+    }
+    public function getDataPasien(Request $request)
+    {
+        if ($request->ajax()) {
+            $data = DB::table('master_pasien')->select('*'); // Sesuaikan nama tabel
+
+            return DataTables::of($data)
+                ->addIndexColumn()
+                // Kita handle formatting via JavaScript (Render) di atas agar lebih ringan
+                ->make(true);
+        }
     }
     public function caridatapasien(Request $request)
     {
@@ -156,7 +168,7 @@ class rekamedisController extends Controller
     {
         $id = $request->idkunjungan;
         // $data = model_ts_kunjungan::where('id', $id)->get();
-
+        $ly = db::select('select *,b.id as iddetail from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.status_layanan != 3', [$id]);
         $data = model_ts_kunjungan::where('ts_kunjungan.id', $id)
             ->leftJoin('master_pegawai', 'ts_kunjungan.dokter', '=', 'master_pegawai.id')
             ->leftJoin('master_unit', 'ts_kunjungan.unit_tujuan', '=', 'master_unit.id')
@@ -168,7 +180,8 @@ class rekamedisController extends Controller
             ->first();
         return view('Rekamedis.detailkunjungan', compact([
             'data',
-            'id'
+            'id',
+            'ly'
         ]));
     }
     public function ambildetailkunjungan_billing(Request $request)
@@ -183,11 +196,11 @@ class rekamedisController extends Controller
                 'master_unit.nama_unit'
             )
             ->first();
-        $ly = db::select('select * from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.status_layanan != 3', [$id]);
+        // $ly = db::select('select *,b.id as iddetail  from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.status_layanan != 3', [$id]);
         return view('Rekamedis.detailkunjungan_2', compact([
             'data',
             'id',
-            'ly'
+            // 'ly'
         ]));
     }
     public function ambilforminputlayanan(Request $request)
@@ -240,6 +253,18 @@ class rekamedisController extends Controller
             $status_antri = 5;
             $data33 = model_ts_antrian::where('id_kunjungan', $id)->update(['status' => $status_antri]);
         }
+        $data2 = [
+            'kode' => 200,
+            'message' => 'data berhasil disimpan !'
+        ];
+        echo json_encode($data2);
+        die;
+    }
+    public function simpanHasilLab(Request $request)
+    {
+        $id = $request->idkunjungan;
+        $hasillab = $request->hasillab;
+        $data = model_ts_kunjungan::where('id', $id)->update(['pemeriksaan_penunjang' => $hasillab]);
         $data2 = [
             'kode' => 200,
             'message' => 'data berhasil disimpan !'

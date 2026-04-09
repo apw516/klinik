@@ -117,10 +117,10 @@ class kasirFarmasiController extends Controller
     {
         $tanggalAwal = $request->tanggalawal . ' 00:00:00';
         $tanggalAkhir = $request->tanggalakhir . ' 23:59:59';
-
         $data = DB::table('ts_transaksi_kasir_header as a')
             ->select(
                 'a.id_transaksi',
+                'a.id as idtx',
                 'a.tgl_transaksi',
                 'a.total_bruto',
                 'a.total_neto',
@@ -134,6 +134,7 @@ class kasirFarmasiController extends Controller
             )
             ->join('ts_kunjungan as b', 'a.id_kunjungan', '=', 'b.id')
             ->join('master_pasien as c', 'b.nomor_rm', '=', 'c.nomor_rm')
+            ->where('a.status', 1)
             ->whereBetween('a.tgl_transaksi', [$tanggalAwal, $tanggalAkhir])
             ->orderBy('a.tgl_transaksi', 'desc')
             ->get();
@@ -177,6 +178,41 @@ class kasirFarmasiController extends Controller
             'idlayananheader',
             'idkunjungan'
         ]));
+    }
+    public function returpembayaran(Request $request)
+    {
+        $idheader = $request->idheader;
+        model_ts_transaksi_kasir_header::where('id', $idheader)->update(['status' => 2]);
+
+        $detail = db::select('select * from ts_transaksi_kasir_detail where id_header = ?', [$idheader]);
+        foreach ($detail as $dd) {
+            $id_detail = $dd->id;
+            $idlydt = $dd->id_layanan_detail;
+            $idlyhd = $dd->id_layanan_header;
+            $dataheader = [
+                'status_bayar' => 0,
+                'status_layanan' => 1
+            ];
+            model_ts_layanan_header::where('id', $idlyhd)->update($dataheader);
+        }
+        $data2 = [
+            'kode' => 200,
+            'message' => 'Pembayaran berhasil dibatalkan ...'
+        ];
+        echo json_encode($data2);
+        die;
+    }
+    public function detailpembayaran(Request $request)
+    {
+        $id = $request->idheader;
+        $idtrans = $request->idtrans;
+        $data = db::select('select * from ts_transaksi_kasir_detail a left join ts_layanan_detail b on a.id_layanan_detail = b.id where a.id_header = ?', [$id]);
+        return response()->json([
+            'kode' => 200,
+            'status' => 'success',
+            'message' => 'Berhasil!',
+            'view' => view('Kasirfarmasi.detail_pembayaran', compact('data','idtrans'))->render()
+        ]);
     }
     public function ambildataorderresep(Request $request)
     {
@@ -489,7 +525,6 @@ class kasirFarmasiController extends Controller
             echo json_encode($data2);
             die;
         }
-
         $datenow = Carbon::now()->format('Y-m-d');
         $KODE = $this->generateKodeLayanan();
         $data_header = [
@@ -561,9 +596,9 @@ class kasirFarmasiController extends Controller
         $header = db::select('select * from ts_layanan_header where id = ?', [$idheader]);
         $total_tagihan = $header[0]->total_tagihan - $subtot;
         $cek_detail = db::select('select * from ts_layanan_detail where id_header = ? and status_layanan = 1', [$idheader]);
-        if(count($cek_detail) > 0){
+        if (count($cek_detail) > 0) {
             $status_layanan = 1;
-        }else{
+        } else {
             $status_layanan = 3;
         }
         $dataup2 = [
@@ -647,6 +682,7 @@ class kasirFarmasiController extends Controller
                 't.stok_sekarang', // Saldo Akhir Saat Ini
                 't.tgl_transaksi'
             )
+            ->orderBy('t.id','DESC')
             ->get();
         return DataTables()->of($data)
             ->addIndexColumn()

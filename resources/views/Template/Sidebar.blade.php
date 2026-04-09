@@ -70,29 +70,29 @@
                         <p>Data Pasien</p>
                     </a>
                 </li>
-                <li class="nav-header">Kasir / Farmasi</li>
-                <li class="nav-item">
+                <li hidden class="nav-header">Kasir / Farmasi</li>
+                <li hidden class="nav-item">
                     <a href="{{ route('indexdatapasienkasirfarmasi') }}"
                         class="nav-link @if ($menu == 'indexdatapasienkasirfarmasi') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Pasien</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li hidden class="nav-item">
                     <a href="{{ route('indexlogtransaksikasir') }}"
                         class="nav-link @if ($menu == 'indexlogtransaksikasir') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Log Transaksi Kasir</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li hidden class="nav-item">
                     <a href="{{ route('indexriwayattagihan') }}"
                         class="nav-link @if ($menu == 'indexriwayatpembayaran') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Riwayat Tagihan Pasien</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li hidden class="nav-item">
                     <a href="{{ route('indexkartustokobat') }}"
                         class="nav-link @if ($menu == 'indexkartustokobat') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -107,35 +107,35 @@
                         <p>Data Pasien</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li hidden class="nav-item">
                     <a href="{{ route('indexmasterbarang') }}"
                         class="nav-link @if ($menu == 'indexmasterbarang') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Barang</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li hidden class="nav-item">
                     <a href="{{ route('indexdataobatgenerik') }}"
                         class="nav-link @if ($menu == 'indexdataobatgenerik') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Nama Generik</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li hidden class="nav-item">
                     <a href="{{ route('indexdataicd10') }}"
                         class="nav-link @if ($menu == 'indexdataicd10') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data ICD 10</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li hidden class="nav-item">
                     <a href="{{ route('indexdataicd9') }}"
                         class="nav-link @if ($menu == 'indexdataicd9') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data ICD 9</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li hidden class="nav-item">
                     <a href="{{ route('indexdatatarifpelayanan') }}"
                         class="nav-link @if ($menu == 'indexdatatarifpelayanan') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -156,7 +156,7 @@
                         <p>Data Unit</p>
                     </a>
                 </li>
-                <li class="nav-item  @if ($menu_sub == 'masterlokasi') menu-open @endif">
+                <li hidden class="nav-item  @if ($menu_sub == 'masterlokasi') menu-open @endif">
                     <a href="#" class="nav-link  @if ($menu == 'dashboard') active @endif">
                         <i class="nav-icon bi bi-speedometer"></i>
                         <p>

@@ -21,7 +21,7 @@
                 <button type="button" class="btn  mb-2 btn-primary" data-bs-toggle="modal"
                     data-bs-target="#modaltambahpasien"> <i class="bi bi-plus" style="margin-right:8px"></i>
                     Master Pasien</button>
-                <div class="card">
+                {{-- <div class="card">
                     <div class="card-header"><i class="bi bi-search" style="margin-right:8px"></i>Form Pencarian Pasien
                     </div>
                     <div class="card-body">
@@ -71,14 +71,22 @@
                             </div>
                         </form>
                     </div>
-                </div>
+                </div> --}}
                 <div class="card mt-4">
-                    <div class="card-header"><i class="bi bi-database-fill-check " style="margin-right: 8px"></i> Hasil
-                        Pencarian Pasien</div>
+                    <div class="card-header"><i class="bi bi-database-fill-check " style="margin-right: 8px"></i> Silahkan Pilih Pasien </div>
                     <div class="card-body">
-                        <div class="v_tabel_pasien">
-
-                        </div>
+                        <table id="tbmasterpasien" class="table table-sm table-bordered table-hover w-100">
+                            <thead>
+                                <tr>
+                                    <th>Nomor RM</th>
+                                    <th>Identitas & Nama</th>
+                                    <th>Tempat, Tgl Lahir & JK</th>
+                                    <th>Alamat Domisili</th>
+                                    <th>Aksi</th>
+                                </tr>
+                            </thead>
+                            <tbody></tbody>
+                        </table>
                     </div>
                 </div>
             </div>
@@ -176,7 +184,7 @@
                         <div class="card mt-2">
                             <div class="card-header">ALAMAT</div>
                             <div class="card-body">
-                                <div class="row">
+                                {{-- <div class="row">
                                     <div class="col-md-3">
                                         <div class="mb-3">
                                             <label for="exampleInputEmail1" class="form-label">Provinsi</label>
@@ -213,7 +221,7 @@
                                                 name="iddesa" aria-describedby="emailHelp">
                                         </div>
                                     </div>
-                                </div>
+                                </div> --}}
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="mb-3">
@@ -235,10 +243,6 @@
         </div>
     </div>
     <script>
-        $(document).ready(function() {
-            caripasien()
-        })
-
         function kembali() {
             $('.v_1').removeAttr('hidden', true)
             $('.v_2').attr('hidden', true)
@@ -414,5 +418,84 @@
                 }
             });
         }
+        $(function() {
+            var table = $("#tbmasterpasien").DataTable({
+                processing: true,
+                serverSide: true,
+                responsive: true,
+                autoWidth: false,
+                pageLength: 12,
+                ajax: {
+                    url: "{{ route('masterpasien.data') }}", // Buat route baru ini
+                    type: "POST",
+                    data: {
+                        _token: "{{ csrf_token() }}"
+                    }
+                },
+                columns: [{
+                        data: 'nomor_rm',
+                        name: 'nomor_rm'
+                    },
+                    {
+                        data: 'nama_pasien',
+                        render: function(data, type, row) {
+                            return `<strong>${data}</strong><br><small>${row.nomor_identitas}</small>`;
+                        }
+                    },
+                    {
+                        data: 'tanggal_lahir',
+                        render: function(data, type, row) {
+                            return `${row.tempat_lahir}, ${data} , ${row.jenis_kelamin}`;
+                        }
+                    },
+                    {
+                        data: 'alamat_ktp',
+                        name: 'alamat_ktp'
+                    },
+                    // {
+                    //     data: 'nomor_asuransi',
+                    //     render: function(data, type, row) {
+                    //         return data ? `${row.nomor_asuransi}<br>${data}` : '-';
+                    //     }
+                    // },
+                    {
+                        data: 'nomor_rm',
+                        orderable: false,
+                        searchable: false,
+                        render: function(data, type, row) {
+                            return `<button class="btn btn-success btn-sm pendaftaran" nomor_rm="${data}">
+                                <i class="bi bi-box-arrow-in-right"></i>
+                            </button>`;
+                        }
+                    }
+                ]
+            });
+
+            // Delegasi event click karena tombol di-generate secara dinamis
+            $('#tbmasterpasien').on('click', '.pendaftaran', function() {
+                let rm = $(this).attr('nomor_rm');
+                let spinner = $('#loader');
+                spinner.show();
+
+                $.ajax({
+                    type: 'post',
+                    data: {
+                        _token: "{{ csrf_token() }}",
+                        rm: rm
+                    },
+                    url: "{{ route('ambilformpendaftaran') }}",
+                    error: function() {
+                        spinner.hide();
+                        alert('error');
+                    },
+                    success: function(response) {
+                        spinner.hide();
+                        $('.v_1').attr('hidden', true);
+                        $('.v_2').removeAttr('hidden');
+                        $('.v_data_pasien').html(response);
+                    }
+                });
+            });
+        });
     </script>
 @endsection

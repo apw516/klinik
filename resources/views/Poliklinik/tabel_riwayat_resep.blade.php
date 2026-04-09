@@ -34,7 +34,7 @@
                     @endif
                 </td>
                 <td>
-                    <button class="btn btn-danger btn-sm batalresep" @if ($l->status_resep == 2) disabled @endif iddetail="{{ $l->iddetail }}" nama="{{ $l->nama_barang }}"><i
+                    <button class="btn btn-danger btn-sm batalresep" @if ($l->status_resep == 2) disabled @endif iddetail="{{ $l->iddetail }}" nama="{{ $l->nama_barang }}" @if ($l->status_obat != 1) disabled @endif ><i
                             class="bi bi-arrow-clockwise"></i></button>
                 </td>
             </tr>

@@ -47,6 +47,7 @@
                                 <th width="16%">Dokter</th>
                                 <th width="16%">Keluhan Utama</th>
                                 <th>S.O.A.P</th>
+                                <th>Hasil Lab</th>
                             </thead>
                             <tbody>
                                 @foreach ($data_kunjungan as $t)
@@ -59,9 +60,13 @@
                                         <td>
                                             {{ $t->SUBJECT }}
                                             ,{{ $t->OBJECT }},{{ $t->ASSESMENT }},{{ $t->PLANNING }}
-                                            <span class="badge text-bg-secondary pilihriwayat" subject="{{ $t->SUBJECT }}"
-                                                object="{{ $t->OBJECT }}" assesmen="{{ $t->ASSESMENT }}"
-                                                planning="{{ $t->PLANNING }}"><i class="bi bi-cursor"></i></span>
+                                            <span class="badge text-bg-secondary pilihriwayat"
+                                                subject="{{ $t->SUBJECT }}" object="{{ $t->OBJECT }}"
+                                                assesmen="{{ $t->ASSESMENT }}" planning="{{ $t->PLANNING }}"><i
+                                                    class="bi bi-cursor"></i></span>
+                                        </td>
+                                        <td>
+                                            {{ $t->pemeriksaan_penunjang}}
                                         </td>
                                     </tr>
                                 @endforeach
@@ -75,7 +80,7 @@
             <div class="card mt-2">
                 <div class="card-header">Form Hasil Pemeriksaan</div>
                 <div class="card-body">
-                    <form action="" class="formassesmen">
+                    {{-- <form action="" class="formassesmen">
                         <input hidden type="text" value="{{ $idkunjungan }}" name="idkunjungan" id="idkunjungan">
                         <table class="table table-sm">
                             <tr>
@@ -118,14 +123,123 @@
                                 </td>
                             </tr>
                         </table>
-                    </form>
-                    <div class="row mt-2">
+                    </form> --}}
+                    <div class="card shadow-sm border-0 mt-3">
+                        <div class="card-header bg-white border-0 pt-3 pb-0 mb-4">
+                            <h6 class="card-title text-uppercase text-muted fw-bold mb-0">Hasil Pemeriksaan Awal (TTV)
+                            </h6>
+                        </div>
+                        <div class="card-body">
+                            <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-ttv bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                            style="width:40px; height:40px;">
+                                            <i class="bi bi-droplet"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block text-uppercase fw-bold"
+                                                style="font-size: 0.7rem;">Tekanan Darah</small>
+                                            <span class="fw-bold h5 mb-0">{{ $dk[0]->tekanan_darah }} <small
+                                                    class="text-muted fs-6">mmHg</small></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-3">
+                                    <div class="d-flex align-items-center">
+                                        <div class="icon-ttv bg-danger text-white rounded-circle me-3 d-flex align-items-center justify-content-center"
+                                            style="width:40px; height:40px;">
+                                            <i class="bi bi-thermometer-half"></i>
+                                        </div>
+                                        <div>
+                                            <small class="text-muted d-block text-uppercase fw-bold"
+                                                style="font-size: 0.7rem;">Suhu Tubuh</small>
+                                            <span class="fw-bold h5 mb-0">{{ $dk[0]->suhu_tubuh }} <small
+                                                    class="text-muted fs-6">°C</small></span>
+                                        </div>
+                                    </div>
+                                </div>
+                                <div class="col-md-6 border-start ps-4">
+                                    <small class="text-muted d-block text-uppercase fw-bold"
+                                        style="font-size: 0.7rem;">Keluhan Utama</small>
+                                    <p class="mb-0 fw-medium text-dark">{{ $dk[0]->keluhan_utama ?: '-' }}</p>
+                                </div>
+                            </div>
+
+                            <form action="" class="formassesmen">
+                                @csrf <input hidden type="text" value="{{ $idkunjungan }}" name="idkunjungan"
+                                    id="idkunjungan">
+
+                                <div class="row g-4">
+                                    <div class="col-md-6 col-lg-3">
+                                        <div
+                                            class="form-group-soap p-3 rounded-3 border-start border-primary border-4 bg-white shadow-sm h-100">
+                                            <label for="subject"
+                                                class="form-label fw-bold text-primary text-uppercase d-flex align-items-center justify-content-between">
+                                                1. Subject (S)
+                                                <i class="bi bi-person-lines-fill fs-5 text-muted opacity-50"></i>
+                                            </label>
+                                            <textarea class="form-control form-control-modern" id="subject" name="subject" rows="6"
+                                                placeholder="Ketik keluhan pasien, riwayat penyakit sekarang... ">{{ $dk[0]->SUBJECT }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 col-lg-3">
+                                        <div
+                                            class="form-group-soap p-3 rounded-3 border-start border-success border-4 bg-white shadow-sm h-100">
+                                            <label for="object"
+                                                class="form-label fw-bold text-success text-uppercase d-flex align-items-center justify-content-between">
+                                                2. Object (O)
+                                                <i class="bi bi-capsule fs-5 text-muted opacity-50"></i>
+                                            </label>
+                                            <textarea class="form-control form-control-modern" id="object" name="object" rows="6"
+                                                placeholder="Ketik hasil pemeriksaan fisik, lab, rontgen... ">{{ $dk[0]->OBJECT }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 col-lg-3">
+                                        <div
+                                            class="form-group-soap p-3 rounded-3 border-start border-warning border-4 bg-white shadow-sm h-100">
+                                            <label for="assesmen"
+                                                class="form-label fw-bold text-warning text-uppercase d-flex align-items-center justify-content-between">
+                                                3. Assessment (A)
+                                                <i class="bi bi-clipboard-pulse fs-5 text-muted opacity-50"></i>
+                                            </label>
+                                            <textarea class="form-control form-control-modern" id="assesmen" name="assesmen" rows="6"
+                                                placeholder="Ketik diagnosis medis, diagnosis banding... ">{{ $dk[0]->ASSESMENT }}</textarea>
+                                        </div>
+                                    </div>
+
+                                    <div class="col-md-6 col-lg-3">
+                                        <div
+                                            class="form-group-soap p-3 rounded-3 border-start border-info border-4 bg-white shadow-sm h-100">
+                                            <label for="planning"
+                                                class="form-label fw-bold text-info text-uppercase d-flex align-items-center justify-content-between">
+                                                4. Planning (P)
+                                                <i class="bi bi-journal-medical fs-5 text-muted opacity-50"></i>
+                                            </label>
+                                            <textarea class="form-control form-control-modern" id="planning" name="planning" rows="6"
+                                                placeholder="Ketik rencana terapi, instruksi, edukasi... ">{{ $dk[0]->PLANNING }}</textarea>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                {{-- <div class="d-flex justify-content-end gap-2 mt-4">
+                                    <button type="reset"
+                                        class="btn btn-outline-secondary btn-sm px-3">Reset</button>
+                                    <button type="submit" class="btn btn-primary btn-sm px-4">
+                                    </button>
+                                </div> --}}
+                            </form>
+                        </div>
+                    </div>
+                    <div hidden class="row mt-2">
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header fw-bold fst-italic">Input billing sistem</div>
                                 <div class="card-body">
-                                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modaltarif"> <i
-                                            class="bi bi-search"></i> tarif Pelayanan</button>
+                                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modaltarif">
+                                        <i class="bi bi-search"></i> tarif Pelayanan</button>
                                     <form action="" method="post" class="formbilling mt-2">
                                         <div class="draftbilling">
                                             <div>
@@ -146,8 +260,8 @@
                             <div class="card">
                                 <div class="card-header fw-bold fst-italic">Resep Obat</div>
                                 <div class="card-body">
-                                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalobat"> <i
-                                            class="bi bi-search"></i> Obat </button>
+                                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalobat">
+                                        <i class="bi bi-search"></i> Obat </button>
                                     <form action="" method="post" class="formbillingobat mt-2">
                                         <div class="draftbillingobat">
                                             <div>
@@ -167,8 +281,8 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button class="btn btn-success" onclick="simpandata()"><i class="bi bi-floppy"></i>
-                        Simpan</button>
+                    <button class="btn btn-success" onclick="simpandata()">                                        <i class="bi bi-save me-1"></i> Simpan SOAP
+</button>
                     <button class="btn btn-danger" onclick="kembali()"><i class="bi bi-back"></i> Batal</button>
                 </div>
             </div>
@@ -402,7 +516,7 @@
             stok +
             '"></div><div class="form-group col-md-2"><label for="">qty</label><input type="" class="form-control form-control-sm text-xs edit_field" id="qty" name="qty" value="0"></div><div class="form-group col-md-3"><label for="">Aturan Pakai</label><textarea readonly type="" class="form-control form-control-sm text-xs edit_field" id="aturanpakai" name="aturanpakai">' +
             aturan_pakai +
-            '</textarea></div><i class="bi bi-x-square remove_field form-group col-md-1 text-danger" kode2=""></i></div>'
+            '</textarea></div><div class="form-group col-md-1 text-center"><label>Paket?</label><br><div class="form-check form-switch d-inline-block"><input class="form-check-input check-paket" type="checkbox" name="is_paket" value="1" checked><input type="hidden" class="status-paket-val" name="status_paket" value="0"></div></div><i class="bi bi-x-square remove_field form-group col-md-1 text-danger" kode2=""></i></div>'
         );
         Swal.fire({
             title: "Obat dipilih " + nama_barang,
@@ -419,6 +533,16 @@
         ambilriwayatbilling()
         ambilriwayatresep()
     })
+    $(document).on('change', '.check-paket', function() {
+        let $row = $(this).closest('.row');
+        if ($(this).is(':checked')) {
+            $row.find('.status-paket-val').val(1);
+            $row.css('background-color', '#f0faff'); // Beri highlight biru muda jika PAKET
+        } else {
+            $row.find('.status-paket-val').val(0);
+            $row.css('background-color', 'transparent');
+        }
+    });
 
     function ambilriwayatbilling() {
         idkunjungan = $('#idkunjungan').val()
