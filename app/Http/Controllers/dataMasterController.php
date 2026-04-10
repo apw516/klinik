@@ -36,11 +36,11 @@ class dataMasterController extends Controller
     {
         // dd('ok');
         // if ($request->ajax()) {
-            $data = DB::table('master_pasien'); // Ganti dengan nama tabel Anda
-            return DataTables::of($data)
-                ->addIndexColumn()
-                ->addColumn('aksi', function ($row) {
-                    return '
+        $data = DB::table('master_pasien'); // Ganti dengan nama tabel Anda
+        return DataTables::of($data)
+            ->addIndexColumn()
+            ->addColumn('aksi', function ($row) {
+                return '
                 <div class="btn-group btn-group-sm">
                     <button type="button" class="btn btn-outline-warning" title="Edit"
                         onclick="editpasien(\'' . $row->id . '\')" data-bs-toggle="modal" data-bs-target="#editmasterpasien">
@@ -51,9 +51,9 @@ class dataMasterController extends Controller
                         <i class="bi bi-x-circle"></i>
                     </button>
                 </div>';
-                })
-                ->rawColumns(['aksi']) // Agar HTML tombol dirender
-                ->make(true);
+            })
+            ->rawColumns(['aksi']) // Agar HTML tombol dirender
+            ->make(true);
         // }
         // return view('Master.tabel_pasien', compact([
         //     'data'
@@ -741,4 +741,30 @@ class dataMasterController extends Controller
     //     // Gabungkan kembali: KodeDesa + Urutan (5 digit)
     //     return $mt_desa[0]->id . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
     // }
+    public function updateNomorRM()
+    {
+        try {
+            DB::beginTransaction();
+
+            // 1. Set variabel awal untuk nomor urut
+            DB::statement(DB::raw('SET @urut := 0'));
+
+            // 2. Jalankan update dengan format: YYYY DD MM + urutan 4 digit
+            // Contoh: 2026 + 10 + 04 + 0001 => 202610040001
+            DB::statement("
+            UPDATE master_pasien 
+            SET nomor_rm = CONCAT(
+                DATE_FORMAT(tgl_entry, '%Y%d%m'), 
+                LPAD(@urut := @urut + 1, 4, '0')
+            )
+            ORDER BY tgl_entry ASC, id ASC
+        ");
+
+            DB::commit();
+            return "Berhasil memperbarui nomor RM.";
+        } catch (\Exception $e) {
+            DB::rollback();
+            return "Gagal: " . $e->getMessage();
+        }
+    }
 }
