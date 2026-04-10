@@ -2,7 +2,7 @@
     <div class="sidebar-brand">
         <a href="./index.html" class="brand-link">
             <img src="./public/img/NP_MEDIKA_LOGO2.png" alt="AdminLTE Logo" class="brand-image shadow" />
-            <span class="brand-text fw-bold">KLINIK PINTAR</span>
+            <span class="brand-text fw-bold">NP MEDIKA</span>
         </a>
     </div>
     <div class="sidebar-wrapper">
@@ -62,8 +62,8 @@
                         <p>Master Pasien</p>
                     </a>
                 </li>
-                <li class="nav-header">POLIKLINIK</li>
-                <li class="nav-item">
+                <li @if(auth()->user()->hak_akses == 2) hidden @endif class="nav-header">POLIKLINIK</li>
+                <li @if(auth()->user()->hak_akses == 2) hidden @endif class="nav-item">
                     <a href="{{ route('indexdatapasienpoli') }}"
                         class="nav-link @if ($menu == 'indexdatapasienpoli') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -99,8 +99,8 @@
                         <p>Kartu Stok Obat</p>
                     </a>
                 </li>
-                <li class="nav-header">DATA MASTER</li>
-                <li class="nav-item">
+                <li @if(auth()->user()->hak_akses == 2) hidden @endif class="nav-header">DATA MASTER</li>
+                <li @if(auth()->user()->hak_akses == 2) hidden @endif class="nav-item">
                     <a href="{{ route('indexmasterpasien') }}"
                         class="nav-link @if ($menu == 'indexmasterpasien') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -149,7 +149,7 @@
                         <p>Data Pegawai</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li @if(auth()->user()->hak_akses == 2) hidden @endif class="nav-item">
                     <a href="{{ route('indexdataunit') }}"
                         class="nav-link @if ($menu == 'indexdataunit') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -195,7 +195,7 @@
                         </li>
                     </ul>
                 </li>
-                <li class="nav-item">
+                <li @if(auth()->user()->hak_akses == 2) hidden @endif class="nav-item">
                     <a href="{{ route('indexdatauser') }}"
                         class="nav-link @if ($menu == 'indexdatauser') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
