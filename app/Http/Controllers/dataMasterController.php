@@ -698,49 +698,49 @@ class dataMasterController extends Controller
 
         return $newKode; // Hasil: B000001, B000002, dst.
     }
-    // public function generateNoRM()
-    // {
-    //     // 1. Ambil kode terakhir yang diawali dengan 'B'
-    //     $lastRecord = DB::table('master_pasien')
-    //         ->orderBy('id', 'desc')
-    //         ->first();
-
-    //     if ($lastRecord) {
-    //         // 2. Ambil angka setelah huruf 'B' (karakter ke-2 sampai habis)
-    //         $lastNumber = substr($lastRecord->nomor_rm, 1);
-    //         $nextNumber = (int)$lastNumber + 1;
-    //     } else {
-    //         // 3. Jika belum ada data sama sekali, mulai dari 1
-    //         $nextNumber = 1;
-    //     }
-    //     $datenow = Carbon::now()->format('ndy');
-    //     // 4. Gabungkan prefix dengan angka yang dipadding 6 digit
-    //     $newKode = $datenow . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
-    //     return $newKode; // Hasil: B000001, B000002, dst.
-    // }
-    public function generateNoRM($idDesa)
+    public function generateNoRM()
     {
-        // Pastikan kode desa selalu 2 digit (misal: 1 jadi 01)
-        $prefix = str_pad($idDesa, 2, '0', STR_PAD_LEFT);
-        // Ambil nomor urut terakhir dari desa tersebut
-        $lastPatient = DB::table('master_pasien')
-            ->where('desa', 'LIKE', $prefix . '%')
-            ->lockForUpdate() // Mengunci baris agar tidak terjadi duplikasi saat traffic tinggi
-            ->orderBy('nomor_rm', 'desc')
+        // 1. Ambil kode terakhir yang diawali dengan 'B'
+        $lastRecord = DB::table('master_pasien')
+            ->orderBy('id', 'desc')
             ->first();
 
-        if ($lastPatient) {
-            // Ambil 5 digit terakhir dan tambah 1
-            $lastNumber = (int) substr($lastPatient->nomor_rm, 2);
-            $nextNumber = $lastNumber + 1;
+        if ($lastRecord) {
+            // 2. Ambil angka setelah huruf 'B' (karakter ke-2 sampai habis)
+            $lastNumber = substr($lastRecord->nomor_rm, 1);
+            $nextNumber = (int)$lastNumber + 1;
         } else {
-            // Jika pasien pertama di desa tersebut
+            // 3. Jika belum ada data sama sekali, mulai dari 1
             $nextNumber = 1;
         }
-        $mt_desa = db::select('select id from mt_desa where bps_code = ?',[$prefix]);
-        // Gabungkan kembali: KodeDesa + Urutan (5 digit)
-        return $mt_desa[0]->id . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+        $datenow = Carbon::now()->format('ndy');
+        // 4. Gabungkan prefix dengan angka yang dipadding 6 digit
+        $newKode = $datenow . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+        return $newKode; // Hasil: B000001, B000002, dst.
     }
+    // public function generateNoRM($idDesa)
+    // {
+    //     // Pastikan kode desa selalu 2 digit (misal: 1 jadi 01)
+    //     $prefix = str_pad($idDesa, 2, '0', STR_PAD_LEFT);
+    //     // Ambil nomor urut terakhir dari desa tersebut
+    //     $lastPatient = DB::table('master_pasien')
+    //         ->where('desa', 'LIKE', $prefix . '%')
+    //         ->lockForUpdate() // Mengunci baris agar tidak terjadi duplikasi saat traffic tinggi
+    //         ->orderBy('nomor_rm', 'desc')
+    //         ->first();
+
+    //     if ($lastPatient) {
+    //         // Ambil 5 digit terakhir dan tambah 1
+    //         $lastNumber = (int) substr($lastPatient->nomor_rm, 2);
+    //         $nextNumber = $lastNumber + 1;
+    //     } else {
+    //         // Jika pasien pertama di desa tersebut
+    //         $nextNumber = 1;
+    //     }
+    //     $mt_desa = db::select('select id from mt_desa where bps_code = ?',[$prefix]);
+    //     // Gabungkan kembali: KodeDesa + Urutan (5 digit)
+    //     return $mt_desa[0]->id . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
+    // }
     public function updateNomorRM()
     {
         try {
