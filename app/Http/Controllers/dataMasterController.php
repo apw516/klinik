@@ -698,25 +698,46 @@ class dataMasterController extends Controller
 
         return $newKode; // Hasil: B000001, B000002, dst.
     }
+    // public function generateNoRM()
+    // {
+    //     // 1. Ambil kode terakhir yang diawali dengan 'B'
+    //     $lastRecord = DB::table('master_pasien')
+    //         ->orderBy('id', 'desc')
+    //         ->first();
+
+    //     if ($lastRecord) {
+    //         // 2. Ambil angka setelah huruf 'B' (karakter ke-2 sampai habis)
+    //         $lastNumber = substr($lastRecord->nomor_rm, 1);
+    //         $nextNumber = (int)$lastNumber + 1;
+    //     } else {
+    //         // 3. Jika belum ada data sama sekali, mulai dari 1
+    //         $nextNumber = 1;
+    //     }
+    //     $datenow = Carbon::now()->format('ndy');
+    //     // 4. Gabungkan prefix dengan angka yang dipadding 6 digit
+    //     $newKode = $datenow . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
+    //     return $newKode; // Hasil: B000001, B000002, dst.
+    // }
     public function generateNoRM()
     {
-        // 1. Ambil kode terakhir yang diawali dengan 'B'
-        $lastRecord = DB::table('master_pasien')
-            ->orderBy('id', 'desc')
+        $hariIni = date('ymd'); // Hasil: 260410 (untuk 10 April 2026)
+
+        // Cari nomor terakhir yang diawali dengan tanggal hari ini
+        $lastRM = DB::table('master_pasien')
+            ->where('nomor_rm', 'like', $hariIni . '%')
+            ->orderBy('nomor_rm', 'desc')
             ->first();
 
-        if ($lastRecord) {
-            // 2. Ambil angka setelah huruf 'B' (karakter ke-2 sampai habis)
-            $lastNumber = substr($lastRecord->nomor_rm, 1);
-            $nextNumber = (int)$lastNumber + 1;
+        if ($lastRM) {
+            // Ambil 4 digit terakhir, tambah 1
+            $noUrut = substr($lastRM->nomor_rm, -4);
+            $nextUrut = str_pad((int)$noUrut + 1, 4, '0', STR_PAD_LEFT);
         } else {
-            // 3. Jika belum ada data sama sekali, mulai dari 1
-            $nextNumber = 1;
+            // Jika pasien pertama di hari ini
+            $nextUrut = '0001';
         }
-        $datenow = Carbon::now()->format('ndy');
-        // 4. Gabungkan prefix dengan angka yang dipadding 6 digit
-        $newKode = $datenow . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
-        return $newKode; // Hasil: B000001, B000002, dst.
+
+        return $hariIni . $nextUrut; // Hasil: 2604100001
     }
     // public function generateNoRM($idDesa)
     // {
