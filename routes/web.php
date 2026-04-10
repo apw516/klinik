@@ -49,7 +49,7 @@ Route::post('/simpanstatuspasien', [dataMasterController::class, 'simpanstatuspa
 Route::post('/ambilformeditpasien', [dataMasterController::class, 'ambilformeditpasien'])->name('ambilformeditpasien');
 Route::post('/simpaneditpasien', [dataMasterController::class, 'simpaneditpasien'])->name('simpaneditpasien');
 Route::post('/ambilinfosediaan', [dataMasterController::class, 'ambilinfosediaan'])->name('ambilinfosediaan');
-Route::post('/updateNomorRM', [dataMasterController::class, 'updateNomorRM'])->name('updateNomorRM');
+Route::get('/updateNomorRM', [dataMasterController::class, 'updateNomorRM'])->name('updateNomorRM');
 
 
 
