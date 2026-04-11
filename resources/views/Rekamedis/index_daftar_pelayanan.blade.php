@@ -21,6 +21,9 @@
                 <button type="button" class="btn  mb-2 btn-primary" data-bs-toggle="modal"
                     data-bs-target="#modaltambahpasien"> <i class="bi bi-plus" style="margin-right:8px"></i>
                     Master Pasien</button>
+                <button type="button" class="btn  mb-2 btn-primary" data-bs-toggle="modal"
+                    data-bs-target="#modaltambahdesa"> <i class="bi bi-plus" style="margin-right:8px"></i>
+                    Master Desa</button>
                 {{-- <div class="card">
                     <div class="card-header"><i class="bi bi-search" style="margin-right:8px"></i>Form Pencarian Pasien
                     </div>
@@ -73,7 +76,8 @@
                     </div>
                 </div> --}}
                 <div class="card mt-4">
-                    <div class="card-header"><i class="bi bi-database-fill-check " style="margin-right: 8px"></i> Silahkan Pilih Pasien </div>
+                    <div class="card-header"><i class="bi bi-database-fill-check " style="margin-right: 8px"></i> Silahkan
+                        Pilih Pasien </div>
                     <div class="card-body">
                         <table id="tbmasterpasien" class="table table-sm table-bordered table-hover w-100">
                             <thead>
@@ -104,7 +108,7 @@
         <div class="modal-dialog modal-xl">
             <div class="modal-content">
                 <div class="modal-header">
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Modal title</h1>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Master Pasien</h1>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
@@ -146,8 +150,8 @@
                             <div class="col-md-2">
                                 <div class="mb-3">
                                     <label for="exampleInputEmail1" class="form-label">Status Pernikahan</label>
-                                    <select class="form-select" aria-label="Default select example"
-                                        name="status_pernikahan" id="status_pernikahan">
+                                    <select class="form-select" aria-label="Default select example" name="status_pernikahan"
+                                        id="status_pernikahan">
                                         <option value="0">-</option>
                                         <option value="1">Menikah</option>
                                         <option value="2">Belum Menikah</option>
@@ -225,6 +229,18 @@
                                 <div class="row">
                                     <div class="col-md-5">
                                         <div class="mb-3">
+                                            <label for="exampleInputEmail1" class="form-label">Piih Desa</label>
+                                            <select class="form-select" aria-label="Default select example"
+                                                name="alamatktp" id="alamatktp">
+                                                <option value="-">Silahkan Pilih</option>
+                                                @foreach ($desa as $d)
+                                                    <option value="{{ $d->nama_desa }}">{{ $d->nama_desa }}</option>
+                                                @endforeach
+                                            </select>
+                                        </div>
+                                    </div>
+                                    <div class="col-md-5">
+                                        <div class="mb-3">
                                             <label for="exampleInputEmail1" class="form-label">Alamat Lengkap</label>
                                             <textarea type="email" class="form-control" id="alamatlengkap" name="alamatlengkap" aria-describedby="emailHelp"
                                                 placeholder="masukan alamat lengkap , contoh : RT 002 RW 006 JL. MERDEKA BLOK 1"></textarea>
@@ -238,6 +254,33 @@
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="button" class="btn btn-primary" onclick="simpanpasien()">Simpan</button>
+                </div>
+            </div>
+        </div>
+    </div>
+    <div class="modal fade" id="modaltambahdesa" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+        <div class="modal-dialog modal-md">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Master Desa</h1>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    <form class="formmasterdesa" id="formmasterdesa">
+                        <div class="row">                         
+                            <div class="col-md-12">
+                                <div class="mb-3">
+                                    <label for="exampleInputEmail1" class="form-label">Masukan Nama Desa</label>
+                                    <input type="email" class="form-control" id="namadesa" name="namadesa"
+                                        placeholder="Masukan nomor kartu identitas ..." aria-describedby="emailHelp">
+                                </div>
+                            </div>
+                        </div>
+                    </form>
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                    <button type="button" class="btn btn-primary" onclick="simpandesa()">Simpan</button>
                 </div>
             </div>
         </div>
@@ -357,6 +400,21 @@
             });
         });
 
+        function simpandesa() {
+            Swal.fire({
+                title: "Data desa akan disimpan !",
+                showDenyButton: true,
+                showCancelButton: false,
+                confirmButtonText: "Simpan",
+                denyButtonText: `Batal`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    simpandesax()
+                } else if (result.isDenied) {
+                    Swal.fire("Changes are not saved", "", "info");
+                }
+            });
+        }
         function simpanpasien() {
             Swal.fire({
                 title: "Data Pasien akan disimpan !",
@@ -373,6 +431,52 @@
             });
         }
 
+        function simpandesax() {
+            var data = $('.formmasterpasien').serializeArray();
+            nama = $('#namadesa').val()
+            spinner = $('#loader')
+            spinner.show();
+            $.ajax({
+                async: true,
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    nama
+                },
+                url: '<?= route('simpandesa') ?>',
+                error: function(data) {
+                    spinner.hide()
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ooops....',
+                        text: 'Sepertinya ada masalah......',
+                        footer: ''
+                    })
+                },
+                success: function(data) {
+                    spinner.hide()
+                    if (data.kode == 500) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oopss...',
+                            text: data.message,
+                            footer: ''
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'OK',
+                            text: data.message,
+                            footer: ''
+                        })
+                        location.reload()
+                        const myForm = document.getElementById('formmasterdesa');
+                        myForm.reset();
+                    }
+                }
+            });
+        }
         function simpanpasienx() {
             var data = $('.formmasterpasien').serializeArray();
             spinner = $('#loader')

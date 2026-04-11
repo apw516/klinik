@@ -26,9 +26,10 @@ class dataMasterController extends Controller
         // LEFT OUTER JOIN master_status_pernikahan d ON a.`status_pernikahan` = d.`id`
         // WHERE a.is_active = 1
         // ORDER BY id DESC');
+        $desa = db::select('select * from tabel_master_desa_baru ORDER By nama_desa ASC');
         return view('Master.index_master_pasien', compact([
             'menu',
-            // 'data',
+            'desa',
             'menu_sub'
         ]));
     }
@@ -382,7 +383,15 @@ class dataMasterController extends Controller
             $value =  $nama['value'];
             $dataSet[$index] = $value;
         }
-        $rm = $this->generateNoRM();
+        if ($dataSet['alamatktp'] == '-') {
+            $data2 = [
+                'kode' => 500,
+                'message' => 'Desa belum dipilih !'
+            ];
+            echo json_encode($data2);
+            die;
+        }
+        $rm = $this->generateNoRM($dataSet['alamatktp']);
         $data_save = [
             'nomor_rm' => $rm,
             'nomor_identitas' => $dataSet['nomoridentitas'],
@@ -391,7 +400,7 @@ class dataMasterController extends Controller
             'nama_pasien' => $dataSet['namapasien'],
             'jenis_kelamin' => $dataSet['jeniskelamin'],
             'tempat_lahir' => $dataSet['tempatlahir'],
-            'alamat_ktp' => $dataSet['alamatlengkap'],
+            'alamat_ktp' => $dataSet['alamatktp'],
             'alamat_domisili' => $dataSet['alamatlengkap'],
             // 'provinsi' => $dataSet['idprovinsi'],
             // 'kabupaten' => $dataSet['idkabupaten'],
@@ -407,6 +416,19 @@ class dataMasterController extends Controller
             'tanggal_lahir' => $dataSet['tanggallahir'],
         ];
         model_master_pasien::create($data_save);
+        $data2 = [
+            'kode' => 200,
+            'message' => 'data berhasil disimpan'
+        ];
+        echo json_encode($data2);
+        die;
+    }
+    public function simpandesa(Request $request)
+    {
+        $nama = strtoupper($request->nama);
+        DB::table('tabel_master_desa_baru')->insert([
+            'nama_desa'     => $nama,
+        ]);
         $data2 = [
             'kode' => 200,
             'message' => 'data berhasil disimpan'
@@ -698,94 +720,38 @@ class dataMasterController extends Controller
 
         return $newKode; // Hasil: B000001, B000002, dst.
     }
-    // public function generateNoRM()
-    // {
-    //     // 1. Ambil kode terakhir yang diawali dengan 'B'
-    //     $lastRecord = DB::table('master_pasien')
-    //         ->orderBy('id', 'desc')
-    //         ->first();
+    public function generateNoRM($alamat)
+    { // 1. Ambil ID Desa berdasarkan alamat_ktp pasien baru
+        $desa = DB::table('tabel_master_desa_baru')
+            ->where('nama_desa', $alamat)
+            ->first();
 
-    //     if ($lastRecord) {
-    //         // 2. Ambil angka setelah huruf 'B' (karakter ke-2 sampai habis)
-    //         $lastNumber = substr($lastRecord->nomor_rm, 1);
-    //         $nextNumber = (int)$lastNumber + 1;
-    //     } else {
-    //         // 3. Jika belum ada data sama sekali, mulai dari 1
-    //         $nextNumber = 1;
-    //     }
-    //     $datenow = Carbon::now()->format('ndy');
-    //     // 4. Gabungkan prefix dengan angka yang dipadding 6 digit
-    //     $newKode = $datenow . str_pad($nextNumber, 6, '0', STR_PAD_LEFT);
-    //     return $newKode; // Hasil: B000001, B000002, dst.
-    // }
-    public function generateNoRM()
-    {
-        $hariIni = date('ymd'); // Hasil: 260410 (untuk 10 April 2026)
+        if (!$desa) {
+            // Handle jika desa tidak ditemukan
+            return response()->json(['error' => 'Desa tidak terdaftar'], 404);
+        }
 
-        // Cari nomor terakhir yang diawali dengan tanggal hari ini
+        $idDesa = str_pad($desa->id, 3, '0', STR_PAD_LEFT); // Hasil: 001
+
+        // 2. Cari nomor RM terakhir yang diawali dengan ID Desa tersebut
         $lastRM = DB::table('master_pasien')
-            ->where('nomor_rm', 'like', $hariIni . '%')
+            ->where('nomor_rm', 'like', $idDesa . '-%')
             ->orderBy('nomor_rm', 'desc')
             ->first();
 
         if ($lastRM) {
-            // Ambil 4 digit terakhir, tambah 1
-            $noUrut = substr($lastRM->nomor_rm, -4);
-            $nextUrut = str_pad((int)$noUrut + 1, 4, '0', STR_PAD_LEFT);
+            // Ambil bagian nomor urut setelah tanda '-' (misal dari 001-00005 ambil 00005)
+            // explode digunakan agar lebih aman jika panjang ID desa berubah
+            $parts = explode('-', $lastRM->nomor_rm);
+            $noUrutTerakhir = end($parts);
+            $nextUrut = str_pad((int)$noUrutTerakhir + 1, 5, '0', STR_PAD_LEFT);
         } else {
-            // Jika pasien pertama di hari ini
-            $nextUrut = '0001';
+            // Jika ini adalah pasien pertama dari desa tersebut
+            $nextUrut = '00001';
         }
 
-        return $hariIni . $nextUrut; // Hasil: 2604100001
-    }
-    // public function generateNoRM($idDesa)
-    // {
-    //     // Pastikan kode desa selalu 2 digit (misal: 1 jadi 01)
-    //     $prefix = str_pad($idDesa, 2, '0', STR_PAD_LEFT);
-    //     // Ambil nomor urut terakhir dari desa tersebut
-    //     $lastPatient = DB::table('master_pasien')
-    //         ->where('desa', 'LIKE', $prefix . '%')
-    //         ->lockForUpdate() // Mengunci baris agar tidak terjadi duplikasi saat traffic tinggi
-    //         ->orderBy('nomor_rm', 'desc')
-    //         ->first();
-
-    //     if ($lastPatient) {
-    //         // Ambil 5 digit terakhir dan tambah 1
-    //         $lastNumber = (int) substr($lastPatient->nomor_rm, 2);
-    //         $nextNumber = $lastNumber + 1;
-    //     } else {
-    //         // Jika pasien pertama di desa tersebut
-    //         $nextNumber = 1;
-    //     }
-    //     $mt_desa = db::select('select id from mt_desa where bps_code = ?',[$prefix]);
-    //     // Gabungkan kembali: KodeDesa + Urutan (5 digit)
-    //     return $mt_desa[0]->id . str_pad($nextNumber, 5, '0', STR_PAD_LEFT);
-    // }
-    public function updateNomorRM()
-    {
-        try {
-            DB::beginTransaction();
-
-            // 1. Set variabel awal untuk nomor urut
-            // DB::statement(DB::raw('SET @urut := 0'));
-            DB::statement("SET @urut := 0");
-            // 2. Jalankan update dengan format: YYYY DD MM + urutan 4 digit
-            // Contoh: 2026 + 10 + 04 + 0001 => 202610040001
-            DB::statement("
-            UPDATE master_pasien 
-            SET nomor_rm = CONCAT(
-                DATE_FORMAT(tgl_entry, '%y%d%m'), 
-                LPAD(@urut := @urut + 1, 4, '0')
-            )
-            ORDER BY tgl_entry ASC, id ASC
-        ");
-
-            DB::commit();
-            return "Berhasil memperbarui nomor RM.";
-        } catch (\Exception $e) {
-            DB::rollback();
-            return "Gagal: " . $e->getMessage();
-        }
+        // 3. Gabungkan menjadi format 001-00001
+        $nomorRMBaru = $idDesa . '-' . $nextUrut;
+        return $nomorRMBaru;
     }
 }

@@ -19,9 +19,11 @@ class rekamedisController extends Controller
     {
         $menu_sub = 'indexdaftarpelayanan';
         $menu = 'indexdaftarpelayanan';
+        $desa = db::select('select * from tabel_master_desa_baru ORDER By nama_desa ASC');
         return view('Rekamedis.index_daftar_pelayanan', compact([
             'menu',
-            'menu_sub'
+            'menu_sub',
+            'desa'
         ]));
     }
     public function indexriwayatpendaftaran()
