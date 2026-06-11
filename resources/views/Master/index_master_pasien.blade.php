@@ -23,6 +23,9 @@
             <button type="button" class="btn btn-outline-primary" data-bs-toggle="modal" data-bs-target="#modaltambahdesa">
                 <i class="bi bi-plus" style="margin-right:8px"></i>
                 Master Desa</button>
+            <button type="button" class="btn btn-outline-primary" onclick="sinkronrm()">
+                <i class="bi bi-plus" style="margin-right:8px"></i>
+                Sinkronisasi Nomor RM</button>
             <div class="card mt-3">
                 <div class="card-header"><i class="bi bi-file-earmark-spreadsheet-fill"></i> Tabel Data Pasien</div>
                 <div class="card-body">
@@ -34,6 +37,7 @@
                                 <th>Nama Pasien</th>
                                 <th>Info Lahir & JK</th>
                                 <th>Alamat Domisili</th>
+                                <th>Status</th>
                                 <th>Aksi</th>
                             </tr>
                         </thead>
@@ -90,8 +94,8 @@
                             <div class="col-md-2">
                                 <div class="mb-3">
                                     <label for="exampleInputEmail1" class="form-label">Status Pernikahan</label>
-                                    <select class="form-select" aria-label="Default select example" name="status_pernikahan"
-                                        id="status_pernikahan">
+                                    <select class="form-select" aria-label="Default select example"
+                                        name="status_pernikahan" id="status_pernikahan">
                                         <option value="0">-</option>
                                         <option value="1">Menikah</option>
                                         <option value="2">Belum Menikah</option>
@@ -353,6 +357,22 @@
             });
         }
 
+        function sinkronrm() {
+            Swal.fire({
+                title: "Nomor Rekamedis akan disinkronisasi ulang !",
+                showDenyButton: true,
+                showCancelButton: false,
+                confirmButtonText: "Ya",
+                denyButtonText: `Batal`
+            }).then((result) => {
+                if (result.isConfirmed) {
+                    sinkronisasi()
+                } else if (result.isDenied) {
+                    Swal.fire("Changes are not saved", "", "info");
+                }
+            });
+        }
+
         function simpanpasien() {
             Swal.fire({
                 title: "Data Pasien akan disimpan !",
@@ -365,6 +385,48 @@
                     simpanpasienx()
                 } else if (result.isDenied) {
                     Swal.fire("Changes are not saved", "", "info");
+                }
+            });
+        }
+
+        function sinkronisasi() {
+            spinner = $('#loader')
+            spinner.show();
+            $.ajax({
+                async: true,
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                },
+                url: '<?= route('sinkronisasirm') ?>',
+                error: function(data) {
+                    spinner.hide()
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ooops....',
+                        text: 'Sepertinya ada masalah......',
+                        footer: ''
+                    })
+                },
+                success: function(data) {
+                    spinner.hide()
+                    if (data.kode == 500) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oopss...',
+                            text: data.message,
+                            footer: ''
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'OK',
+                            text: data.message,
+                            footer: ''
+                        })
+                        location.reload()
+                    }
                 }
             });
         }
@@ -639,6 +701,24 @@
                     {
                         data: 'alamat_domisili',
                         name: 'alamat_domisili'
+                    },
+                    {
+                        data: 'is_active',
+                        name: 'is_active',
+                        render: function(data, type, row) {
+                            // Jika data bernilai 1 (bisa berupa angka atau string)
+                            if (data == 1) {
+                                return '<span class="badge bg-success">Aktif</span>';
+                            }
+                            // Jika data bernilai 2
+                            else if (data == 2) {
+                                return '<span class="badge bg-danger">Tidak Aktif</span>';
+                            }
+                            // Antisipasi jika data kosong atau bernilai lain
+                            else {
+                                return '<span class="badge bg-secondary">Misteri / Kosong</span>';
+                            }
+                        }
                     },
                     {
                         data: 'aksi',

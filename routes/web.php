@@ -12,7 +12,7 @@ Route::get('/', [authController::class, 'index']);
 Route::get('/login', [authController::class, 'index'])->middleware('guest')->name('login');
 Route::get('/logout', [authController::class, 'logout'])->name('logout');
 Route::post('/login', [authController::class, 'authenticate']);
-
+Route::post('/register', [authController::class, 'register'])->name('register');
 Route::get('/dashboard', [dashboardController::class, 'index']);
 
 
@@ -51,6 +51,14 @@ Route::post('/simpaneditpasien', [dataMasterController::class, 'simpaneditpasien
 Route::post('/ambilinfosediaan', [dataMasterController::class, 'ambilinfosediaan'])->name('ambilinfosediaan');
 Route::post('/simpandesa', [dataMasterController::class, 'simpandesa'])->name('simpandesa');
 Route::get('/updateNomorRM', [dataMasterController::class, 'updateNomorRM'])->name('updateNomorRM');
+Route::post('/sinkronisasirm', [dataMasterController::class, 'sinkronisasirm'])->name('sinkronisasirm');
+Route::post('/simpanpegawai', [dataMasterController::class, 'simpanpegawai'])->name('simpanpegawai');
+Route::post('/simpanpegawaiedit', [dataMasterController::class, 'simpanpegawaiedit'])->name('simpanpegawaiedit');
+Route::post('/ambildatapegawai', [dataMasterController::class, 'ambildatapegawai'])->name('ambildatapegawai');
+Route::post('/hapuspegawai', [dataMasterController::class, 'hapuspegawai'])->name('hapuspegawai');
+Route::post('/ambildatauser', [dataMasterController::class, 'ambildatauser'])->name('ambildatauser');
+Route::post('/hapususer', [dataMasterController::class, 'hapususer'])->name('hapususer');
+Route::post('/simpanedituser', [dataMasterController::class, 'simpanedituser'])->name('simpanedituser');
 
 
 
@@ -69,7 +77,9 @@ Route::post('/ambilforminputlayanan', [rekamedisController::class, 'ambilforminp
 Route::post('/simpanbilling', [rekamedisController::class, 'simpanbilling'])->name('simpanbilling');
 Route::post('/simpanbatalkunjungan', [rekamedisController::class, 'simpanbatalkunjungan'])->name('simpanbatalkunjungan');
 Route::post('/simpanHasilLab', [rekamedisController::class, 'simpanHasilLab'])->name('simpanHasilLab');
-
+Route::post('/cek_kesiapan_cetak_lab', [rekamedisController::class, 'cekKesiapanCetak'])->name('cek_kesiapan_cetak_lab');
+Route::get('cetak_nota_laboratorium/{kode}', [rekamedisController::class, 'cetakNota'])
+     ->name('cetak.nota.lab');
 //antrian
 Route::get('/indexdataantrian', [rekamedisController::class, 'indexdataantrian'])->name('indexdataantrian');
 Route::post('/ambildataantrian', [rekamedisController::class, 'ambildataantrian'])->name('ambildataantrian');
@@ -84,6 +94,7 @@ Route::post('/ambilformerm', [poliklinikController::class, 'ambilformerm'])->nam
 Route::post('/simpancatatanmedis', [poliklinikController::class, 'simpancatatanmedis'])->name('simpancatatanmedis');
 Route::post('/ambilriwayatbilling', [poliklinikController::class, 'ambilriwayatbilling'])->name('ambilriwayatbilling');
 Route::post('/ambilriwayatresep', [poliklinikController::class, 'ambilriwayatresep'])->name('ambilriwayatresep');
+Route::post('/ambilhasillab', [poliklinikController::class, 'ambilhasillab'])->name('ambilhasillab');
 
 
 Route::get('/indexkartustokobat', [kasirFarmasiController::class, 'indexkartustokobat'])->name('indexkartustokobat');

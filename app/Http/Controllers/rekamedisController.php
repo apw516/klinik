@@ -2,12 +2,15 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\model_hasil_lab;
+use App\Models\model_master_pasien;
 use App\Models\model_ts_antrian;
 use App\Models\model_ts_kunjungan;
 use App\Models\model_ts_layanan_detail;
 use App\Models\model_ts_layanan_header;
 use App\Models\model_ts_resep_detail;
 use App\Models\model_ts_resep_header;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
@@ -134,6 +137,10 @@ class rekamedisController extends Controller
             'counter' => $counter,
             'tekanan_darah' => $dataSet['tekanandarah'],
             'suhu_tubuh' => $dataSet['suhutubuh'],
+            'frekuensi_nafas' => $dataSet['frekuensinafas'],
+            'frekuensi_nadi' => $dataSet['frekuensinadi'],
+            'usia_kunjungan' => $dataSet['usia_kunjungan'],
+            'suhu_tubuh' => $dataSet['suhutubuh'],
             'keluhan_utama' => $dataSet['keluhanutama'],
             'pic' => auth()->user()->id,
             'id_klinik' => 1,
@@ -180,10 +187,13 @@ class rekamedisController extends Controller
                 'master_unit.nama_unit'
             )
             ->first();
+        $hasillab = model_hasil_lab::where('kode_kunjungan', $id)->first();
+
         return view('Rekamedis.detailkunjungan', compact([
             'data',
             'id',
-            'ly'
+            'ly',
+            'hasillab'
         ]));
     }
     public function ambildetailkunjungan_billing(Request $request)
@@ -198,10 +208,11 @@ class rekamedisController extends Controller
                 'master_unit.nama_unit'
             )
             ->first();
-        // $ly = db::select('select *,b.id as iddetail  from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.status_layanan != 3', [$id]);
+        $hasillab = model_hasil_lab::where('kode_kunjungan', $id)->first();
         return view('Rekamedis.detailkunjungan_2', compact([
             'data',
             'id',
+            'hasillab'
             // 'ly'
         ]));
     }
@@ -265,8 +276,29 @@ class rekamedisController extends Controller
     public function simpanHasilLab(Request $request)
     {
         $id = $request->idkunjungan;
-        $hasillab = $request->hasillab;
-        $data = model_ts_kunjungan::where('id', $id)->update(['pemeriksaan_penunjang' => $hasillab]);
+        $data = json_decode($_POST['data'], true);
+        foreach ($data as $nama) {
+            $index =  $nama['name'];
+            $value =  $nama['value'];
+            $dataSet[$index] = $value;
+        }
+        $datenow = Carbon::now()->format('Y-m-d');
+
+        $hasil = [
+            'kode_kunjungan' => $dataSet['idkunjungannya'],
+            'hb_hasil' => $dataSet['hb_hasil'],
+            'ht_hasil' => $dataSet['ht_hasil'],
+            'eritrosit_hasil' => $dataSet['eritrosit_hasil'],
+            'leukosit_hasil' => $dataSet['leukosit_hasil'],
+            'trombosit_hasil' => $dataSet['trombosit_hasil'],
+            'kesan_lab' => $dataSet['kesan_lab'],
+            'pic' => auth()->user()->id,
+            'tgl_entry' => $datenow,
+        ];
+        $search_criteria = [
+            'kode_kunjungan' => $dataSet['idkunjungannya']
+        ];
+        $lab = model_hasil_lab::updateOrCreate($search_criteria, $hasil);
         $data2 = [
             'kode' => 200,
             'message' => 'data berhasil disimpan !'
@@ -565,5 +597,49 @@ class rekamedisController extends Controller
         $nextNumber = str_pad($lastNumber + 1, 4, '0', STR_PAD_LEFT);
 
         return $prefix . $nextNumber;
+    }
+    public function cekKesiapanCetak(Request $request)
+    {
+        $kode = $request->kode_kunjungan;
+
+        // Cek apakah data lab untuk kunjungan ini memang ada di DB
+        $cek = model_hasil_lab::where('kode_kunjungan', $kode)->first();
+
+        if (!$cek) {
+            return response()->json([
+                'kode' => 404,
+                'status' => 'error',
+                'message' => 'Gagal cetak! Parameter hasil lab untuk kunjungan ini belum diisi.'
+            ]);
+        }
+
+        // Jika ada, kirim status sukses beserta link URL cetak dokumennya
+        return response()->json([
+            'kode' => 200,
+            'status' => 'success',
+            'url_cetak' => url('cetak_nota_laboratorium/' . $kode) // Route halaman cetak PDF
+        ]);
+    }
+    public function cetakNota($kode)
+    {
+        // 1. Cari data hasil laboratorium berdasarkan kode kunjungan
+        $hasillab = model_hasil_lab::where('kode_kunjungan', $kode)->first();
+        $dtakunjungan = model_ts_kunjungan::where('id',$kode)->first();
+        $pic = $hasillab->pic;
+        $user = User::where('id',$pic)->first();
+        $rm = $dtakunjungan->nomor_rm;
+        $ddokter = $dtakunjungan->dokter;
+        $pasien = model_master_pasien::where('nomor_rm',$rm)->first();
+        $dokter = db::select('select * from master_pegawai where id = ?',[$ddokter]);
+        // 2. Proteksi jika data ternyata belum di-input
+        if (!$hasillab) {
+            return "Error: Data pemeriksaan untuk kunjungan " . htmlspecialchars($kode) . " tidak ditemukan.";
+        }
+        
+        // 3. (Opsional) Ambil data header pasien/kunjungan jika Anda menyimpannya di tabel terpisah
+        // $pasien = DB::table('ts_header_catatan_hemodialisis')->where('kode_kunjungan', $kode)->first();
+
+        // 4. Return view khusus cetakan dan kirim datanya
+        return view('Rekamedis.cetakanlab', compact('hasillab','pasien','dokter','user'));
     }
 }

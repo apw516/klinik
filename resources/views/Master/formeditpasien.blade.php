@@ -128,9 +128,21 @@
                  <div class="row">
                      <div class="col-md-5">
                          <div class="mb-3">
+                             <label for="exampleInputEmail1" class="form-label">Piih Desa</label>
+                             <select class="form-select" aria-label="Default select example" name="alamatktp"
+                                 id="alamatktp">
+                                 <option value="-">Silahkan Pilih</option>
+                                 @foreach ($desa as $d)
+                                     <option value="{{ $d->nama_desa }}" @if($pasien[0]->alamat_ktp == $d->nama_desa) selected @endif>{{ $d->nama_desa }}</option>
+                                 @endforeach
+                             </select>
+                         </div>
+                     </div>
+                     <div class="col-md-5">
+                         <div class="mb-3">
                              <label for="exampleInputEmail1" class="form-label">Alamat Lengkap</label>
-                             <textarea type="email" class="form-control" id="alamatlengkap" name="editalamatlengkap"
-                                 aria-describedby="emailHelp" placeholder="masukan alamat lengkap , contoh : RT 002 RW 006 JL. MERDEKA BLOK 1">{{ $pasien[0]->alamat_domisili }}</textarea>
+                             <textarea type="email" class="form-control" id="alamatlengkap" name="alamatlengkap" aria-describedby="emailHelp"
+                                 placeholder="masukan alamat lengkap , contoh : RT 002 RW 006 JL. MERDEKA BLOK 1">{{ $pasien[0]->alamat_domisili}}</textarea>
                          </div>
                      </div>
                  </div>

@@ -47,15 +47,11 @@
                                         @endif
                                     </td>
                                     <td>
-                                        <button class="btn btn-warning editunit" 
-                                            idunit="{{ $d->id }}"
-                                            nama="{{ $d->nama_unit }}" 
-                                            kelas="{{ $d->kelas}}"
-                                            tipeunit="{{ $d->tipe_unit}}"
-                                            status="{{ $d->status}}"
-
-                                            data-bs-toggle="modal"
-                                            data-bs-target="#modaleditunit"><i class="bi bi-pencil-square"></i></button>
+                                        <button class="btn btn-warning editunit" idunit="{{ $d->id }}"
+                                            nama="{{ $d->nama_unit }}" kelas="{{ $d->kelas }}"
+                                            tipeunit="{{ $d->tipe_unit }}" status="{{ $d->status }}"
+                                            data-bs-toggle="modal" data-bs-target="#modaleditunit"><i
+                                                class="bi bi-pencil-square"></i></button>
                                         <button class="btn btn-danger hapusunit" idunit="{{ $d->id }}"
                                             nama="{{ $d->nama_unit }}"><i class="bi bi-trash3"></i></button>
                                     </td>
@@ -102,7 +98,7 @@
                             <label for="exampleInputEmail1" class="form-label">Status</label>
                             <select class="form-select" aria-label="Default select example" id="status" name="status">
                                 <option selected>Silahkan pilih</option>
-                                <option value="1">aKTIF</option>
+                                <option value="1">AKTIF</option>
                                 <option value="2">TIDAK AKTIF</option>
                             </select>
                         </div>
@@ -134,14 +130,16 @@
                         </div>
                         <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">Tipe Unit</label>
-                            <select class="form-select" aria-label="Default select example" name="tipeunitedit" id="tipeunitedit">
+                            <select class="form-select" aria-label="Default select example" name="tipeunitedit"
+                                id="tipeunitedit">
                                 <option value="RAWAT JALAN">Rawat Jalan</option>
                                 <option value="RAWAT INAP">Rawat Inap</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">Kelas</label>
-                            <select class="form-select" aria-label="Default select example" name="kelasunitedit" id="kelasunitedit">
+                            <select class="form-select" aria-label="Default select example" name="kelasunitedit"
+                                id="kelasunitedit">
                                 <option value="1">1</option>
                                 <option value="2">2</option>
                                 <option value="3">3</option>
@@ -149,7 +147,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="exampleInputEmail1" class="form-label">Status</label>
-                            <select class="form-select" aria-label="Default select example" name="statusedit" id="statusedit">
+                            <select class="form-select" aria-label="Default select example" name="statusedit"
+                                id="statusedit">
                                 <option value="1">AKTIF</option>
                                 <option value="2">TIDAK AKTIF</option>
                             </select>
@@ -179,7 +178,7 @@
             nama = $(this).attr('nama')
             kelas = $(this).attr('kelas')
             tipeunit = $(this).attr('tipeunit')
-            status = $(this).attr('status')        
+            status = $(this).attr('status')
             $('#namaunitedit').val(nama);
             $('#idunit').val(idunit);
             $('#tipeunitedit').val(tipeunit).trigger('change');
@@ -196,7 +195,7 @@
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Ya, simpan !"
+                confirmButtonText: "Ya, hapus !"
             }).then((result) => {
                 if (result.isConfirmed) {
                     spinner = $('#loader')
@@ -242,8 +241,9 @@
                 }
             });
         })
-        function simpanalert()
-        {
+
+        function simpanalert() {
+            nama = $('#namaunit').val()
             Swal.fire({
                 title: "Anda yakin ?",
                 text: "Data Unit " + nama + " Akan disimpan ...",
@@ -251,15 +251,16 @@
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Ya, hapus !"
+                confirmButtonText: "Ya, Simpan !"
             }).then((result) => {
                 if (result.isConfirmed) {
                     simpanunit()
                 }
             });
         }
-        function simpanalert2()
-        {
+
+        function simpanalert2() {
+            nama = $('#namaunitedit').val()
             Swal.fire({
                 title: "Anda yakin ?",
                 text: "Data Unit " + nama + " Akan diedit ...",
@@ -267,7 +268,7 @@
                 showCancelButton: true,
                 confirmButtonColor: "#3085d6",
                 cancelButtonColor: "#d33",
-                confirmButtonText: "Ya, hapus !"
+                confirmButtonText: "Ya, Simpan !"
             }).then((result) => {
                 if (result.isConfirmed) {
                     formeditunit()
@@ -320,6 +321,7 @@
                 }
             });
         }
+
         function formeditunit() {
             var data = $('.formeditunit').serializeArray();
             spinner = $('#loader')

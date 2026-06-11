@@ -66,7 +66,9 @@
                                                     class="bi bi-cursor"></i></span>
                                         </td>
                                         <td>
-                                            {{ $t->pemeriksaan_penunjang}}
+                                            <button class="btn btn-info hasillab"
+                                                kode_kunjungan="{{ $t->id }}" data-bs-toggle="modal"
+                                                data-bs-target="#modalhasillab"><i class="bi bi-search"></i></button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -130,42 +132,113 @@
                             </h6>
                         </div>
                         <div class="card-body">
-                            <div class="row g-3 mb-4 p-3 bg-light rounded-3 border">
-                                <div class="col-md-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="icon-ttv bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                            style="width:40px; height:40px;">
-                                            <i class="bi bi-droplet"></i>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block text-uppercase fw-bold"
-                                                style="font-size: 0.7rem;">Tekanan Darah</small>
-                                            <span class="fw-bold h5 mb-0">{{ $dk[0]->tekanan_darah }} <small
-                                                    class="text-muted fs-6">mmHg</small></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-3">
-                                    <div class="d-flex align-items-center">
-                                        <div class="icon-ttv bg-danger text-white rounded-circle me-3 d-flex align-items-center justify-content-center"
-                                            style="width:40px; height:40px;">
-                                            <i class="bi bi-thermometer-half"></i>
-                                        </div>
-                                        <div>
-                                            <small class="text-muted d-block text-uppercase fw-bold"
-                                                style="font-size: 0.7rem;">Suhu Tubuh</small>
-                                            <span class="fw-bold h5 mb-0">{{ $dk[0]->suhu_tubuh }} <small
-                                                    class="text-muted fs-6">°C</small></span>
-                                        </div>
-                                    </div>
-                                </div>
-                                <div class="col-md-6 border-start ps-4">
-                                    <small class="text-muted d-block text-uppercase fw-bold"
-                                        style="font-size: 0.7rem;">Keluhan Utama</small>
-                                    <p class="mb-0 fw-medium text-dark">{{ $dk[0]->keluhan_utama ?: '-' }}</p>
-                                </div>
-                            </div>
+                            <div class="row g-3 mb-4 p-4 bg-white rounded-3 shadow-sm border">
 
+                                <div class="col-12">
+                                    <div class="row g-3">
+                                        <div class="col-sm-6 col-md-3">
+                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light">
+                                                <div class="bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm"
+                                                    style="width:45px; height:45px; min-width:45px;">
+                                                    <i class="bi bi-activity fs-5"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block text-uppercase fw-bold"
+                                                        style="font-size: 0.65rem; letter-spacing: 0.5px;">Tekanan
+                                                        Darah</small>
+                                                    <span
+                                                        class="fw-bold h5 mb-0 text-dark">{{ $dk[0]->tekanan_darah ?? '-' }}
+                                                        <small class="text-muted fs-6 fw-normal">mmHg</small></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6 col-md-3">
+                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light">
+                                                <div class="bg-danger text-white rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm"
+                                                    style="width:45px; height:45px; min-width:45px;">
+                                                    <i class="bi bi-thermometer-half fs-5"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block text-uppercase fw-bold"
+                                                        style="font-size: 0.65rem; letter-spacing: 0.5px;">Suhu
+                                                        Tubuh</small>
+                                                    <span
+                                                        class="fw-bold h5 mb-0 text-dark">{{ $dk[0]->suhu_tubuh ?? '-' }}
+                                                        <small class="text-muted fs-6 fw-normal">°C</small></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6 col-md-3">
+                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light">
+                                                <div class="bg-warning text-dark rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm"
+                                                    style="width:45px; height:45px; min-width:45px;">
+                                                    <i class="bi bi-heart-pulse fs-5"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block text-uppercase fw-bold"
+                                                        style="font-size: 0.65rem; letter-spacing: 0.5px;">Frekuensi
+                                                        Nadi</small>
+                                                    <span
+                                                        class="fw-bold h5 mb-0 text-dark">{{ $dk[0]->frekuensi_nadi ?? '-' }}
+                                                        <small class="text-muted fs-6 fw-normal">x/mnt</small></span>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-sm-6 col-md-3">
+                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light">
+                                                <div class="bg-info text-white rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm"
+                                                    style="width:45px; height:45px; min-width:45px;">
+                                                    <i class="bi bi-wind fs-5"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block text-uppercase fw-bold"
+                                                        style="font-size: 0.65rem; letter-spacing: 0.5px;">Frekuensi
+                                                        Nafas</small>
+                                                    <span
+                                                        class="fw-bold h5 mb-0 text-dark">{{ $dk[0]->frekuensi_nafas ?? '-' }}
+                                                        <small class="text-muted fs-6 fw-normal">x/mnt</small></span>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                                <div class="col-12 my-2">
+                                    <hr class="text-muted opacity-25">
+                                </div>
+
+                                <div class="col-12">
+                                    <div class="row g-3">
+                                        <div class="col-md-4 border-end-md">
+                                            <div class="d-flex align-items-start">
+                                                <i class="bi bi-person-bounding-box text-secondary me-2 mt-1"></i>
+                                                <div>
+                                                    <small class="text-muted d-block text-uppercase fw-bold mb-1"
+                                                        style="font-size: 0.75rem;">Usia Saat Ini</small>
+                                                    <p class="mb-0 fw-semibold text-dark">
+                                                        {{ $dk[0]->usia_kunjungan ?: '-' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+
+                                        <div class="col-md-8">
+                                            <div class="d-flex align-items-start">
+                                                <i class="bi bi-chat-right-text text-secondary me-2 mt-1"></i>
+                                                <div>
+                                                    <small class="text-muted d-block text-uppercase fw-bold mb-1"
+                                                        style="font-size: 0.75rem;">Keluhan Utama</small>
+                                                    <p class="mb-0 fw-semibold text-dark text-break">
+                                                        {{ $dk[0]->keluhan_utama ?: '-' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                    </div>
+                                </div>
+
+                            </div>
                             <form action="" class="formassesmen">
                                 @csrf <input hidden type="text" value="{{ $idkunjungan }}" name="idkunjungan"
                                     id="idkunjungan">
@@ -281,8 +354,9 @@
                     </div>
                 </div>
                 <div class="card-footer">
-                    <button class="btn btn-success" onclick="simpandata()">                                        <i class="bi bi-save me-1"></i> Simpan SOAP
-</button>
+                    <button class="btn btn-success" onclick="simpandata()"> <i class="bi bi-save me-1"></i> Simpan
+                        SOAP
+                    </button>
                     <button class="btn btn-danger" onclick="kembali()"><i class="bi bi-back"></i> Batal</button>
                 </div>
             </div>
@@ -354,6 +428,26 @@
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<!-- Modal -->
+<div class="modal fade" id="modalhasillab" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Hasil Laboratorium</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="v_h">
+
+                </div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+                <button type="button" class="btn btn-primary">Save changes</button>
             </div>
         </div>
     </div>
@@ -579,4 +673,21 @@
             }
         });
     }
+    $(".hasillab").on('click', function(event) {
+        kode_kunjungan = $(this).attr('kode_kunjungan')
+        spinner = $('#loader')
+        spinner.show();
+        $.ajax({
+            type: 'post',
+            data: {
+                _token: "{{ csrf_token() }}",
+                idkunjungan
+            },
+            url: '<?= route('ambilhasillab') ?>',
+            success: function(response) {
+                spinner.hide();
+                $('.v_h').html(response);
+            }
+        });
+    });
 </script>

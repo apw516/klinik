@@ -5,14 +5,17 @@ namespace App\Http\Controllers;
 use App\Models\model_master_barang;
 use App\Models\model_master_generik;
 use App\Models\model_master_pasien;
+use App\Models\model_master_pegawai;
 use App\Models\model_master_supllier;
 use App\Models\model_mt_unit;
 use App\Models\model_ts_kartu_stok;
 use App\Models\model_ts_stok_batch;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\DB;
 use Carbon\Carbon;
 use Yajra\DataTables\Facades\DataTables;
+use Illuminate\Support\Facades\Hash; // <--- TAMBAHKAN BARIS INI
 
 class dataMasterController extends Controller
 {
@@ -47,7 +50,7 @@ class dataMasterController extends Controller
                         onclick="editpasien(\'' . $row->id . '\')" data-bs-toggle="modal" data-bs-target="#editmasterpasien">
                         <i class="bi bi-pencil-square"></i>
                     </button>
-                    <button type="button" class="btn btn-outline-danger" title="Hapus"
+                    <button type="button" class="btn btn-outline-danger" title="Non aktifkan"
                         onclick="hapuspasien(\'' . $row->id . '\')">
                         <i class="bi bi-x-circle"></i>
                     </button>
@@ -153,9 +156,10 @@ class dataMasterController extends Controller
         // $kab = db::select('select * from mt_kabupaten_kota where bps_code = ?', [$pasien[0]->kabupaten]);
         // $kec = db::select('select * from mt_kecamatan where code = ?', [$pasien[0]->kecamatan]);
         // $desa = db::select('select * from mt_desa where bps_code = ?', [$pasien[0]->desa]);
+        $desa = db::select('select * from tabel_master_desa_baru ORDER By nama_desa ASC');
         return view('Master.formeditpasien', compact([
             'pasien',
-            // 'desa',
+            'desa'
             // 'provinsi',
             // 'kab',
             // 'kec'
@@ -351,8 +355,8 @@ class dataMasterController extends Controller
             'nama_pasien' => $dataSet['editnamapasien'],
             'jenis_kelamin' => $dataSet['editjeniskelamin'],
             'tempat_lahir' => $dataSet['edittempatlahir'],
-            'alamat_ktp' => $dataSet['editalamatlengkap'],
-            'alamat_domisili' => $dataSet['editalamatlengkap'],
+            'alamat_ktp' => $dataSet['alamatktp'],
+            'alamat_domisili' => $dataSet['alamatlengkap'],
             // 'provinsi' => $dataSet['editidprovinsi'],
             // 'kabupaten' => $dataSet['editidkabupaten'],
             // 'kecamatan' => $dataSet['editidkecamatan'],
@@ -426,9 +430,22 @@ class dataMasterController extends Controller
     public function simpandesa(Request $request)
     {
         $nama = strtoupper($request->nama);
+        $maxPrefixDigit = DB::table('tabel_master_desa_baru')
+            ->selectRaw("MAX(CAST(SUBSTRING(prefix, 3) AS UNSIGNED)) as max_digit")
+            ->value('max_digit');
+
+        // 2. Jika tabel masih kosong (null), mulai dari angka 1. Jika ada, tambahkan 1.
+        $nextDigit = $maxPrefixDigit ? ($maxPrefixDigit + 1) : 1;
+
+        // 3. Gabungkan kembali dengan teks 'NP' dan format agar menjadi 2 digit (misal: 01, 02, 10)
+        $newPrefix = 'NP' . str_pad($nextDigit, 2, '0', STR_PAD_LEFT);
+
+        // 4. Eksekusi Insert ke Database
         DB::table('tabel_master_desa_baru')->insert([
-            'nama_desa'     => $nama,
+            'prefix'    => $newPrefix,
+            'nama_desa' => $nama,
         ]);
+
         $data2 = [
             'kode' => 200,
             'message' => 'data berhasil disimpan'
@@ -458,6 +475,149 @@ class dataMasterController extends Controller
             'message' => 'data berhasil disimpan'
         ];
         echo json_encode($data2);
+        die;
+    }
+    public function simpanpegawaiedit(Request $request)
+    {
+        $data = json_decode($_POST['data'], true);
+        foreach ($data as $nama) {
+            $index =  $nama['name'];
+            $value =  $nama['value'];
+            $dataSet[$index] = $value;
+        }
+        $save = [
+            'NIP' => $dataSet['NIP'],
+            'NIK' => $dataSet['NIK'],
+            'nama_lengkap' => $dataSet['namalengkap'],
+            'tanggal_lahir' => $dataSet['tanggallahir'],
+            'tempat_lahir' => strtoupper($dataSet['tempatlahir']),
+            'jenis_kelamin' => $dataSet['jeniskelamin'],
+            'no_telp' => $dataSet['nomortelepon'],
+            'alamat' => strtoupper($dataSet['alamat']),
+            'posisi_kerja' => strtoupper($dataSet['jabatan']),
+            'tanggal_masuk' => $dataSet['tanggalmasuk'],
+            'status' => 1,
+            'id_klinik' => 1,
+            'status' => $dataSet['status'],
+        ];
+        model_master_pegawai::where('id', $dataSet['ID'])->update($save);
+        $data2 = [
+            'kode' => 200,
+            'message' => 'data berhasil disimpan'
+        ];
+        echo json_encode($data2);
+        die;
+    }
+    public function simpanedituser(Request $request)
+    {
+        $data = json_decode($_POST['data'], true);
+        foreach ($data as $nama) {
+            $index =  $nama['name'];
+            $value =  $nama['value'];
+            $dataSet[$index] = $value;
+        }
+        if ($dataSet['resetpassword'] == 2) {
+            $password = '123456';
+            $save = [
+                'nama' => $dataSet['namalengkap'],
+                'username' => $dataSet['username'],
+                'hak_akses' => $dataSet['hak_akses'],
+                'is_activated' => $dataSet['status'],
+                'password' => Hash::make($password), // WAJIB di-bcrypt demi keamanan
+            ];
+        } else {
+            $save = [
+                'nama' => $dataSet['namalengkap'],
+                'username' => $dataSet['username'],
+                'hak_akses' => $dataSet['hak_akses'],
+                'is_activated' => $dataSet['status'],
+            ];
+        }
+        User::where('id', $dataSet['ID'])->update($save);
+        $data2 = [
+            'kode' => 200,
+            'message' => 'data berhasil disimpan'
+        ];
+        echo json_encode($data2);
+        die;
+    }
+    public function hapuspegawai(Request $request)
+    {
+        $id = $request->id;
+        model_master_pegawai::where('id', $id)->delete();
+        $response = [
+            'code' => 200,
+            'message' => 'sukses'
+        ];
+        echo json_encode($response);
+        die;
+    }
+    public function hapususer(Request $request)
+    {
+        $id = $request->iduser;
+        User::where('id', $id)->delete();
+        $response = [
+            'code' => 200,
+            'message' => 'sukses'
+        ];
+        echo json_encode($response);
+        die;
+    }
+    public function simpanpegawai(Request $request)
+    {
+        $data = json_decode($_POST['data'], true);
+        foreach ($data as $nama) {
+            $index =  $nama['name'];
+            $value =  $nama['value'];
+            $dataSet[$index] = $value;
+        }
+        $save = [
+            'NIP' => $dataSet['NIP'],
+            'NIK' => $dataSet['NIK'],
+            'nama_lengkap' => $dataSet['namalengkap'],
+            'tanggal_lahir' => $dataSet['tanggallahir'],
+            'tempat_lahir' => strtoupper($dataSet['tempatlahir']),
+            'jenis_kelamin' => $dataSet['jeniskelamin'],
+            'no_telp' => $dataSet['nomortelepon'],
+            'alamat' => strtoupper($dataSet['alamat']),
+            'posisi_kerja' => strtoupper($dataSet['jabatan']),
+            'tanggal_masuk' => $dataSet['tanggalmasuk'],
+            'status' => 1,
+            'id_klinik' => 1,
+        ];
+        model_master_pegawai::create($save);
+        $data2 = [
+            'kode' => 200,
+            'message' => 'data berhasil disimpan'
+        ];
+        echo json_encode($data2);
+        die;
+    }
+    public function ambildatapegawai(Request $request)
+    {
+        $id = $request->idpegawai;
+        $data = model_master_pegawai::where('id', $id)->first();
+        $html = view('Master.formeditpegawai', compact(['data']))->render();
+        $response = [
+            'code' => 200,
+            'html' => $html,
+            'message' => 'sukses'
+        ];
+        echo json_encode($response);
+        die;
+    }
+    public function ambildatauser(Request $request)
+    {
+        $id = $request->iduser;
+        $data = User::where('id', $id)->first();
+        $hak = db::select('select * from master_hak_akses');
+        $html = view('Master.formedituser', compact(['data', 'hak']))->render();
+        $response = [
+            'code' => 200,
+            'html' => $html,
+            'message' => 'sukses'
+        ];
+        echo json_encode($response);
         die;
     }
     public function simpanmasterbarang(Request $request)
@@ -731,7 +891,7 @@ class dataMasterController extends Controller
             return response()->json(['error' => 'Desa tidak terdaftar'], 404);
         }
 
-        $idDesa = str_pad($desa->id, 3, '0', STR_PAD_LEFT); // Hasil: 001
+        $idDesa = str_pad($desa->prefix, 3, '0', STR_PAD_LEFT); // Hasil: 001
 
         // 2. Cari nomor RM terakhir yang diawali dengan ID Desa tersebut
         $lastRM = DB::table('master_pasien')
@@ -753,5 +913,30 @@ class dataMasterController extends Controller
         // 3. Gabungkan menjadi format 001-00001
         $nomorRMBaru = $idDesa . '-' . $nextUrut;
         return $nomorRMBaru;
+    }
+    public function sinkronisasirm()
+    {
+        $sinc = db::select("WITH PasienBerurut AS (
+            SELECT 
+                mp.id, 
+                mdb.prefix,
+                -- Membuat nomor urut otomatis per desa (dimulai dari 1 s.d jumlah pasien di desa tersebut)
+                ROW_NUMBER() OVER (
+                    PARTITION BY mdb.nama_desa -- Dikomparasi per desa agar urutan akurat per jumlah pasien desa
+                    ORDER BY mp.id -- Pasien yang mendaftar duluan mendapat nomor urut lebih kecil
+                ) as nomor_urut
+            FROM master_pasien mp
+            INNER JOIN tabel_master_desa_baru mdb 
+                ON mp.alamat_ktp = mdb.nama_desa 
+        )
+        UPDATE master_pasien mp
+        INNER JOIN PasienBerurut pb ON mp.id = pb.id
+        SET mp.nomor_rm = CONCAT(pb.prefix, '-', LPAD(pb.nomor_urut, 5, '0'));");
+        $data2 = [
+            'kode' => 200,
+            'message' => 'sinkronisasi data pasien berhasil ...'
+        ];
+        echo json_encode($data2);
+        die;
     }
 }

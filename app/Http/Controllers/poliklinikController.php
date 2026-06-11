@@ -2,6 +2,7 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\model_hasil_lab;
 use Illuminate\Http\Request;
 use App\Models\model_ts_antrian;
 use App\Models\model_ts_kunjungan;
@@ -172,7 +173,7 @@ class poliklinikController extends Controller
                 if (data_get($b, 'is_paket', 0)) {
                     $paket = 1;
                 } else {
-                   $paket = 0;
+                    $paket = 0;
                 }
                 $data_detail = [
                     'id_header' => $rh->id,
@@ -330,4 +331,35 @@ class poliklinikController extends Controller
 
         return $prefix . $nextNumber;
     }
+    public function ambilhasillab(Request $request)
+    {
+        $kode_kunjungan = $request->idkunjungan;
+        $hasillab = model_hasil_lab::where('kode_kunjungan', $kode_kunjungan)->first();
+        return view('Poliklinik.hasillab', compact([
+            'hasillab'
+        ]));
+    }
+    public function cekKesiapanCetak(Request $request)
+    {
+        $kode = $request->kode_kunjungan;
+
+        // Cek apakah data lab untuk kunjungan ini memang ada di DB
+        $cek = model_hasil_lab::where('kode_kunjungan', $kode)->first();
+
+        if (!$cek) {
+            return response()->json([
+                'kode' => 404,
+                'status' => 'error',
+                'message' => 'Gagal cetak! Parameter hasil lab untuk kunjungan ini belum diisi.'
+            ]);
+        }
+
+        // Jika ada, kirim status sukses beserta link URL cetak dokumennya
+        return response()->json([
+            'kode' => 200,
+            'status' => 'success',
+            'url_cetak' => url('cetak_nota_laboratorium/' . $kode) // Route halaman cetak PDF
+        ]);
+    }
+   
 }

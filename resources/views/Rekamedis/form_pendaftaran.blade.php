@@ -138,7 +138,16 @@
                         </select>
                     </div>
                     <div class="row">
-                        <div class="col-md-6">
+                        <div class="col-md-4">
+                            <label for="exampleFormControlInput1" class="form-label">Usia</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="masukan tekanan darah ..."
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2"
+                                    name="usia_kunjungan" id="usia_kunjungan" value="{{ \Carbon\Carbon::parse($mt_pasien[0]->tanggal_lahir)->diff(\Carbon\Carbon::now())->format('%y Tahun, %m Bulan, %d Hari') }}">
+                                <span class="input-group-text" id="basic-addon2"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-4">
                             <label for="exampleFormControlInput1" class="form-label">Tekanan Darah</label>
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" placeholder="masukan tekanan darah ..."
@@ -147,13 +156,31 @@
                                 <span class="input-group-text" id="basic-addon2">mmHg </span>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-4">
                             <label for="exampleFormControlInput1" class="form-label">Suhu Tubuh</label>
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" placeholder="masukan suhu tubuh ..."
                                     aria-label="Recipient’s username" aria-describedby="basic-addon2" name="suhutubuh"
                                     id="suhutubuh">
                                 <span class="input-group-text" id="basic-addon2">°C </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="exampleFormControlInput1" class="form-label">Frekuensi Nadi</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="masukan frekuensi nadi ..."
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2"
+                                    name="frekuensinadi" id="frekuensinadi">
+                                <span class="input-group-text" id="basic-addon2">x / menit </span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="exampleFormControlInput1" class="form-label">Frekuensi Nafas</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="masukan frekuensi Nafas ..."
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="frekuensinafas"
+                                    id="frekuensinafas">
+                                <span class="input-group-text" id="basic-addon2">x / menit</span>
                             </div>
                         </div>
                     </div>

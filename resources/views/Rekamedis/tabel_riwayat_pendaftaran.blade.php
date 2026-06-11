@@ -125,13 +125,160 @@
                     aria-label="Close"></button>
             </div>
             <div class="modal-body">
-                <div class="mb-3">
-                    <label for="exampleFormControlTextarea1" class="form-label">Masukan hasil pemeriksaan laboratorium ...</label>
-                    <textarea class="form-control" rows="9" id="hasillab"></textarea>
-                </div>
-                <input hidden type="text" id="idkunjungannya" value="">
+                <form action="" class="formhasillab">
+                <style>
+                    /* CSS Kustom agar Input Menyatu Sempurna dengan Tabel */
+                    .table-input-seamless {
+                        vertical-align: middle !important;
+                    }
+
+                    .table-input-seamless td {
+                        padding: 4px 8px !important;
+                        /* Memperkecil padding agar tabel lebih ringkas */
+                        vertical-align: middle !important;
+                    }
+
+                    .table-input-seamless .input-group {
+                        margin-bottom: 0 !important;
+                        /* Menghilangkan margin bawaan bootstrap */
+                        border: 1px solid #dee2e6;
+                        /* Membuat border luar membungkus input + satuan */
+                        border-radius: 4px;
+                        background-color: #fff;
+                        transition: border-color 0.15s ease-in-out, box-shadow 0.15s ease-in-out;
+                    }
+
+                    /* Efek Fokus saat User Mengklik Kolom Hasil */
+                    .table-input-seamless .input-group:focus-within {
+                        border-color: #80bdff;
+                        outline: 0;
+                        box-shadow: 0 0 0 0.2rem rgba(0, 123, 255, 0.25);
+                    }
+
+                    .table-input-seamless .form-control-minimal {
+                        border: none !important;
+                        /* Menghapus border internal input */
+                        background-color: transparent !important;
+                        padding: 4px 8px;
+                        height: auto;
+                        text-align: right;
+                        /* Angka hasil lab umumnya rata kanan */
+                        font-weight: 600;
+                        color: #495057;
+                    }
+
+                    .table-input-seamless .form-control-minimal:focus {
+                        box-shadow: none !important;
+                        outline: none !important;
+                    }
+
+                    .table-input-seamless .unit-text {
+                        border: none !important;
+                        /* Menghapus border internal addon */
+                        background-color: transparent !important;
+                        color: #6c757d;
+                        font-size: 0.85rem;
+                        padding-left: 4px;
+                        padding-right: 8px;
+                    }
+                </style>
+                <table class="table table-sm table-bordered table-input-seamless">
+                    <thead class="bg-light text-center">
+                        <tr>
+                            <th class="align-middle">JENIS PEMERIKSAAN</th>
+                            <th class="align-middle" rowspan="2" style="width: 25%;">HASIL</th>
+                            <th class="align-middle" rowspan="2" colspan="2">NILAI RUJUKAN</th>
+                        </tr>
+                        <tr>
+                            <th class="text-left text-primary fw-bold">HEMATOLOGI RUTIN</th>
+                        </tr>
+                    </thead>
+                    <tbody>
+                        <tr>
+                            <td class="fw-semibold">Hemoglobin Rutin</td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="hb_hasil" class="form-control form-control-minimal"
+                                        placeholder="0.0">
+                                    <span class="input-group-text unit-text">gr/dl</span>
+                                </div>
+                            </td>
+                            <td>P : 12 – 15,5 gr/dl</td>
+                            <td>L : 13,5 – 17,5 gr/dl</td>
+                        </tr>
+
+                        <tr>
+                            <td class="fw-semibold">Hematokrit</td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="ht_hasil" class="form-control form-control-minimal"
+                                        placeholder="0">
+                                    <span class="input-group-text unit-text">%</span>
+                                </div>
+                            </td>
+                            <td>P : 34,9 – 44,5%</td>
+                            <td>L : 38,8 – 50%</td>
+                        </tr>
+
+                        <tr>
+                            <td class="fw-semibold">Eritrosit</td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="eritrosit_hasil"
+                                        class="form-control form-control-minimal" placeholder="0.0">
+                                    <span class="input-group-text unit-text">juta/mm³</span>
+                                </div>
+                            </td>
+                            <td>P : 4 – 5 Juta/mm³</td>
+                            <td>L : 4,5 – 5,5 juta/mm³</td>
+                        </tr>
+
+                        <tr>
+                            <td class="fw-semibold">Leukosit</td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="leukosit_hasil"
+                                        class="form-control form-control-minimal" placeholder="0">
+                                    <span class="input-group-text unit-text">/µL</span>
+                                </div>
+                            </td>
+                            <td>P : 4.500 – 10.000 /µL</td>
+                            <td>L : 4.500 – 10.000 /µL</td>
+                        </tr>
+
+                        <tr>
+                            <td class="fw-semibold">Trombosit</td>
+                            <td>
+                                <div class="input-group">
+                                    <input type="text" name="trombosit_hasil"
+                                        class="form-control form-control-minimal" placeholder="0">
+                                    <span class="input-group-text unit-text">/µL</span>
+                                </div>
+                            </td>
+                            <td>P : 150.000 – 450.000 /µL</td>
+                            <td>L : 150.000 – 450.000 /µL</td>
+                        </tr>
+                        <tr class="bg-light">
+                            <td colspan="4" class="p-3">
+                                <div class="form-group mb-0">
+                                    <label for="hasillab"
+                                        class="fw-bold text-secondary small mb-1.5 d-flex align-items-center">
+                                        <i class="fas fa-comment-medical text-primary mr-2"
+                                            style="font-size: 1.1rem;"></i>
+                                        KESAN / INTERPRETASI LABORATORIUM
+                                    </label>
+                                    <textarea class="form-control border-secondary-subtle rounded-2 p-2.5" rows="4" id="hasillab"
+                                        name="kesan_lab" placeholder="Tuliskan kesan atau catatan keahlian dokter/petugas laboratorium di sini..."
+                                        style="font-size: 0.95rem; line-height: 1.5; resize: vertical; background-color: #fff;"></textarea>
+                                </div>
+                            </td>
+                        </tr>
+                    </tbody>
+                </table>
+                <input hidden type="text" id="idkunjungannya" name="idkunjungannya" value="">
+                </form>
             </div>
-            <div class="modal-footer footer-lab" >
+            <div class="modal-footer footer-lab">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Tutup</button>
                 <button type="button" class="btn btn-success" onclick="simpanHasilLab()">
                     <i class="bi bi-save me-1"></i>Simpan Hasil Lab
@@ -202,6 +349,7 @@
             });
         });
     }
+
     function simpanlayanan() {
         Swal.fire({
             title: "Anda yakin ?",
@@ -229,6 +377,7 @@
     function simpanhasillabfinx() {
         hasillab = $('#hasillab').val()
         idkunjungan = $('#idkunjungannya').val()
+        var data = $('.formhasillab').serializeArray();
         spinner = $('#loader')
         spinner.show();
         $.ajax({
@@ -238,7 +387,9 @@
             data: {
                 _token: "{{ csrf_token() }}",
                 hasillab,
-                idkunjungan
+                idkunjungan,
+                data: JSON.stringify(data),
+
             },
             url: '<?= route('simpanHasilLab') ?>',
             error: function(data) {
@@ -271,6 +422,7 @@
             }
         });
     }
+
     function simpanbilling() {
         var data2 = $('.formbilling').serializeArray();
         var data3 = $('.formbillingobat').serializeArray();

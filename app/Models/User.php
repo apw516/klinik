@@ -13,6 +13,8 @@ class User extends Authenticatable
     use HasApiTokens, HasFactory, Notifiable;
     protected $connection = 'mysql';
     protected $table = 'user';
+    const UPDATED_AT = null;
+    const CREATED_AT = null;
     // protected $fillable = [
     //     'nama_user',
     //     'username',

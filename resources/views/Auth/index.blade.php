@@ -173,7 +173,7 @@
 
         .overlay {
             background: rgb(112, 49, 114);
-            background: -webkit-linear-gradient(to right,rgb(193, 115, 196),rgb(193, 115, 196));
+            background: -webkit-linear-gradient(to right, rgb(193, 115, 196), rgb(193, 115, 196));
             background: linear-gradient(to right, rgb(193, 115, 196), rgb(193, 115, 196));
             background-repeat: no-repeat;
             background-size: cover;
@@ -269,27 +269,40 @@
     {{-- <h2>Selamat Datang</h2> --}}
     <div class="container" id="container">
         <div class="form-container sign-up-container">
-            <form action="#">
+            <form action="{{ route('register') }}" method="post">
+                @csrf
                 <h1>Buat Akun</h1>
-                <input type="text" placeholder="Masukan Nama Lengkap anda dan gelar ..." />
-                <input type="text" placeholder="Masukan username" />
-                <input type="password" placeholder="Masukan Password" />
+                <<input name="nama" type="text" placeholder="Masukan Nama Lengkap anda dan gelar ..."
+                    value="{{ old('nama') }}" />
+                @error('nama')
+                    <small style="color: red;">{{ $message }}</small>
+                @enderror
+
+                <input name="username" type="text" placeholder="Masukan username" value="{{ old('username') }}" />
+                @error('username')
+                    <small style="color: red;">{{ $message }}</small>
+                @enderror
+
+                <input name="password" type="password" placeholder="Masukan Password" />
+                @error('password')
+                    <small style="color: red;">{{ $message }}</small>
+                @enderror
                 <button>Registrasi</button>
             </form>
         </div>
         <div class="form-container sign-in-container">
-            <form action="{{ route('login')}}" method="post">
+            <form action="{{ route('login') }}" method="post">
                 @csrf
                 <h1>Login</h1>
-                @if(session()->has('loginError'))
-                <div class="alert alert-danger mt-2" role="alert">
-                    Login gagal !
-                </div>
+                @if (session()->has('loginError'))
+                    <div class="alert alert-danger mt-2" role="alert">
+                        Login gagal !
+                    </div>
                 @endif
-                @if(session()->has('Sukses'))
-                <div class="alert alert-danger mt-2" role="alert">
-                    Registrasi berhasil !
-                </div>
+                @if (session()->has('Sukses'))
+                    <div class="alert alert-danger mt-2" role="alert">
+                        Registrasi berhasil !
+                    </div>
                 @endif
                 <input required type="text" placeholder="Masukan username anda ..." name="username" id="username" />
                 <input required type="password" placeholder="Password" name="password" id="password" />
@@ -300,7 +313,7 @@
         <div class="overlay-container">
             <div class="overlay">
                 <div class="overlay-panel overlay-left">
-                    <img src="{{ asset('/public/img/NP_MEDIKA_LOGO2.png')}}" alt="" width="50%"
+                    <img src="{{ asset('/public/img/NP_MEDIKA_LOGO2.png') }}" alt="" width="50%"
                         style="margin-bottom:20px">
 
                     <h1>Welcome Back!</h1>
@@ -308,7 +321,7 @@
                     <button class="ghost" id="signIn">Login</button>
                 </div>
                 <div class="overlay-panel overlay-right">
-                    <img src="{{ asset('/public/img/NP_MEDIKA_LOGO2.png')}}" alt="" width="50%"
+                    <img src="{{ asset('/public/img/NP_MEDIKA_LOGO2.png') }}" alt="" width="50%"
                         style="margin-bottom:20px">
                     <h1>Hello, Friend!</h1>
                     <p>Masukan data anda dan dapatkan akun akun baru ...</p>
