@@ -369,6 +369,7 @@ class dataMasterController extends Controller
             'pic' => auth()->user()->id,
             'id_klinik' => 1,
             'tanggal_lahir' => $dataSet['edittanggallahir'],
+            'is_active' => $dataSet['is_active'],
         ];
         model_master_pasien::where('id', $dataSet['idpasien'])->update($data_save);
         $data2 = [

@@ -133,7 +133,8 @@
                                  id="alamatktp">
                                  <option value="-">Silahkan Pilih</option>
                                  @foreach ($desa as $d)
-                                     <option value="{{ $d->nama_desa }}" @if($pasien[0]->alamat_ktp == $d->nama_desa) selected @endif>{{ $d->nama_desa }}</option>
+                                     <option value="{{ $d->nama_desa }}"
+                                         @if ($pasien[0]->alamat_ktp == $d->nama_desa) selected @endif>{{ $d->nama_desa }}</option>
                                  @endforeach
                              </select>
                          </div>
@@ -142,8 +143,21 @@
                          <div class="mb-3">
                              <label for="exampleInputEmail1" class="form-label">Alamat Lengkap</label>
                              <textarea type="email" class="form-control" id="alamatlengkap" name="alamatlengkap" aria-describedby="emailHelp"
-                                 placeholder="masukan alamat lengkap , contoh : RT 002 RW 006 JL. MERDEKA BLOK 1">{{ $pasien[0]->alamat_domisili}}</textarea>
+                                 placeholder="masukan alamat lengkap , contoh : RT 002 RW 006 JL. MERDEKA BLOK 1">{{ $pasien[0]->alamat_domisili }}</textarea>
                          </div>
+                     </div>
+                 </div>
+                 <div class="card">
+                     <div class="card-header">Status Pasien</div>
+                     <div class="card-body">
+                         <select class="form-select" aria-label="Default select example" name="is_active"
+                             id="is_active">
+                             <option value="-">Silahkan Pilih</option>
+                             <option value="1" @if ($pasien[0]->is_active == 1) selected @endif>
+                                 Aktif</option>
+                             <option value="2" @if ($pasien[0]->is_active == 2) selected @endif>
+                                 Tidak Aktif</option>
+                         </select>
                      </div>
                  </div>
              </div>
