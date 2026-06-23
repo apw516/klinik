@@ -211,7 +211,7 @@ class kasirFarmasiController extends Controller
             'kode' => 200,
             'status' => 'success',
             'message' => 'Berhasil!',
-            'view' => view('Kasirfarmasi.detail_pembayaran', compact('data','idtrans'))->render()
+            'view' => view('Kasirfarmasi.detail_pembayaran', compact('data', 'idtrans'))->render()
         ]);
     }
     public function ambildataorderresep(Request $request)
@@ -229,7 +229,6 @@ class kasirFarmasiController extends Controller
         $totalbruto = $request->totaltagihanasli;
         $bayar = $request->uangbayarasli;
         $diskon = $request->diskon ?? 0;
-
         // Hitung Netto
         $diskontunai = ($diskon != 0) ? ($totalbruto * $diskon / 100) : 0;
         $totalNetto = $totalbruto - $diskontunai;
@@ -298,53 +297,7 @@ class kasirFarmasiController extends Controller
                 ]);
 
                 // LOGIKA STOK (Jika Item adalah Barang)
-                if (!empty($d->kode_barang)) {
-                    $qtyDibutuhkan = $d->jumlah;
-
-                    // Ambil batch berdasarkan Expired Date terdekat (FEFO)
-                    $batches = DB::table('ts_stok_batch')
-                        ->where('kode_barang', $d->kode_barang)
-                        ->where('stok_now', '>', 0)
-                        ->orderBy('tgl_ed', 'asc')
-                        ->lockForUpdate() // Mencegah race condition stok
-                        ->get();
-                    foreach ($batches as $batch) {
-                        if ($qtyDibutuhkan <= 0) break;
-
-                        $jumlahDipotong = min($qtyDibutuhkan, $batch->stok_now);
-                        $stokBaruBatch = $batch->stok_now - $jumlahDipotong;
-
-                        // Update Tabel Batch
-                        DB::table('ts_stok_batch')->where('id', $batch->id)->update(['stok_now' => $stokBaruBatch]);
-
-                        // Ambil Saldo Stok Terakhir secara Global (Kartu Stok)
-                        $stokTerakhirGlobal = DB::table('ts_kartu_stok')
-                            ->where('kode_barang', $d->kode_barang)
-                            ->orderBy('id', 'desc')
-                            ->value('stok_sekarang') ?? 0;
-
-                        // Catat ke Kartu Stok
-                        DB::table('ts_kartu_stok')->insert([
-                            'tgl_transaksi' => now(),
-                            'kode_barang'   => $d->kode_barang,
-                            'no_batch'      => $batch->no_batch,
-                            'kode_unit'     => 5, // Unit Farmasi
-                            'stok_masuk'    => 0,
-                            'stok_keluar'   => $jumlahDipotong,
-                            'stok_terakhir' => $stokTerakhirGlobal,
-                            'stok_sekarang' => $stokTerakhirGlobal - $jumlahDipotong,
-                            'keterangan'    => ($kunjungan->nomor_rm ?? '-') . ' | ' . ($kunjungan->nama_pasien ?? '-'),
-                            'no_referensi'  => 'TRX Kasir: ' . $header->id_transaksi,
-                            'pic'           => auth()->user()->id
-                        ]);
-
-                        $qtyDibutuhkan -= $jumlahDipotong;
-                    }
-                    // Jika setelah semua batch dicek stok masih kurang
-                    if ($qtyDibutuhkan > 0) {
-                        throw new \Exception("Stok barang [{$d->kode_barang}] tidak mencukupi! Kurang: $qtyDibutuhkan");
-                    }
-                }
+              
                 // Update Status Layanan
                 model_ts_layanan_header::where('id', $d->idheader)
                     ->update(['status_bayar' => 1, 'status_layanan' => 2]);
@@ -584,34 +537,188 @@ class kasirFarmasiController extends Controller
     public function returlayanan(Request $request)
     {
         $id = $request->iddetail;
-        $detail = db::select('select * from ts_layanan_detail where id = ?', [$id]);
-        $dataup = [
-            'jumlah' => 0,
-            'subtotal' => 0,
-            'status_layanan' => 3
-        ];
-        $subtot = $detail[0]->subtotal;
-        $idheader = $detail[0]->id_header;
-        model_ts_layanan_detail::where('id', $id)->update($dataup);
-        $header = db::select('select * from ts_layanan_header where id = ?', [$idheader]);
-        $total_tagihan = $header[0]->total_tagihan - $subtot;
-        $cek_detail = db::select('select * from ts_layanan_detail where id_header = ? and status_layanan = 1', [$idheader]);
-        if (count($cek_detail) > 0) {
-            $status_layanan = 1;
-        } else {
-            $status_layanan = 3;
+
+        // 1. Ambil data detail layanan yang akan diretur
+        $detail = DB::select('select * from ts_layanan_detail where id = ?', [$id]);
+        if (empty($detail)) {
+            return response()->json(['kode' => 404, 'message' => 'Detail layanan tidak ditemukan.']);
         }
-        $dataup2 = [
-            'total_tagihan' => $total_tagihan,
-            'status_layanan' => $status_layanan
-        ];
-        model_ts_layanan_header::where('id', $idheader)->update($dataup2);
-        $data2 = [
-            'kode' => 200,
-            'message' => 'Order berhasil dibatalkan ...'
-        ];
-        echo json_encode($data2);
-        die;
+
+        $detailRow   = $detail[0];
+        $subtot      = $detailRow->subtotal;
+        $idheader    = $detailRow->id_header;
+        $kodeBarang  = $detailRow->kode_barang;
+        $qtyRetur    = (int) $detailRow->jumlah; // Jumlah qty obat yang dibatalkan
+
+        // 2. Jalankan DB Transaction
+        DB::beginTransaction();
+
+        try {
+            // =========================================================================
+            // PROSES PENGEMBALIAN STOK OBAT (JIKA KODE_BARANG BUKAN '0' ATAU BUKAN JASA)
+            // =========================================================================
+            if ($kodeBarang != '0' && $qtyRetur > 0) {
+
+                // Ambil data log transaksi keluar yang merekam pemotongan obat untuk layanan ini sebelumnya
+                // Kita spesifikkan berdasarkan kode_barang, jenis_transaksi KELUAR, dan ID Header/Detail pada keterangan
+                $logsKeluar = DB::table('mt_log_persediaan_barang')
+                    ->where('kode_barang', $kodeBarang)
+                    ->where('jenis_transaksi', 'KELUAR')
+                    ->where('keterangan', 'like', '%Detail Layanan ID: ' . $idheader . '%')
+                    ->get();
+
+                // Ambil stok global saat ini di master barang sebelum dikembalikan
+                $masterBarang = DB::table('mt_barang')->where('kode_barang', $kodeBarang)->first();
+                $stokAwalGlobal = $masterBarang ? (int) $masterBarang->stok_global : 0;
+
+                if ($logsKeluar->isNotEmpty()) {
+                    foreach ($logsKeluar as $log) {
+                        $jumlahKembali = (int) $log->jumlah;
+
+                        // A. Kembalikan stok_sekarang ke batch asalnya di mt_stok_persediaan_barang
+                        DB::table('mt_stok_persediaan_barang')
+                            ->where('id', $log->id_persediaan)
+                            ->increment('stok_sekarang', $jumlahKembali);
+
+                        // B. Kembalikan stok_global di tabel master barang (mt_barang)
+                        DB::table('mt_barang')
+                            ->where('kode_barang', $kodeBarang)
+                            ->increment('stok_global', $jumlahKembali);
+
+                        $stokAkhirGlobal = $stokAwalGlobal + $jumlahKembali;
+
+                        // C. Catat Log Baru berupa mutasi MASUK (Pembatalan/Retur Obat Pasien)
+                        DB::table('mt_log_persediaan_barang')->insert([
+                            'kode_barang'     => $kodeBarang,
+                            'no_batch'        => $log->no_batch,
+                            'id_persediaan'   => $log->id_persediaan,
+                            'jenis_transaksi' => 'MASUK',
+                            'keterangan'      => 'Pembatalan/Retur Obat Pasien (Detail Layanan ID: ' . $idheader . ')',
+                            'jumlah'          => $jumlahKembali,
+                            'stok_awal'       => $stokAwalGlobal,
+                            'stok_akhir'      => $stokAkhirGlobal,
+                            'user_id'         => auth()->id() ?? null,
+                            'tanggal_log'     => now()->toDateString(),
+                            'created_at'      => now(),
+                            'updated_at'      => now(),
+                        ]);
+
+                        // Gulung nilai stok awal global untuk loop log berikutnya jika multi-batch
+                        $stokAwalGlobal = $stokAkhirGlobal;
+                    }
+                } else {
+                    // BACKUP PLAN: Jika log lama tidak ditemukan (data migrasi/manual), kembalikan ke batch ED terdekat yang aktif
+                    $batchTerdekat = DB::table('mt_stok_persediaan_barang')
+                        ->where('kode_barang', $kodeBarang)
+                        ->orderBy('tanggal_kadaluwarsa', 'asc')
+                        ->first();
+
+                    if ($batchTerdekat) {
+                        DB::table('mt_stok_persediaan_barang')->where('id', $batchTerdekat->id)->increment('stok_sekarang', $qtyRetur);
+                        DB::table('mt_barang')->where('kode_barang', $kodeBarang)->increment('stok_global', $qtyRetur);
+
+                        DB::table('mt_log_persediaan_barang')->insert([
+                            'kode_barang'     => $kodeBarang,
+                            'no_batch'        => $batchTerdekat->no_batch,
+                            'id_persediaan'   => $batchTerdekat->id,
+                            'jenis_transaksi' => 'MASUK',
+                            'keterangan'      => 'Pembatalan Obat Pasien (Tanpa Log Lama - ED Terdekat) ID Header: ' . $idheader,
+                            'jumlah'          => $qtyRetur,
+                            'stok_awal'       => $stokAwalGlobal,
+                            'stok_akhir'      => $stokAwalGlobal + $qtyRetur,
+                            'user_id'         => auth()->id() ?? null,
+                            'tanggal_log'     => now()->toDateString(),
+                            'created_at'      => now(),
+                            'updated_at'      => now(),
+                        ]);
+                    }
+                }
+            }
+
+            // =========================================================================
+            // PROSES UPDATE DATA LAYANAN (DETAIL & HEADER)
+            // =========================================================================
+
+            // 3. Reset jumlah & subtotal detail layanan menjadi 0, status_layanan = 3 (Batal/Retur)
+            $dataup = [
+                'jumlah' => 0,
+                'subtotal' => 0,
+                'status_layanan' => 3
+            ];
+            model_ts_layanan_detail::where('id', $id)->update($dataup);
+
+            // 4. Hitung ulang total_tagihan pada header layanan
+            $header = DB::select('select * from ts_layanan_header where id = ?', [$idheader]);
+            $total_tagihan = $header[0]->total_tagihan - $subtot;
+
+            // 5. Cek apakah masih ada tindakan/obat lain yang aktif (status_layanan = 1) di nota ini
+            $cek_detail = DB::select('select * from ts_layanan_detail where id_header = ? and status_layanan = 1', [$idheader]);
+            $status_layanan = (count($cek_detail) > 0) ? 1 : 3;
+
+            // 6. Update data header layanan
+            $dataup2 = [
+                'total_tagihan' => $total_tagihan,
+                'status_layanan' => $status_layanan
+            ];
+            model_ts_layanan_header::where('id', $idheader)->update($dataup2);
+
+            // Commit semua transaksi jika berhasil tanpa hambatan
+            DB::commit();
+
+            // return response()->json([
+            //     'kode' => 200,
+            //     'message' => 'Layanan berhasil diretur dan stok obat dikembalikan ke masing-masing batch asal.'
+            // ]);
+            $data2 = [
+                'kode' => 200,
+                'message' => 'Order berhasil dibatalkan ...'
+            ];
+            echo json_encode($data2);
+            // die;
+        } catch (\Exception $e) {
+            // Rollback database jika terjadi error SQL
+            DB::rollBack();
+            // return response()->json([
+            //     'kode' => 500,
+            //     'message' => 'Gagal meretur layanan. Terjadi kesalahan: ' . $e->getMessage()
+            // ]);
+            $data2 = [
+                'kode' => 500,
+                'message' => 'Gagal meretur layanan. Terjadi kesalahan: ' . $e->getMessage()
+            ];
+            echo json_encode($data2);
+            die;
+        }
+        // $id = $request->iddetail;
+        // $detail = db::select('select * from ts_layanan_detail where id = ?', [$id]);
+        // $dataup = [
+        //     'jumlah' => 0,
+        //     'subtotal' => 0,
+        //     'status_layanan' => 3
+        // ];
+        // $subtot = $detail[0]->subtotal;
+        // $idheader = $detail[0]->id_header;
+        // model_ts_layanan_detail::where('id', $id)->update($dataup);
+        // $header = db::select('select * from ts_layanan_header where id = ?', [$idheader]);
+        // $total_tagihan = $header[0]->total_tagihan - $subtot;
+        // $cek_detail = db::select('select * from ts_layanan_detail where id_header = ? and status_layanan = 1', [$idheader]);
+        // if (count($cek_detail) > 0) {
+        //     $status_layanan = 1;
+        // } else {
+        //     $status_layanan = 3;
+        // }
+        // $dataup2 = [
+        //     'total_tagihan' => $total_tagihan,
+        //     'status_layanan' => $status_layanan
+        // ];
+        // model_ts_layanan_header::where('id', $idheader)->update($dataup2);
+
+        // $data2 = [
+        //     'kode' => 200,
+        //     'message' => 'Order berhasil dibatalkan ...'
+        // ];
+        // echo json_encode($data2);
+        // die;
     }
     public function generateKodeLayanan()
     {
@@ -682,7 +789,7 @@ class kasirFarmasiController extends Controller
                 't.stok_sekarang', // Saldo Akhir Saat Ini
                 't.tgl_transaksi'
             )
-            ->orderBy('t.id','DESC')
+            ->orderBy('t.id', 'DESC')
             ->get();
         return DataTables()->of($data)
             ->addIndexColumn()

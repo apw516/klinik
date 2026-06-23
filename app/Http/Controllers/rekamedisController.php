@@ -141,6 +141,7 @@ class rekamedisController extends Controller
             'frekuensi_nadi' => $dataSet['frekuensinadi'],
             'usia_kunjungan' => $dataSet['usia_kunjungan'],
             'suhu_tubuh' => $dataSet['suhutubuh'],
+            'saturasi_oksigen' => $dataSet['saturasi_oksigen'],
             'keluhan_utama' => $dataSet['keluhanutama'],
             'pic' => auth()->user()->id,
             'id_klinik' => 1,
@@ -177,7 +178,7 @@ class rekamedisController extends Controller
     {
         $id = $request->idkunjungan;
         // $data = model_ts_kunjungan::where('id', $id)->get();
-        $ly = db::select('select *,b.id as iddetail from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.status_layanan != 3', [$id]);
+       
         $data = model_ts_kunjungan::where('ts_kunjungan.id', $id)
             ->leftJoin('master_pegawai', 'ts_kunjungan.dokter', '=', 'master_pegawai.id')
             ->leftJoin('master_unit', 'ts_kunjungan.unit_tujuan', '=', 'master_unit.id')
@@ -188,12 +189,13 @@ class rekamedisController extends Controller
             )
             ->first();
         $hasillab = model_hasil_lab::where('kode_kunjungan', $id)->first();
+        $layanan = db::select('select * from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.status_layanan != 3 and b.status_layanan != 3', [$id]);
 
         return view('Rekamedis.detailkunjungan', compact([
             'data',
             'id',
-            'ly',
-            'hasillab'
+            'hasillab',
+            'layanan'
         ]));
     }
     public function ambildetailkunjungan_billing(Request $request)
@@ -209,11 +211,12 @@ class rekamedisController extends Controller
             )
             ->first();
         $hasillab = model_hasil_lab::where('kode_kunjungan', $id)->first();
+        $layanan = db::select('select * from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.status_layanan != 3 and b.status_layanan != 3', [$id]);
         return view('Rekamedis.detailkunjungan_2', compact([
             'data',
             'id',
-            'hasillab'
-            // 'ly'
+            'hasillab',
+            'layanan'
         ]));
     }
     public function ambilforminputlayanan(Request $request)
@@ -624,22 +627,22 @@ class rekamedisController extends Controller
     {
         // 1. Cari data hasil laboratorium berdasarkan kode kunjungan
         $hasillab = model_hasil_lab::where('kode_kunjungan', $kode)->first();
-        $dtakunjungan = model_ts_kunjungan::where('id',$kode)->first();
+        $dtakunjungan = model_ts_kunjungan::where('id', $kode)->first();
         $pic = $hasillab->pic;
-        $user = User::where('id',$pic)->first();
+        $user = User::where('id', $pic)->first();
         $rm = $dtakunjungan->nomor_rm;
         $ddokter = $dtakunjungan->dokter;
-        $pasien = model_master_pasien::where('nomor_rm',$rm)->first();
-        $dokter = db::select('select * from master_pegawai where id = ?',[$ddokter]);
+        $pasien = model_master_pasien::where('nomor_rm', $rm)->first();
+        $dokter = db::select('select * from master_pegawai where id = ?', [$ddokter]);
         // 2. Proteksi jika data ternyata belum di-input
         if (!$hasillab) {
             return "Error: Data pemeriksaan untuk kunjungan " . htmlspecialchars($kode) . " tidak ditemukan.";
         }
-        
+
         // 3. (Opsional) Ambil data header pasien/kunjungan jika Anda menyimpannya di tabel terpisah
         // $pasien = DB::table('ts_header_catatan_hemodialisis')->where('kode_kunjungan', $kode)->first();
 
         // 4. Return view khusus cetakan dan kirim datanya
-        return view('Rekamedis.cetakanlab', compact('hasillab','pasien','dokter','user'));
+        return view('Rekamedis.cetakanlab', compact('hasillab', 'pasien', 'dokter', 'user'));
     }
 }

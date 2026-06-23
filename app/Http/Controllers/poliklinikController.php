@@ -54,40 +54,14 @@ class poliklinikController extends Controller
             ->orderBy('k.id', 'desc')
             ->get();
         $tarif = db::select('select * from master_tarif_pelayanan');
-        $stokSemua = DB::table('ts_kartu_stok as t1')
-            ->select(
-                't1.kode_barang',
-                't1.stok_sekarang',
-                'mb.nama_barang',
-                'mb.margin', // sesuaikan nama kolom margin di tabel master
-                'batch.tgl_ed',
-                'batch.harga_beli_terakhir',
-                'mb.aturan_pakai'
-            )
-            ->join('master_barang as mb', 't1.kode_barang', '=', 'mb.kode_barang')
-            // Join dengan subquery untuk mendapatkan ED terdekat dan Harga Beli terbaru dari tabel batch
-            ->leftJoin(DB::raw('(
-            SELECT 
-                kode_barang, 
-                MIN(tgl_ed) as tgl_ed, 
-                MAX(harga_beli) as harga_beli_terakhir
-            FROM ts_stok_batch
-            WHERE stok_now > 0
-            GROUP BY kode_barang
-            ) as batch'), 't1.kode_barang', '=', 'batch.kode_barang')
-            ->whereIn('t1.id', function ($query) {
-                $query->select(DB::raw('MAX(id)'))
-                    ->from('ts_kartu_stok')
-                    ->groupBy('kode_barang');
-            })
-            ->get();
+        $mt_barang = db::select('select * from mt_barang where stok_global > 0');
         return view('Poliklinik.form_erm_poliklinik', compact([
             'mt_pasien',
             'data_kunjungan',
             'dk',
             'tarif',
             'idkunjungan',
-            'stokSemua'
+            'mt_barang'
         ]));
     }
     public function simpancatatanmedis(Request $request)
@@ -159,44 +133,19 @@ class poliklinikController extends Controller
         if (count($data3) > 0) {
             $datenow = Carbon::now()->format('Y-m-d');
             $data_kunjungan = db::select('select * from ts_kunjungan where id = ?', [$dataSet['idkunjungan']]);
-            $dataheader = [
-                'no_resep' => $no_resep,
-                'id_kunjungan' => $dataSet['idkunjungan'],
-                'no_rm' => $data_kunjungan[0]->nomor_rm,
-                'dokter' => $data_kunjungan[0]->dokter,
-                'unit_kirim' => $data_kunjungan[0]->unit_tujuan,
-                'tgl_resep' => $datenow,
-                'status_resep' => '1'
-            ];
-            $rh = model_ts_resep_header::create($dataheader);
-            foreach ($arrayobat as $b) {
-                if (data_get($b, 'is_paket', 0)) {
-                    $paket = 1;
-                } else {
-                    $paket = 0;
-                }
-                $data_detail = [
-                    'id_header' => $rh->id,
-                    'kode_barang' => $b['kodebarang'],
-                    'qty' => $b['qty'],
-                    'aturan_pakai' => $b['aturanpakai'],
-                    'status_obat' => 1,
-                    'paket' => $paket,
-                ];
-                model_ts_resep_detail::create($data_detail);
-            }
-            $idkunjungan = $dataSet['idkunjungan'];
-            $data_resep = db::select('select * from ts_resep_header a inner join ts_resep_detail b on a.id = b.id_header where a.id_kunjungan = ? and status_resep = 1 and b.status_obat = 1', [$idkunjungan]);
-            if (count($data_resep) == 0) {
-                $data2 = [
-                    'kode' => 500,
-                    'message' => 'Tidak ada resep yang diterima ...'
-                ];
-                echo json_encode($data2);
-                die;
-            }
+            // $dataheader = [
+            //     'no_resep' => $no_resep,
+            //     'id_kunjungan' => $dataSet['idkunjungan'],
+            //     'no_rm' => $data_kunjungan[0]->nomor_rm,
+            //     'dokter' => $data_kunjungan[0]->dokter,
+            //     'unit_kirim' => $data_kunjungan[0]->unit_tujuan,
+            //     'tgl_resep' => $datenow,
+            //     'status_resep' => '1'
+            // ];
+            // $rh = model_ts_resep_header::create($dataheader);
             $datenow = Carbon::now()->format('Y-m-d');
             $KODE = $this->generateKodeLayanan();
+            $idkunjungan = $dataSet['idkunjungan'];
             $data_header = [
                 'id_kunjungan' => $idkunjungan,
                 'kode_layanan_header' => $KODE,
@@ -205,35 +154,154 @@ class poliklinikController extends Controller
                 'tgl_entry' => $datenow,
                 'pic' => auth()->user()->id,
                 'status_bayar' => '0',
-                'status_layanan' => '3'
+                'status_layanan' => '3',
+                'keterangan' => 'OBAT'
             ];
             $h = model_ts_layanan_header::create($data_header);
             $total_tagihan = 0;
-            foreach ($data_resep as $t) {
-                $mt_barang = db::select('select nama_barang,harga_jual,isi_konversi FROM master_barang where kode_barang = ?', [$t->kode_barang]);
-                $paketresep = $t->paket;
-                if ($paketresep == 1) {
-                    $harga = 0;
-                } else {
-                    $harga = $mt_barang[0]->harga_jual / $mt_barang[0]->isi_konversi;
+            // foreach ($arrayobat as $b) {
+            //     if (data_get($b, 'is_paket', 0)) {
+            //         $paket = 1;
+            //     } else {
+            //         $paket = 0;
+            //     }
+            //     $mt_barang = db::select('select nama_barang,harga_jual,isi_konversi FROM mt_barang where kode_barang = ?', [$b['kodebarang']]);
+            //     if ($paket == 1) {
+            //         $harga = 0;
+            //         $status_paket = 'YA';
+            //     } else {
+            //         $harga = $mt_barang[0]->harga_jual;
+            //         $status_paket = 'TIDAK';
+            //     }
+            //     $data_detail = [
+            //         'id_header' => $h->id,
+            //         'kode_barang' => $b['kodebarang'],
+            //         'nama_tarif' => $mt_barang[0]->nama_barang,
+            //         'harga_satuan' => $harga,
+            //         'jumlah' => $b['qty'],
+            //         'subtotal' => $harga * $b['qty'],
+            //         'status_layanan' => 1,
+            //         'aturan_pakai' => $b['aturanpakai'],
+            //         'status_paket' => $status_paket
+            //     ];
+            //     $subtotal = $harga * $b['qty'];
+            //     model_ts_layanan_detail::create($data_detail);
+            //     $total_tagihan = $total_tagihan + $subtotal;
+            // }
+            foreach ($arrayobat as $b) {
+                // 1. Tentukan status paket
+                $paket = data_get($b, 'is_paket', 0) ? 1 : 0;
+
+                // 2. Ambil data master barang
+                $mt_barang = DB::select('select id, nama_barang, harga_jual, isi_konversi, stok_global FROM mt_barang where kode_barang = ?', [$b['kodebarang']]);
+
+                if (empty($mt_barang)) {
+                    continue; // Lewati jika kode barang tidak ditemukan di master
                 }
+
+                $barangMaster = $mt_barang[0];
+
+                if ($paket == 1) {
+                    $harga = 0;
+                    $status_paket = 'YA';
+                } else {
+                    $harga = $barangMaster->harga_jual;
+                    $status_paket = 'TIDAK';
+                }
+
+                $subtotal = $harga * $b['qty'];
+
+                // 3. Insert ke detail layanan pasien
                 $data_detail = [
-                    'id_header' => $h->id,
-                    'kode_barang' => $t->kode_barang,
-                    'nama_tarif' => $mt_barang[0]->nama_barang,
-                    'harga_satuan' => $harga,
-                    'jumlah' => $t->qty,
-                    'subtotal' => $harga * $t->qty,
-                    'status_layanan' => 1,
+                    'id_header'       => $h->id,
+                    'kode_barang'     => $b['kodebarang'],
+                    'nama_tarif'      => $barangMaster->nama_barang,
+                    'harga_satuan'    => $harga,
+                    'jumlah'          => $b['qty'],
+                    'subtotal'        => $subtotal,
+                    'status_layanan'  => 1,
+                    'aturan_pakai'    => $b['aturanpakai'],
+                    'status_paket'    => $status_paket
                 ];
-                $subtotal = $harga * $t->qty;
-                model_ts_layanan_detail::create($data_detail);
+                $ts_layanan_detail = model_ts_layanan_detail::create($data_detail);
                 $total_tagihan = $total_tagihan + $subtotal;
+
+                // =========================================================================
+                // PROSES PENGURANGAN STOK GUDANG & LOG BATCH (FIFO BY EXPIRED DATE CLOSEST)
+                // =========================================================================
+
+                $jumlahDibutuhkan = (int) $b['qty'];
+
+                // Ambil semua batch sediaan yang masih ada stoknya, urutkan dari ED terdekat (FIFO)
+                $daftarSediaan = DB::table('mt_stok_persediaan_barang')
+                    ->where('kode_barang', $b['kodebarang'])
+                    ->where('stok_sekarang', '>', 0)
+                    ->orderBy('tanggal_kadaluwarsa', 'asc') // Urutan ED Terdekat
+                    ->orderBy('id', 'asc')
+                    ->get();
+
+                // Catat saldo awal global barang untuk keperluan log kartu stok
+                $stokAwalGlobal = (int) $barangMaster->stok_global;
+
+                foreach ($daftarSediaan as $sediaan) {
+                    if ($jumlahDibutuhkan <= 0) {
+                        break; // Jika kebutuhan obat sudah terpenuhi dari batch sebelumnya, hentikan loop batch
+                    }
+
+                    $stokTerbuka = (int) $sediaan->stok_sekarang;
+
+                    // Tentukan berapa jumlah yang diambil dari batch ini
+                    if ($stokTerbuka >= $jumlahDibutuhkan) {
+                        // Jika stok di batch ini melimpah/cukup
+                        $jumlahDiambil = $jumlahDibutuhkan;
+                        $jumlahDibutuhkan = 0;
+                    } else {
+                        // Jika stok di batch ini kurang, ambil semua sisa yang ada, lalu lanjut cari di batch berikutnya
+                        $jumlahDiambil = $stokTerbuka;
+                        $jumlahDibutuhkan -= $stokTerbuka;
+                    }
+
+                    // A. Kurangi stok_sekarang di tabel sediaan batch terkait
+                    DB::table('mt_stok_persediaan_barang')
+                        ->where('id', $sediaan->id)
+                        ->decrement('stok_sekarang', $jumlahDiambil);
+
+                    // B. Kurangi stok_global di tabel master barang (mt_barang)
+                    DB::table('mt_barang')
+                        ->where('kode_barang', $b['kodebarang'])
+                        ->decrement('stok_global', $jumlahDiambil);
+
+                    // Hitung akumulasi saldo global setelah dikurangi baris ini untuk kebutuhan log kartu stok
+                    $stokAkhirGlobal = $stokAwalGlobal - $jumlahDiambil;
+
+                    // C. Catat Log Persediaan Barang (Mutasi KELUAR) per batch yang terpotong
+                    DB::table('mt_log_persediaan_barang')->insert([
+                        'kode_barang'     => $b['kodebarang'],
+                        'no_batch'        => $sediaan->no_batch,
+                        'id_persediaan'   => $sediaan->id,
+                        'id_layanan_detail'   => $ts_layanan_detail->id,
+                        'jenis_transaksi' => 'KELUAR',
+                        'keterangan'      => 'Pengurangan Obat Pasien (Detail Layanan ID: ' . $h->id . ')',
+                        'jumlah'          => $jumlahDiambil,
+                        'stok_awal'       => $stokAwalGlobal,
+                        'stok_akhir'      => $stokAkhirGlobal,
+                        'user_id'         => auth()->id() ?? null,
+                        'tanggal_log'     => now()->toDateString(),
+                        'created_at'      => now(),
+                        'updated_at'      => now(),
+                    ]);
+
+                    // Perbarui counter stok awal untuk loop batch berikutnya (jika quantity > 1 batch)
+                    $stokAwalGlobal = $stokAkhirGlobal;
+                }
+
+                // [OPSIONAL] Validasi jika setelah mutasi semua batch ternyata obat masih kurang dari QTY permintaan
+                if ($jumlahDibutuhkan > 0) {
+                    // Anda bisa melempar exception atau membiarkannya minus tergantung kebijakan aplikasi SIMRS Anda
+                    // throw new \Exception("Stok obat untuk kode " . $b['kodebarang'] . " kurang dari permintaan.");
+                }
             }
             model_ts_layanan_header::where('id', $h->id)->update(['total_tagihan' => $total_tagihan, 'status_layanan' => 1]);
-            model_ts_resep_header::where('id_kunjungan', $idkunjungan)
-                ->where('status_resep', 1) // Ini otomatis dianggap sebagai "AND"
-                ->update(['status_resep' => 2]);
         }
         $data2 = [
             'kode' => 200,
@@ -361,5 +429,4 @@ class poliklinikController extends Controller
             'url_cetak' => url('cetak_nota_laboratorium/' . $kode) // Route halaman cetak PDF
         ]);
     }
-   
 }

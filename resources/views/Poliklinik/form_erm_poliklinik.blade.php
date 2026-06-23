@@ -66,9 +66,9 @@
                                                     class="bi bi-cursor"></i></span>
                                         </td>
                                         <td>
-                                            <button class="btn btn-info hasillab"
-                                                kode_kunjungan="{{ $t->id }}" data-bs-toggle="modal"
-                                                data-bs-target="#modalhasillab"><i class="bi bi-search"></i></button>
+                                            <button class="btn btn-info hasillab" kode_kunjungan="{{ $t->id }}"
+                                                data-bs-toggle="modal" data-bs-target="#modalhasillab"><i
+                                                    class="bi bi-search"></i></button>
                                         </td>
                                     </tr>
                                 @endforeach
@@ -82,50 +82,6 @@
             <div class="card mt-2">
                 <div class="card-header">Form Hasil Pemeriksaan</div>
                 <div class="card-body">
-                    {{-- <form action="" class="formassesmen">
-                        <input hidden type="text" value="{{ $idkunjungan }}" name="idkunjungan" id="idkunjungan">
-                        <table class="table table-sm">
-                            <tr>
-                                <td>Tekanan Darah : {{ $dk[0]->tekanan_darah }} mmHg</td>
-                                <td>Suhu Tubuh : {{ $dk[0]->suhu_tubuh }} (°C)</td>
-                                <td colspan="2">Keluhan Utama : {{ $dk[0]->keluhan_utama }}</td>
-                            </tr>
-                            <tr>
-                                <td class="bg-light fw-bold">
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlTextarea1" class="form-label">SUBJECT <i
-                                                class="bi bi-arrow-down-short"></i></label>
-                                        <textarea class="form-control" id="subject" name="subject" rows="3"
-                                            placeholder="Ketik hasil pemeriksaan subject... ">{{ $dk[0]->SUBJECT }}</textarea>
-                                    </div>
-                                </td>
-                                <td class="bg-light fw-bold">
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlTextarea1" class="form-label">OBJECT <i
-                                                class="bi bi-arrow-down-short"></i></label>
-                                        <textarea class="form-control" id="object" name="object" rows="3"
-                                            placeholder="Ketik hasil pemeriksaan obeject... ">{{ $dk[0]->OBJECT }}</textarea>
-                                    </div>
-                                </td>
-                                <td class="bg-light fw-bold">
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlTextarea1" class="form-label">ASSESMENT <i
-                                                class="bi bi-arrow-down-short"></i></label>
-                                        <textarea class="form-control" id="assesmen" name="assesmen" rows="3"
-                                            placeholder="Ketik hasil pemeriksaan assesmen ... ">{{ $dk[0]->ASSESMENT }}</textarea>
-                                    </div>
-                                </td>
-                                <td class="bg-light fw-bold">
-                                    <div class="mb-3">
-                                        <label for="exampleFormControlTextarea1" class="form-label">PLANNING <i
-                                                class="bi bi-arrow-down-short"></i></label>
-                                        <textarea class="form-control" id="planning" name="planning" rows="3"
-                                            placeholder="Ketik hasil pemeriksaan planning ... ">{{ $dk[0]->PLANNING }}</textarea>
-                                    </div>
-                                </td>
-                            </tr>
-                        </table>
-                    </form> --}}
                     <div class="card shadow-sm border-0 mt-3">
                         <div class="card-header bg-white border-0 pt-3 pb-0 mb-4">
                             <h6 class="card-title text-uppercase text-muted fw-bold mb-0">Hasil Pemeriksaan Awal (TTV)
@@ -133,28 +89,29 @@
                         </div>
                         <div class="card-body">
                             <div class="row g-3 mb-4 p-4 bg-white rounded-3 shadow-sm border">
-
                                 <div class="col-12">
-                                    <div class="row g-3">
-                                        <div class="col-sm-6 col-md-3">
-                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light">
+                                    <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-md-5">
+
+                                        <div class="col">
+                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light h-100">
                                                 <div class="bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm"
                                                     style="width:45px; height:45px; min-width:45px;">
-                                                    <i class="bi bi-activity fs-5"></i>
+                                                    <i class="bi bi-heart-pulse-fill fs-5"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block text-uppercase fw-bold"
                                                         style="font-size: 0.65rem; letter-spacing: 0.5px;">Tekanan
                                                         Darah</small>
-                                                    <span
-                                                        class="fw-bold h5 mb-0 text-dark">{{ $dk[0]->tekanan_darah ?? '-' }}
-                                                        <small class="text-muted fs-6 fw-normal">mmHg</small></span>
+                                                    <span class="fw-bold h5 mb-0 text-dark">
+                                                        {{ $dk[0]->tekanan_darah ?? '-' }}
+                                                        <small class="text-muted fs-6 fw-normal">mmHg</small>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6 col-md-3">
-                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light">
+                                        <div class="col">
+                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light h-100">
                                                 <div class="bg-danger text-white rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm"
                                                     style="width:45px; height:45px; min-width:45px;">
                                                     <i class="bi bi-thermometer-half fs-5"></i>
@@ -163,53 +120,73 @@
                                                     <small class="text-muted d-block text-uppercase fw-bold"
                                                         style="font-size: 0.65rem; letter-spacing: 0.5px;">Suhu
                                                         Tubuh</small>
-                                                    <span
-                                                        class="fw-bold h5 mb-0 text-dark">{{ $dk[0]->suhu_tubuh ?? '-' }}
-                                                        <small class="text-muted fs-6 fw-normal">°C</small></span>
+                                                    <span class="fw-bold h5 mb-0 text-dark">
+                                                        {{ $dk[0]->suhu_tubuh ?? '-' }}
+                                                        <small class="text-muted fs-6 fw-normal">°C</small>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6 col-md-3">
-                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light">
+                                        <div class="col">
+                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light h-100">
                                                 <div class="bg-warning text-dark rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm"
                                                     style="width:45px; height:45px; min-width:45px;">
-                                                    <i class="bi bi-heart-pulse fs-5"></i>
+                                                    <i class="bi bi-activity fs-5"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block text-uppercase fw-bold"
                                                         style="font-size: 0.65rem; letter-spacing: 0.5px;">Frekuensi
                                                         Nadi</small>
-                                                    <span
-                                                        class="fw-bold h5 mb-0 text-dark">{{ $dk[0]->frekuensi_nadi ?? '-' }}
-                                                        <small class="text-muted fs-6 fw-normal">x/mnt</small></span>
+                                                    <span class="fw-bold h5 mb-0 text-dark">
+                                                        {{ $dk[0]->frekuensi_nadi ?? '-' }}
+                                                        <small class="text-muted fs-6 fw-normal">x/mnt</small>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
 
-                                        <div class="col-sm-6 col-md-3">
-                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light">
+                                        <div class="col">
+                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light h-100">
                                                 <div class="bg-info text-white rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm"
                                                     style="width:45px; height:45px; min-width:45px;">
-                                                    <i class="bi bi-wind fs-5"></i>
+                                                    <i class="bi bi-lungs-fill fs-5"></i>
                                                 </div>
                                                 <div>
                                                     <small class="text-muted d-block text-uppercase fw-bold"
                                                         style="font-size: 0.65rem; letter-spacing: 0.5px;">Frekuensi
                                                         Nafas</small>
-                                                    <span
-                                                        class="fw-bold h5 mb-0 text-dark">{{ $dk[0]->frekuensi_nafas ?? '-' }}
-                                                        <small class="text-muted fs-6 fw-normal">x/mnt</small></span>
+                                                    <span class="fw-bold h5 mb-0 text-dark">
+                                                        {{ $dk[0]->frekuensi_nafas ?? '-' }}
+                                                        <small class="text-muted fs-6 fw-normal">x/mnt</small>
+                                                    </span>
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col">
+                                            <div class="d-flex align-items-center p-2 rounded-2 bg-light h-100">
+                                                <div class="bg-success text-white rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm"
+                                                    style="width:45px; height:45px; min-width:45px;">
+                                                    <i class="bi bi-droplet-half fs-5"></i>
+                                                </div>
+                                                <div>
+                                                    <small class="text-muted d-block text-uppercase fw-bold"
+                                                        style="font-size: 0.65rem; letter-spacing: 0.5px;">SpO₂
+                                                        (Saturasi)</small>
+                                                    <span class="fw-bold h5 mb-0 text-dark">
+                                                        {{ $dk[0]->saturasi_oksigen ?? '-' }}
+                                                        <small class="text-muted fs-6 fw-normal">%</small>
+                                                    </span>
+                                                </div>
+                                            </div>
+                                        </div>
+
                                     </div>
                                 </div>
 
                                 <div class="col-12 my-2">
                                     <hr class="text-muted opacity-25">
                                 </div>
-
                                 <div class="col-12">
                                     <div class="row g-3">
                                         <div class="col-md-4 border-end-md">
@@ -242,7 +219,6 @@
                             <form action="" class="formassesmen">
                                 @csrf <input hidden type="text" value="{{ $idkunjungan }}" name="idkunjungan"
                                     id="idkunjungan">
-
                                 <div class="row g-4">
                                     <div class="col-md-6 col-lg-3">
                                         <div
@@ -252,11 +228,19 @@
                                                 1. Subject (S)
                                                 <i class="bi bi-person-lines-fill fs-5 text-muted opacity-50"></i>
                                             </label>
-                                            <textarea class="form-control form-control-modern" id="subject" name="subject" rows="6"
-                                                placeholder="Ketik keluhan pasien, riwayat penyakit sekarang... ">{{ $dk[0]->SUBJECT }}</textarea>
+                                            <textarea class="form-control form-control-modern" id="subject" name="subject" rows="10"
+                                                placeholder="Ketik keluhan pasien, riwayat penyakit sekarang... ">
+@if ($dk[0]->SUBJECT == '')
+Keluhan Utama : {{ $dk[0]->keluhan_utama }}
+Tekanan darah : {{ $dk[0]->tekanan_darah }} mmHg
+Suhu Tubuh : {{ $dk[0]->suhu_tubuh }} °C
+Frekuensi Nadi : {{ $dk[0]->frekuensi_nadi }} x/mnt
+Frekuensi nafas : {{ $dk[0]->frekuensi_nafas }} x/mnt
+Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->SUBJECT }}
+@endif
+</textarea>
                                         </div>
                                     </div>
-
                                     <div class="col-md-6 col-lg-3">
                                         <div
                                             class="form-group-soap p-3 rounded-3 border-start border-success border-4 bg-white shadow-sm h-100">
@@ -265,11 +249,10 @@
                                                 2. Object (O)
                                                 <i class="bi bi-capsule fs-5 text-muted opacity-50"></i>
                                             </label>
-                                            <textarea class="form-control form-control-modern" id="object" name="object" rows="6"
+                                            <textarea class="form-control form-control-modern" id="object" name="object" rows="10"
                                                 placeholder="Ketik hasil pemeriksaan fisik, lab, rontgen... ">{{ $dk[0]->OBJECT }}</textarea>
                                         </div>
                                     </div>
-
                                     <div class="col-md-6 col-lg-3">
                                         <div
                                             class="form-group-soap p-3 rounded-3 border-start border-warning border-4 bg-white shadow-sm h-100">
@@ -278,11 +261,10 @@
                                                 3. Assessment (A)
                                                 <i class="bi bi-clipboard-pulse fs-5 text-muted opacity-50"></i>
                                             </label>
-                                            <textarea class="form-control form-control-modern" id="assesmen" name="assesmen" rows="6"
+                                            <textarea class="form-control form-control-modern" id="assesmen" name="assesmen" rows="10"
                                                 placeholder="Ketik diagnosis medis, diagnosis banding... ">{{ $dk[0]->ASSESMENT }}</textarea>
                                         </div>
                                     </div>
-
                                     <div class="col-md-6 col-lg-3">
                                         <div
                                             class="form-group-soap p-3 rounded-3 border-start border-info border-4 bg-white shadow-sm h-100">
@@ -291,22 +273,15 @@
                                                 4. Planning (P)
                                                 <i class="bi bi-journal-medical fs-5 text-muted opacity-50"></i>
                                             </label>
-                                            <textarea class="form-control form-control-modern" id="planning" name="planning" rows="6"
+                                            <textarea class="form-control form-control-modern" id="planning" name="planning" rows="10"
                                                 placeholder="Ketik rencana terapi, instruksi, edukasi... ">{{ $dk[0]->PLANNING }}</textarea>
                                         </div>
                                     </div>
                                 </div>
-
-                                {{-- <div class="d-flex justify-content-end gap-2 mt-4">
-                                    <button type="reset"
-                                        class="btn btn-outline-secondary btn-sm px-3">Reset</button>
-                                    <button type="submit" class="btn btn-primary btn-sm px-4">
-                                    </button>
-                                </div> --}}
                             </form>
                         </div>
                     </div>
-                    <div hidden class="row mt-2">
+                    <div class="row mt-2">
                         <div class="col-md-6">
                             <div class="card">
                                 <div class="card-header fw-bold fst-italic">Input billing sistem</div>
@@ -319,13 +294,13 @@
                                             </div>
                                         </div>
                                     </form>
-                                    <div class="card mt-4">
+                                    {{-- <div class="card mt-4">
                                         <div class="card-header fw-bold fst-italic bg-light">data billing yang sudah
                                             tersimpan ...</div>
                                         <div class="card-body">
                                             <div class="v_riwayat_billing"></div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
                             </div>
                         </div>
@@ -341,14 +316,22 @@
                                             </div>
                                         </div>
                                     </form>
-                                    <div class="card mt-4">
+                                    {{-- <div class="card mt-4">
                                         <div class="card-header fw-bold fst-italic bg-light">data resep yang sudah
                                             tersimpan ...</div>
                                         <div class="card-body">
                                             <div class="v_riwayat_resep"></div>
                                         </div>
-                                    </div>
+                                    </div> --}}
                                 </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col-md-12 mt-2">
+                        <div class="card">
+                            <div class="card-header">Data Tagihan yang sudah tersimpan</div>
+                            <div class="card-body">
+                                <div class="v_riwayat_billing"></div>
                             </div>
                         </div>
                     </div>
@@ -413,13 +396,13 @@
                         <th>Aturan pakai</th>
                     </thead>
                     <tbody>
-                        @foreach ($stokSemua as $item)
+                        @foreach ($mt_barang as $item)
                             <tr class="pilihobat" kode_barang="{{ $item->kode_barang }}"
-                                nama_barang="{{ $item->nama_barang }}" stok={{ $item->stok_sekarang }}
+                                nama_barang="{{ $item->nama_barang }}" stok={{ $item->stok_global }}
                                 aturan_pakai="{{ $item->aturan_pakai }}">
                                 <td>{{ $item->nama_barang }}</td>
-                                <td>{{ $item->stok_sekarang }}</td>
-                                <td>{{ $item->aturan_pakai }}</td>
+                                <td>{{ $item->stok_global }}</td>
+                                <td>{{ $item->stok_global }}</td>
                                 {{-- <td>{{ $item->stok_sekarang}}</td> --}}
                             </tr>
                         @endforeach
@@ -602,11 +585,11 @@
         aturan_pakai = $(this).attr('aturan_pakai')
         var wrapper = $(".draftbillingobat");
         $(wrapper).append(
-            '<div class="row text-xs"><div class="form-group col-md-4"><label for="">Nama Tarif</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="namabarang" name="namabarang" value="' +
+            '<div class="row text-xs"><div class="form-group col-md-3"><label for="">Nama Tarif</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="namabarang" name="namabarang" value="' +
             nama_barang +
             '"><input   hidden readonly type="" class="form-control form-control-sm" id="kodebarang" name="kodebarang" value="' +
             kode_barang +
-            '"><input   hidden readonly type="" class="form-control form-control-sm" id="harga2" name="harga2" value=""></div><div class="form-group col-md-1"><label for="">Stok</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="stok" name="stok" value="' +
+            '"><input   hidden readonly type="" class="form-control form-control-sm" id="harga2" name="harga2" value=""></div><div class="form-group col-md-2"><label for="">Stok</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="stok" name="stok" value="' +
             stok +
             '"></div><div class="form-group col-md-2"><label for="">qty</label><input type="" class="form-control form-control-sm text-xs edit_field" id="qty" name="qty" value="0"></div><div class="form-group col-md-3"><label for="">Aturan Pakai</label><textarea readonly type="" class="form-control form-control-sm text-xs edit_field" id="aturanpakai" name="aturanpakai">' +
             aturan_pakai +
@@ -637,7 +620,6 @@
             $row.css('background-color', 'transparent');
         }
     });
-
     function ambilriwayatbilling() {
         idkunjungan = $('#idkunjungan').val()
         spinner = $('#loader')
@@ -652,24 +634,6 @@
             success: function(response) {
                 spinner.hide();
                 $('.v_riwayat_billing').html(response);
-            }
-        });
-    }
-
-    function ambilriwayatresep() {
-        idkunjungan = $('#idkunjungan').val()
-        spinner = $('#loader')
-        spinner.show();
-        $.ajax({
-            type: 'post',
-            data: {
-                _token: "{{ csrf_token() }}",
-                idkunjungan
-            },
-            url: '<?= route('ambilriwayatresep') ?>',
-            success: function(response) {
-                spinner.hide();
-                $('.v_riwayat_resep').html(response);
             }
         });
     }

@@ -23,18 +23,101 @@ class dataMasterController extends Controller
     {
         $menu_sub = 'indexmasterpasien';
         $menu = 'indexmasterpasien';
-        // $data = db::select('SELECT a.*,b.`nama_jenis` AS nama_jenis_identitas,c.`jenis_asuransi`,c.`nama_asuransi`,d.`nama_status`,fc_nama_klinik(a.`id_klinik`) AS nama_klinik FROM master_pasien a 
-        // LEFT OUTER JOIN master_jenis_identitas b ON a.jenis_identitas = b.id 
-        // LEFT OUTER JOIN master_asuransi c ON a.`jenis_asuransi` = c.`id`
-        // LEFT OUTER JOIN master_status_pernikahan d ON a.`status_pernikahan` = d.`id`
-        // WHERE a.is_active = 1
-        // ORDER BY id DESC');
         $desa = db::select('select * from tabel_master_desa_baru ORDER By nama_desa ASC');
         return view('Master.index_master_pasien', compact([
             'menu',
             'desa',
             'menu_sub'
         ]));
+    }
+    public function indexstokpersediaan()
+    {
+        $menu_sub = 'indexstokpersediaan';
+        $menu = 'indexstokpersediaan';
+        $data = db::select('select * from mt_barang');
+        return view('Master.indexstokpersediaan', compact([
+            'menu',
+            'menu_sub',
+            'data'
+        ]));
+    }
+    public function dataobat(Request $request)
+    {
+        // Sesuaikan 'mt_stok_persediaan_barang' dan 'master_barang' dengan nama tabel asli Anda
+        $query = DB::table('mt_stok_persediaan_barang')
+            ->join('mt_barang', 'mt_stok_persediaan_barang.kode_barang', '=', 'mt_barang.kode_barang')
+            ->select([
+                'mt_stok_persediaan_barang.tanggal_masuk', // atau created_at
+                'mt_barang.kode_barang',
+                'mt_barang.nama_barang',
+                'mt_barang.nama_generik',
+                'mt_barang.nama_pabrik',
+                'mt_stok_persediaan_barang.id',
+                'mt_stok_persediaan_barang.id_supplier',
+                'mt_stok_persediaan_barang.no_batch',
+                'mt_stok_persediaan_barang.tanggal_kadaluwarsa', // ED
+                'mt_stok_persediaan_barang.stok_awal',
+                'mt_stok_persediaan_barang.stok_sekarang'
+            ]);
+
+        // 2. Hitung total data awal sebelum filter pencarian
+        $totalData = $query->count();
+        $totalFiltered = $totalData;
+
+        // 3. Logika Pencarian Global DataTables (Search Box)
+        if ($request->filled('search.value')) {
+            $search = $request->input('search.value');
+            $query->where(function ($q) use ($search) {
+                $q->where('mt_barang.kode_barang', 'LIKE', "%{$search}%")
+                    ->orWhere('mt_barang.nama_barang', 'LIKE', "%{$search}%")
+                    ->orWhere('mt_barang.nama_generik', 'LIKE', "%{$search}%")
+                    ->orWhere('mt_stok_persediaan_barang.no_batch', 'LIKE', "%{$search}%");
+            });
+
+            // Hitung ulang total data setelah difilter pencarian
+            $totalFiltered = $query->count();
+        }
+
+        // 4. Logika Pagination (Limit & Offset)
+        $limit = $request->input('length', 10);
+        $start = $request->input('start', 0);
+
+        // Ambil data terurut berdasarkan tanggal masuk terbaru
+        $results = $query->orderBy('mt_stok_persediaan_barang.id', 'DESC')
+            ->offset($start)
+            ->limit($limit)
+            ->get();
+
+        // 5. Format ulang struktur data agar cocok dengan urutan th di Blade
+        $data = [];
+        foreach ($results as $row) {
+            $data[] = [
+                // Format tanggal indonesia rapi
+                'tanggal_masuk'      => date('d-m-Y', strtotime($row->tanggal_masuk)),
+                'kode_barang'        => '<span class="fw-bold text-secondary text-uppercase">' . $row->kode_barang . '</span>',
+                'id'        => $row->id,
+                'nama_barang'        => $row->nama_barang,
+                'id_supplier'        => $row->id_supplier,
+                'nama_generik'       => $row->nama_generik ?? '-',
+                'nama_pabrik'        => $row->nama_pabrik ?? '-',
+                'no_batch'           => '<span class="badge bg-dark">' . $row->no_batch . '</span>',
+                'no_batch2'           => $row->no_batch,
+                'kode_barang2'           => $row->kode_barang,
+                'stok_sekarang2'           => $row->stok_sekarang,
+                // Format Expired Date
+                'tanggal_kadaluwarsa' => date('d-m-Y', strtotime($row->tanggal_kadaluwarsa)),
+                'stok_awal'          => number_format($row->stok_awal, 0, ',', '.'),
+                'stok_sekarang'      => '<span class="fw-bold text-primary">' . number_format($row->stok_sekarang, 0, ',', '.') . '</span>'
+            ];
+        }
+
+        // 6. Kembalikan response JSON standar DataTables
+        return response()->json([
+            "draw"            => intval($request->input('draw')),
+            "recordsTotal"    => intval($totalData),
+            "recordsFiltered" => intval($totalFiltered),
+            "data"            => $data
+        ]);
     }
     public function indexdatamasterpasien(Request $request)
     {
@@ -67,13 +150,11 @@ class dataMasterController extends Controller
     {
         $menu_sub = 'indexmasterbarang';
         $menu = 'indexmasterbarang';
-        $data = db::select('select a.*,b.nama_generik_lengkap as nama_generik,b.nama_zat_aktif,fc_nama_klinik(a.id_klinik) as nama_klinik,d.nama_supplier,c.nama as nama_jenis_barang from master_barang a left outer join master_obat_generik b on a.id_generik = b.id left outer join master_jenis_barang c on a.jenis_barang = c.id left outer join master_supplier d on a.id_supplier = d.id');
-        $data_s = db::select('select * from master_sediaan_obat');
+        $data = db::select('select * from mt_barang');
         return view('Master.index_master_barang', compact([
             'menu',
             'data',
             'menu_sub',
-            'data_s'
         ]));
     }
     public function indexdataobatgenerik()
@@ -621,7 +702,38 @@ class dataMasterController extends Controller
         echo json_encode($response);
         die;
     }
-    public function simpanmasterbarang(Request $request)
+    public function barangstore(Request $request)
+    {
+        try {
+            DB::table('mt_barang')->insert([
+                'kode_barang'   => $this->generateKodeBarang(), // Memastikan kode selalu Kapital
+                'nama_barang'   => $request->nama_barang,
+                'nama_generik'  => $request->nama_generik,
+                'nama_pabrik'   => $request->nama_pabrik,
+                'jenis_barang'  => $request->jenis_barang,
+                'kategori_obat' => $request->kategori_obat,
+                'satuan_besar'  => $request->satuan_besar,
+                'satuan_sedang' => $request->satuan_sedang,
+                'satuan_kecil'  => $request->satuan_kecil,
+                'isi_konversi'  => $request->isi_konversi,
+                'bentuk_sediaan'  => $request->bentuk_sediaan,
+                'created_at'    => now(),
+                'updated_at'    => now(),
+            ]);
+            // Kembalikan response sukses (Ditangkap oleh success: function(response) di AJAX)
+            return response()->json([
+                'status'  => true,
+                'message' => 'Data master barang baru berhasil disimpan!'
+            ], 200);
+        } catch (\Exception $e) {
+            // Jika ada kendala koneksi database atau query error (Error 500)
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal menyimpan data ke server. Terjadi kesalahan sistem.'
+            ], 500);
+        }
+    }
+    public function barangedit(Request $request)
     {
         $data = json_decode($_POST['data'], true);
         foreach ($data as $nama) {
@@ -629,29 +741,52 @@ class dataMasterController extends Controller
             $value =  $nama['value'];
             $dataSet[$index] = $value;
         }
-        $datenow = Carbon::now()->format('Y-m-d');
-        $data_save = [
-            'kode_barang' => $this->generateKodeBarang(),
-            'nama_barang' => $dataSet['namabarang'],
-            'jenis_barang' => 1,
-            'id_generik' => $dataSet['id_generik'],
-            'id_supplier' => $dataSet['id_supplier'],
-            'id_klinik' => '1',
-            'tgl_entry' => $datenow,
-            'aturan_pakai' => $dataSet['aturanpakai'],
-            'satuan_besar' => $dataSet['satuanbesar'],
-            'satuan_kecil' => $dataSet['satuankecil'],
-            'isi_konversi' => $dataSet['konversi'],
-            'keterangan' => '',
-            'pic' => auth()->user()->id,
-        ];
-        model_master_barang::create($data_save);
+        // dd($data);
+        try {
+            DB::table('mt_barang')
+                ->where('id', $dataSet['id_barang']) // Tentukan ID data barang yang ingin diubah
+                ->update([
+                    'nama_barang'    => $dataSet['nama_barang'],
+                    'nama_generik'   => $dataSet['nama_generik'],
+                    'nama_pabrik'    => $dataSet['nama_pabrik'],
+                    'jenis_barang'   => $dataSet['jenis_barang'],
+                    'kategori_obat'  => $dataSet['kategori_obat'],
+                    'satuan_besar'   => $dataSet['satuan_besar'],
+                    'satuan_sedang'  => $dataSet['satuan_sedang'],
+                    'satuan_kecil'   => $dataSet['satuan_kecil'],
+                    'isi_konversi'   => $dataSet['isi_konversi'],
+                    'bentuk_sediaan' => $dataSet['bentuk_sediaan'],
+                    'updated_at'     => now(), // Cukup updated_at saja saat update
+                ]);
+            // Kembalikan response sukses (Ditangkap oleh success: function(response) di AJAX)
+            return response()->json([
+                'status'  => true,
+                'message' => 'Data master barang  berhasil diedit!'
+            ], 200);
+        } catch (\Exception $e) {
+            // Jika ada kendala koneksi database atau query error (Error 500)
+            return response()->json([
+                'status'  => false,
+                'message' => 'Gagal menyimpan data ke server. Terjadi kesalahan sistem.'
+            ], 500);
+        }
+    }
+    public function hapusmasterbarang(Request $request)
+    {
+        $id = $request->idbarang;
+        model_master_barang::where('id', $id)->delete();
         $data2 = [
             'kode' => 200,
-            'message' => 'data berhasil disimpan'
+            'message' => 'data berhasil dihapus ...'
         ];
         echo json_encode($data2);
         die;
+    }
+    public function ambilformeditbarang(Request $request)
+    {
+        $id = $request->idbarang;
+        $data = model_master_barang::where('id', $id)->first();
+        return view('Master.form_edit_barang', compact(['data']));
     }
     public function ambilinfosediaan(Request $request)
     {
@@ -741,6 +876,212 @@ class dataMasterController extends Controller
         ];
         echo json_encode($data2);
         die;
+    }
+    public function simpanstokpersediaan(Request $request)
+    {
+        $rawData = json_decode($request->input('data'), true);
+        if (empty($rawData)) {
+            return response()->json([
+                'kode' => 500,
+                'message' => 'Tidak ada data barang yang dikirim atau format data salah.'
+            ]);
+        }
+
+        // 2. Kelompokkan data berdasarkan indeks array input html []
+        $barangIds = [];
+        $noBatches = [];
+        $tanggalKadaluwarsas = [];
+        $stokAwals = [];
+        $hargaModals = [];
+
+        foreach ($rawData as $item) {
+            if ($item['name'] === 'barang_id[]') {
+                $barangIds[] = $item['value'];
+            } elseif ($item['name'] === 'no_batch[]') {
+                $noBatches[] = strtoupper($item['value']); // Force uppercase untuk batch
+            } elseif ($item['name'] === 'tanggal_kadaluwarsa[]') {
+                $tanggalKadaluwarsas[] = $item['value'];
+            } elseif ($item['name'] === 'stok_awal[]') {
+                $stokAwals[] = $item['value'];
+            } elseif ($item['name'] === 'harga_modal[]') {
+                $hargaModals[] = $item['value'];
+            }
+        }
+
+        // 3. Gunakan DB::transaction untuk memastikan jika 1 baris gagal, semua dibatalkan (aman untuk stok)
+        DB::beginTransaction();
+        try {
+            // Looping berdasarkan jumlah barang_id yang dikirim
+            for ($i = 0; $i < count($barangIds); $i++) {
+                // Validasi manual dasar di tingkat controller per baris
+                if (empty($noBatches[$i]) || empty($tanggalKadaluwarsas[$i]) || empty($stokAwals[$i]) || empty($hargaModals[$i])) {
+                    return response()->json([
+                        'kode' => 500,
+                        'message' => 'Ada kolom input batch, ED, harga modal, atau Stok Masuk yang masih kosong!'
+                    ]);
+                }
+
+                // A. Ambil stok awal global sebelum ditambah (untuk kebutuhan log saldo awal)
+                $masterBarang = DB::table('mt_barang')
+                    ->where('kode_barang', $barangIds[$i])
+                    ->first();
+
+                $stokAwalGlobal = $masterBarang ? $masterBarang->stok_global : 0;
+                $stokAkhirGlobal = $stokAwalGlobal + $stokAwals[$i];
+
+                // B. Insert ke tabel riwayat batch / persediaan gudang
+                $persediaan = DB::table('mt_stok_persediaan_barang')->insertGetId([
+                    'kode_barang'         => $barangIds[$i],
+                    'no_batch'            => $noBatches[$i],
+                    'tanggal_kadaluwarsa' => $tanggalKadaluwarsas[$i],
+                    'stok_awal'           => $stokAwals[$i],
+                    'stok_sekarang'       => $stokAwals[$i],
+                    'harga_modal_ppn'     => $hargaModals[$i],
+                    'tanggal_masuk'       => now()->toDateString(),
+                    'created_at'          => now(),
+                    'updated_at'          => now(),
+                ]);
+
+                // C. Update total akumulasi stok di tabel master barang
+                DB::table('mt_barang')
+                    ->where('kode_barang', $barangIds[$i])
+                    ->increment('stok_global', $stokAwals[$i]);
+
+                // D. Insert ke tabel log transaksi stok (Kartu Stok)
+                // Sesuaikan 'log_stok_barang' dengan nama tabel log Anda
+                DB::table('mt_log_persediaan_barang')->insert([
+                    'kode_barang'    => $barangIds[$i],
+                    'no_batch'       => $noBatches[$i],
+                    'id_persediaan'       => $persediaan,
+                    'jenis_transaksi' => 'MASUK', // Keterangan jenis mutasi
+                    'keterangan'     => 'Input Stok Persediaan Baru / Penerimaan Barang',
+                    'jumlah'         => $stokAwals[$i],
+                    'stok_awal'      => $stokAwalGlobal,  // Saldo sebelum transaksi
+                    'stok_akhir'     => $stokAkhirGlobal, // Saldo sesudah transaksi
+                    'user_id'        => auth()->id() ?? null, // Mencatat siapa yang menginput (jika ada auth)
+                    'tanggal_log'    => now()->toDateString(),
+                    'created_at'     => now(),
+                    'updated_at'     => now(),
+                ]);
+            }
+
+            // Jika semua baris berhasil di-insert tanpa error
+            DB::commit();
+
+            return response()->json([
+                'kode' => 200,
+                'message' => 'Semua data stok persediaan barang dan log transaksi berhasil disimpan!'
+            ]);
+        } catch (\Exception $e) {
+            // Batalkan semua insert jika di tengah jalan ada query yang error
+            DB::rollBack();
+
+            return response()->json([
+                'kode' => 500,
+                'message' => 'Gagal menyimpan data persediaan. Terjadi kesalahan internal: ' . $e->getMessage()
+            ]);
+        }
+    }
+    public function returstokpersediaan(Request $request)
+    {
+        // 1. Validasi Input Request
+        if (empty($request->id_persediaan) || empty($request->jumlah_retur) || empty($request->kode_barang)) {
+            return response()->json([
+                'kode' => 500,
+                'message' => 'Data input tidak lengkap. Mohon periksa kembali form Anda.'
+            ]);
+        }
+
+        $idPersediaan = $request->id_persediaan;
+        $kodeBarang   = $request->kode_barang;
+        $jumlahRetur  = (int) $request->jumlah_retur;
+        $alasanRetur  = $request->alasan_retur ?? 'Retur Sediaan Barang';
+
+        if ($jumlahRetur <= 0) {
+            return response()->json([
+                'kode' => 500,
+                'message' => 'Jumlah retur harus lebih besar dari 0!'
+            ]);
+        }
+
+        // 2. Jalankan DB Transaction demi keamanan data stok
+        DB::beginTransaction();
+
+        try {
+            // A. Kunci & Ambil data dari tabel persediaan (Cek ketersediaan stok aktual)
+            // Menggunakan lockForUpdate() mencegah 'race condition' jika diakses bersamaan
+            $persediaan = DB::table('mt_stok_persediaan_barang')
+                ->where('id', $idPersediaan)
+                ->lockForUpdate()
+                ->first();
+
+            if (!$persediaan) {
+                return response()->json([
+                    'kode' => 500,
+                    'message' => 'Data batch persediaan tidak ditemukan di sistem.'
+                ]);
+            }
+
+            // Cek apakah stok sediaan tersebut mencukupi untuk diretur
+            if ($persediaan->stok_sekarang < $jumlahRetur) {
+                return response()->json([
+                    'kode' => 500,
+                    'message' => 'Gagal! Sisa stok pada batch ini tinggal ' . $persediaan->stok_sekarang . '. Tidak mencukupi untuk melakukan retur sebanyak ' . $jumlahRetur
+                ]);
+            }
+
+            // B. Ambil data stok awal master barang sebelum dikurangi (untuk pencatatan saldo awal kartu log)
+            $masterBarang = DB::table('mt_barang')
+                ->where('kode_barang', $kodeBarang)
+                ->first();
+
+            $stokAwalGlobal  = $masterBarang ? $masterBarang->stok_global : 0;
+            $stokAkhirGlobal = $stokAwalGlobal - $jumlahRetur;
+
+            // --- EKSEKUSI 3 TABEL ---
+
+            // [TABEL 1] Kurangi stok_sekarang pada tabel persediaan batch terkait
+            DB::table('mt_stok_persediaan_barang')
+                ->where('id', $idPersediaan)
+                ->decrement('stok_sekarang', $jumlahRetur);
+
+            // [TABEL 2] Kurangi stok_global pada tabel master barang
+            DB::table('mt_barang')
+                ->where('kode_barang', $kodeBarang)
+                ->decrement('stok_global', $jumlahRetur);
+
+            // [TABEL 3] Catat mutasi barang KELUAR ke tabel Log Persediaan Barang (Kartu Stok)
+            DB::table('mt_log_persediaan_barang')->insert([
+                'kode_barang'     => $kodeBarang,
+                'no_batch'        => $persediaan->no_batch,
+                'id_persediaan'   => $idPersediaan,
+                'jenis_transaksi' => 'KELUAR', // Ditandai KELUAR karena stok berkurang
+                'keterangan'      => 'Retur Sediaan: ' . $alasanRetur,
+                'jumlah'          => $jumlahRetur,
+                'stok_awal'       => $stokAwalGlobal,  // Saldo global sebelum retur
+                'stok_akhir'      => $stokAkhirGlobal, // Saldo global setelah retur
+                'user_id'         => auth()->id() ?? null, // Siapa yang melakukan retur
+                'tanggal_log'     => now()->toDateString(),
+                'created_at'      => now(),
+                'updated_at'      => now(),
+            ]);
+
+            // Jika semua langkah aman, kunci perubahan ke Database
+            DB::commit();
+
+            return response()->json([
+                'kode' => 200,
+                'message' => 'Berhasil! Data retur sediaan sebanyak ' . $jumlahRetur . ' barang telah diproses dan stok telah diperbarui.'
+            ]);
+        } catch (\Exception $e) {
+            // Gagalkan semua perubahan jika di tengah jalan terdapat error SQL
+            DB::rollBack();
+
+            return response()->json([
+                'kode' => 500,
+                'message' => 'Gagal memproses retur sediaan. Terjadi kesalahan internal: ' . $e->getMessage()
+            ]);
+        }
     }
     public function simpanunit(Request $request)
     {
@@ -839,7 +1180,7 @@ class dataMasterController extends Controller
     {
         $prefix = "B";
         // 1. Ambil kode terakhir yang diawali dengan 'B'
-        $lastRecord = DB::table('master_barang')
+        $lastRecord = DB::table('mt_barang')
             ->where('kode_barang', 'LIKE', $prefix . '%')
             ->orderBy('kode_barang', 'desc')
             ->first();

@@ -183,6 +183,15 @@
                                 <span class="input-group-text" id="basic-addon2">x / menit</span>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <label for="exampleFormControlInput1" class="form-label">Saturasi ( SpO₂ )</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="masukan saturasi oksigen ..."
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="saturasi_oksigen"
+                                    id="saturasi_oksigen">
+                                <span class="input-group-text" id="basic-addon2">%</span>
+                            </div>
+                        </div>
                     </div>
                     <label for="exampleFormControlInput1" class="form-label">Keluhan Utama</label>
                     <div class="input-group mb-3">

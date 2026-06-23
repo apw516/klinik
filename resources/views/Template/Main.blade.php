@@ -47,6 +47,13 @@
     <link href="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/css/select2.min.css" rel="stylesheet" />
     <script src="https://cdn.jsdelivr.net/npm/select2@4.1.0-rc.0/dist/js/select2.min.js"></script>
     <style>
+        /* Memberikan jarak di bawah kotak pencarian DataTables */
+        .dataTables_filter {
+            margin-bottom: 15px !important;
+            /* Ubah angka sesuai jarak yang diinginkan */
+        }
+    </style>
+    <style>
         /* Memberi jarak antara tabel dan pagination */
         .ui-autocomplete {
             z-index: 2000 !important;

@@ -70,22 +70,22 @@
                         <p>Data Pasien</p>
                     </a>
                 </li>
-                <li hidden class="nav-header">Kasir / Farmasi</li>
-                <li hidden class="nav-item">
+                <li  class="nav-header">Kasir / Farmasi</li>
+                <li class="nav-item">
                     <a href="{{ route('indexdatapasienkasirfarmasi') }}"
                         class="nav-link @if ($menu == 'indexdatapasienkasirfarmasi') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Pasien</p>
                     </a>
                 </li>
-                <li hidden class="nav-item">
+                <li  class="nav-item">
                     <a href="{{ route('indexlogtransaksikasir') }}"
                         class="nav-link @if ($menu == 'indexlogtransaksikasir') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Log Transaksi Kasir</p>
                     </a>
                 </li>
-                <li hidden class="nav-item">
+                <li class="nav-item">
                     <a href="{{ route('indexriwayattagihan') }}"
                         class="nav-link @if ($menu == 'indexriwayatpembayaran') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -107,11 +107,18 @@
                         <p>Data Pasien</p>
                     </a>
                 </li>
-                <li hidden class="nav-item">
+                <li class="nav-item">
+                    <a href="{{ route('indexstokpersediaan') }}"
+                        class="nav-link @if ($menu == 'indexstokpersediaan') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>Stok Persediaan Barang</p>
+                    </a>
+                </li>
+                <li class="nav-item">
                     <a href="{{ route('indexmasterbarang') }}"
                         class="nav-link @if ($menu == 'indexmasterbarang') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
-                        <p>Data Barang</p>
+                        <p>Data Master Barang</p>
                     </a>
                 </li>
                 <li hidden class="nav-item">

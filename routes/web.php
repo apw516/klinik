@@ -16,6 +16,7 @@ Route::post('/register', [authController::class, 'register'])->name('register');
 Route::get('/dashboard', [dashboardController::class, 'index']);
 
 
+Route::get('/indexstokpersediaan', [dataMasterController::class, 'indexstokpersediaan'])->name('indexstokpersediaan');
 Route::get('/indexmasterpasien', [dataMasterController::class, 'indexmasterpasien'])->name('indexmasterpasien');
 Route::post('/master-pasien/json', [dataMasterController::class, 'indexdatamasterpasien'])->name('masterpasien.json');
 Route::get('/indexmasterbarang', [dataMasterController::class, 'indexmasterbarang'])->name('indexmasterbarang');
@@ -59,7 +60,13 @@ Route::post('/hapuspegawai', [dataMasterController::class, 'hapuspegawai'])->nam
 Route::post('/ambildatauser', [dataMasterController::class, 'ambildatauser'])->name('ambildatauser');
 Route::post('/hapususer', [dataMasterController::class, 'hapususer'])->name('hapususer');
 Route::post('/simpanedituser', [dataMasterController::class, 'simpanedituser'])->name('simpanedituser');
-
+Route::post('/barang/store', [dataMasterController::class, 'barangstore'])->name('barang/store');
+Route::post('/barang/edit', [dataMasterController::class, 'barangedit'])->name('simpaneditmasterbarang');
+Route::post('/hapusmasterbarang', [dataMasterController::class, 'hapusmasterbarang'])->name('hapusmasterbarang');
+Route::post('/ambilformeditbarang', [dataMasterController::class, 'ambilformeditbarang'])->name('ambilformeditbarang');
+Route::post('/stok-obat/data', [dataMasterController::class, 'dataobat']);
+Route::post('simpanstokpersediaan', [dataMasterController::class, 'simpanstokpersediaan'])->name('simpanstokpersediaan');
+Route::post('stok-obat/proses-retur', [dataMasterController::class, 'returstokpersediaan'])->name('stok-obat/proses-retur');
 
 
 Route::get('/indexdaftarpelayanan', [rekamedisController::class, 'indexdaftarpelayanan'])->name('indexdaftarpelayanan');

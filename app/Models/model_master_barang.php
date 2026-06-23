@@ -10,6 +10,6 @@ class model_master_barang extends Model
     use HasFactory;
     const UPDATED_AT = null;
     const CREATED_AT = null;
-    protected $table = 'master_barang';
+    protected $table = 'mt_barang';
     protected $guarded = [];
 }
