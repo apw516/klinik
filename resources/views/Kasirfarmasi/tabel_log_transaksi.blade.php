@@ -43,16 +43,13 @@
                     Rp {{ number_format($d->total_neto, 0, ',', '.') }}
                 </td>
                 <td class="text-center">
-                    {{-- <button class="btn btn-sm btn-outline-secondary" onclick="printStruk('{{ $d->id_transaksi }}')">
-                        <i class="bi bi-printer"></i>
-                    </button> --}}
                     <div class="btn-group" role="group" aria-label="Basic example">
                         <button type="button" class="btn btn-danger returpembayaran" idheader="{{ $d->idtx }}"
                             idtrans="{{ $d->id_transaksi }}"><i class="bi bi-x-square"></i></button>
                         <button type="button" class="btn btn-info detailpembayaran" idheader="{{ $d->idtx }}"
                             idtrans="{{ $d->id_transaksi }}" data-bs-toggle="modal" data-bs-target="#modaldt"><i
                                 class="bi bi-eye"></i></button>
-                        <button type="button" class="btn btn-success cetaknota"> <i class="bi bi-printer"></i></button>
+                        {{-- <button type="button" class="btn btn-success cetaknota"> <i class="bi bi-printer"></i></button> --}}
                     </div>
                 </td>
             </tr>

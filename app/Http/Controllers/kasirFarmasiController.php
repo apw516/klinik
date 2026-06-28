@@ -22,11 +22,66 @@ class kasirFarmasiController extends Controller
         $menu_sub = 'indexdatapasienkasirfarmasi';
         $menu = 'indexdatapasienkasirfarmasi';
         $datenow = Carbon::now()->format('Y-m-d');
+        $cek_sesi = db::select('select * from ts_log_sesi_kasir where id_user = ? and status = ? and date(tgl_mulai) = ?', [auth()->user()->id, 1, $datenow]);
         return view('Kasirfarmasi.indexdatapasien', compact([
             'menu',
             'menu_sub',
-            'datenow'
+            'datenow',
+            'cek_sesi'
         ]));
+    }
+    public function simpansesikasir(Request $request)
+    {
+        $saldoawal = $request->saldoawal;
+        $datenow = Carbon::now()->format('Y-m-d H:i:s');
+
+        $data = [
+            'id_user' => auth()->user()->id,
+            'nama_user' => auth()->user()->nama,
+            'tgl_mulai' => $datenow,
+            'saldo_awal' => $saldoawal,
+            'status' => 1,
+        ];
+        try {
+            // Proses Insert ke Database
+            DB::table('ts_log_sesi_kasir')->insert($data);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Sesi kasir berhasil dibuka.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal membuka sesi: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    public function tutupsesikasir(Request $request)
+    {
+        $idsesi = $request->idsesi;
+        $datenow = Carbon::now()->format('Y-m-d H:i:s');
+        $total = db::select('select sum(total_neto) jumlahsaldo from ts_transaksi_kasir_header where id_sesi = ? and status = 1', [$idsesi]);
+        $sesi = db::select('select * from ts_log_sesi_kasir where id = ?', [$idsesi]);
+        $data = [
+            'tgl_selesai' => $datenow,
+            'status' => 2,
+            'saldo_akhir' => $total[0]->jumlahsaldo
+        ];
+        try {
+            // Proses Insert ke Database
+            DB::table('ts_log_sesi_kasir')->where('id', $idsesi)->update($data);
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Sesi kasir berhasil ditutup.'
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal menutup sesi: ' . $e->getMessage()
+            ], 500);
+        }
     }
     public function indexkartustokobat()
     {
@@ -45,6 +100,17 @@ class kasirFarmasiController extends Controller
         $menu = 'indexlogtransaksikasir';
         $datenow = Carbon::now()->format('Y-m-d');
         return view('Kasirfarmasi.indexlogtransaksikasir', compact([
+            'menu',
+            'menu_sub',
+            'datenow'
+        ]));
+    }
+    public function indexlogsesikasir()
+    {
+        $menu_sub = 'indexlogsesikasir';
+        $menu = 'indexlogsesikasir';
+        $datenow = Carbon::now()->format('Y-m-d');
+        return view('Kasirfarmasi.indexlogsesikasir', compact([
             'menu',
             'menu_sub',
             'datenow'
@@ -142,6 +208,27 @@ class kasirFarmasiController extends Controller
             'data'
         ]));
     }
+    public function ambilsesikasir(Request $request)
+    {
+        $tanggalAwal = $request->tanggalawal . ' 00:00:00';
+        $tanggalAkhir = $request->tanggalakhir . ' 23:59:59';
+        $data = DB::table('ts_log_sesi_kasir as a')
+            ->select(
+                'a.id as idtx',
+                'a.nama_user',
+                'a.tgl_mulai',
+                'a.tgl_selesai',
+                'a.saldo_awal',
+                'a.saldo_akhir',
+                'a.status'
+            )
+            ->whereBetween('a.tgl_mulai', [$tanggalAwal, $tanggalAkhir])
+            ->orderBy('a.id', 'desc')
+            ->get();
+        return view('Kasirfarmasi.tabel_log_sesi_kasir', compact([
+            'data'
+        ]));
+    }
     public function ambilriwayattagihanpasien(Request $request)
     {
         $tanggalAwal = $request->tanggalawal . ' 00:00:00';
@@ -153,6 +240,7 @@ class kasirFarmasiController extends Controller
                 'a.tgl_masuk',
                 'a.nomor_rm',
                 'b.nama_pasien',
+                'd.id as idlayananheader',
                 'c.nama_unit',
                 'd.kode_layanan_header',
                 'd.tgl_layanan',
@@ -202,16 +290,29 @@ class kasirFarmasiController extends Controller
         echo json_encode($data2);
         die;
     }
+    public function detailtagihan(Request $request)
+    {
+        $id = $request->idheader;
+        $header = db::select('select * from ts_layanan_header where id = ?', [$id]);
+        $data = db::select('select * from  ts_layanan_detail where id_header = ? and status_layanan != 3', [$id]);
+        return response()->json([
+            'kode' => 200,
+            'status' => 'success',
+            'message' => 'Berhasil!',
+            'view' => view('Kasirfarmasi.detailtagihan', compact('data', 'header'))->render()
+        ]);
+    }
     public function detailpembayaran(Request $request)
     {
         $id = $request->idheader;
         $idtrans = $request->idtrans;
+        $header = db::select('select * from ts_transaksi_kasir_header where id = ?', [$id]);
         $data = db::select('select * from ts_transaksi_kasir_detail a left join ts_layanan_detail b on a.id_layanan_detail = b.id where a.id_header = ?', [$id]);
         return response()->json([
             'kode' => 200,
             'status' => 'success',
             'message' => 'Berhasil!',
-            'view' => view('Kasirfarmasi.detail_pembayaran', compact('data', 'idtrans'))->render()
+            'view' => view('Kasirfarmasi.detail_pembayaran', compact('data', 'idtrans', 'header'))->render()
         ]);
     }
     public function ambildataorderresep(Request $request)
@@ -244,7 +345,8 @@ class kasirFarmasiController extends Controller
 
         $kembalian = $bayar - $totalNetto;
         $now = Carbon::now();
-
+        $datenow = Carbon::now()->format('Y-m-d');
+        $cek_sesi = db::select('select * from ts_log_sesi_kasir where id_user = ? and status = ? and date(tgl_mulai) = ?', [auth()->user()->id, 1, $datenow]);
         // 2. Persiapan Data Header
         $dataheader2 = [
             'id_transaksi'  => $this->generateNoTransaksi(),
@@ -257,6 +359,7 @@ class kasirFarmasiController extends Controller
             'kembalian'     => $kembalian,
             'pic'           => auth()->user()->id,
             'tgl_entry'     => $now,
+            'id_sesi'       => $cek_sesi[0]->id
         ];
 
         // 3. Ambil Data Layanan & Kunjungan
@@ -297,7 +400,7 @@ class kasirFarmasiController extends Controller
                 ]);
 
                 // LOGIKA STOK (Jika Item adalah Barang)
-              
+
                 // Update Status Layanan
                 model_ts_layanan_header::where('id', $d->idheader)
                     ->update(['status_bayar' => 1, 'status_layanan' => 2]);
@@ -665,10 +768,7 @@ class kasirFarmasiController extends Controller
             // Commit semua transaksi jika berhasil tanpa hambatan
             DB::commit();
 
-            // return response()->json([
-            //     'kode' => 200,
-            //     'message' => 'Layanan berhasil diretur dan stok obat dikembalikan ke masing-masing batch asal.'
-            // ]);
+          
             $data2 = [
                 'kode' => 200,
                 'message' => 'Order berhasil dibatalkan ...'
@@ -678,10 +778,7 @@ class kasirFarmasiController extends Controller
         } catch (\Exception $e) {
             // Rollback database jika terjadi error SQL
             DB::rollBack();
-            // return response()->json([
-            //     'kode' => 500,
-            //     'message' => 'Gagal meretur layanan. Terjadi kesalahan: ' . $e->getMessage()
-            // ]);
+         
             $data2 = [
                 'kode' => 500,
                 'message' => 'Gagal meretur layanan. Terjadi kesalahan: ' . $e->getMessage()
@@ -689,36 +786,7 @@ class kasirFarmasiController extends Controller
             echo json_encode($data2);
             die;
         }
-        // $id = $request->iddetail;
-        // $detail = db::select('select * from ts_layanan_detail where id = ?', [$id]);
-        // $dataup = [
-        //     'jumlah' => 0,
-        //     'subtotal' => 0,
-        //     'status_layanan' => 3
-        // ];
-        // $subtot = $detail[0]->subtotal;
-        // $idheader = $detail[0]->id_header;
-        // model_ts_layanan_detail::where('id', $id)->update($dataup);
-        // $header = db::select('select * from ts_layanan_header where id = ?', [$idheader]);
-        // $total_tagihan = $header[0]->total_tagihan - $subtot;
-        // $cek_detail = db::select('select * from ts_layanan_detail where id_header = ? and status_layanan = 1', [$idheader]);
-        // if (count($cek_detail) > 0) {
-        //     $status_layanan = 1;
-        // } else {
-        //     $status_layanan = 3;
-        // }
-        // $dataup2 = [
-        //     'total_tagihan' => $total_tagihan,
-        //     'status_layanan' => $status_layanan
-        // ];
-        // model_ts_layanan_header::where('id', $idheader)->update($dataup2);
-
-        // $data2 = [
-        //     'kode' => 200,
-        //     'message' => 'Order berhasil dibatalkan ...'
-        // ];
-        // echo json_encode($data2);
-        // die;
+      
     }
     public function generateKodeLayanan()
     {
@@ -768,33 +836,16 @@ class kasirFarmasiController extends Controller
     public function getKartuStok(Request $request)
     {
         // Query untuk mengambil ID terakhir per kode_barang
-        $latestIds = DB::table('ts_kartu_stok')
+        $latestIds = DB::table('mt_log_persediaan_barang as t')
             ->select(DB::raw('MAX(id) as id'))
-            ->groupBy('kode_barang');
-
-        // Query utama untuk mengambil detail berdasarkan ID terakhir tersebut
-        $data = DB::table('ts_kartu_stok as t')
-            ->joinSub($latestIds, 'latest', function ($join) {
-                $join->on('t.id', '=', 'latest.id');
-            })
-            ->leftJoin('master_barang as b', 't.kode_barang', '=', 'b.kode_barang')
-            ->select(
-                't.kode_barang',
-                'b.nama_barang',
-                't.no_batch',
-                't.keterangan',
-                't.stok_terakhir', // Stok sebelum transaksi terakhir
-                't.stok_masuk',
-                't.stok_keluar',
-                't.stok_sekarang', // Saldo Akhir Saat Ini
-                't.tgl_transaksi'
-            )
+            ->leftJoin('mt_barang as b', 't.kode_barang', '=', 'b.kode_barang')
+            ->select('*')
             ->orderBy('t.id', 'DESC')
             ->get();
-        return DataTables()->of($data)
+        return DataTables()->of($latestIds)
             ->addIndexColumn()
-            ->editColumn('tgl_transaksi', function ($row) {
-                return date('d-m-Y H:i', strtotime($row->tgl_transaksi));
+            ->editColumn('tanggal_log', function ($row) {
+                return date('d-m-Y H:i', strtotime($row->tanggal_log));
             })
             ->make(true);
     }

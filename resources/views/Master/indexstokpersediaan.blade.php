@@ -37,6 +37,7 @@
                                     <th>ED</th>
                                     <th>Stok Awal</th>
                                     <th>Stok Sekarang</th>
+                                    <th>Harga</th>
                                     <th class="text-center" style="width: 10%">Aksi</th>
                                 </tr>
                             </thead>
@@ -135,7 +136,7 @@
                 <form id="formSubmitRetur">
                     @csrf
                     <div class="modal-body">
-                        <input type="" id="retur_id_persediaan" name="id_persediaan">
+                        <input type="hidden" id="retur_id_persediaan" name="id_persediaan">
                         <input type="hidden" id="retur_kode_barang" name="kode_barang">
                         <div class="mb-3">
                             <label class="form-label fw-bold">Nama Barang</label>
@@ -245,6 +246,25 @@
                         className: 'text-center'
                     },
                     {
+                        data: 'harga_modal_ppn',
+                        name: 'stok_batch_obat.harga_modal_ppn',
+                        className: 'text-right', // REKOMENDASI: Format uang sebaiknya rata kanan agar rapi
+                        render: function(data, type, row) {
+                            // Jika data kosong, null, atau bkn angka, kembalikan Rp 0
+                            if (data === null || data === undefined || isNaN(data)) {
+                                return 'Rp 0';
+                            }
+
+                            // Mengubah string/angka ke tipe float
+                            var angka = parseFloat(data);
+
+                            // Format ke Rupiah menggunakan toLocaleString standar Indonesia
+                            return 'Rp ' + angka.toLocaleString('id-ID', {
+                                minimumFractionDigits: 0,
+                                maximumFractionDigits: 0
+                            });
+                        }
+                    }, {
                         // TAMBAHAN KOLOM BARU: AKSI RETUR
                         data: null,
                         name: 'aksi',

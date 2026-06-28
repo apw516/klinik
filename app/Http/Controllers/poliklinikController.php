@@ -66,7 +66,7 @@ class poliklinikController extends Controller
     }
     public function simpancatatanmedis(Request $request)
     {
-        $no_resep = $this->generateNoResep();
+        // $no_resep = $this->generateNoResep();
         $data1 = json_decode($_POST['data1'], true);
         $data2 = json_decode($_POST['data2'], true);
         $data3 = json_decode($_POST['data3'], true);

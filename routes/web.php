@@ -104,12 +104,16 @@ Route::post('/ambilriwayatresep', [poliklinikController::class, 'ambilriwayatres
 Route::post('/ambilhasillab', [poliklinikController::class, 'ambilhasillab'])->name('ambilhasillab');
 
 
+Route::get('/indexlogsesikasir', [kasirFarmasiController::class, 'indexlogsesikasir'])->name('indexlogsesikasir');
+Route::post('/simpansesikasir', [kasirFarmasiController::class, 'simpansesikasir'])->name('simpansesikasir');
+Route::post('/tutupsesikasir', [kasirFarmasiController::class, 'tutupsesikasir'])->name('tutupsesikasir');
 Route::get('/indexkartustokobat', [kasirFarmasiController::class, 'indexkartustokobat'])->name('indexkartustokobat');
 Route::get('/indexdatapasienkasirfarmasi', [kasirFarmasiController::class, 'indexdatapasienkasirfarmasi'])->name('indexdatapasienkasirfarmasi');
 Route::get('/indexlogtransaksikasir', [kasirFarmasiController::class, 'indexlogtransaksikasir'])->name('indexlogtransaksikasir');
 Route::get('/indexriwayattagihan', [kasirFarmasiController::class, 'indexriwayattagihan'])->name('indexriwayattagihan');
 Route::post('/ambildatapasienkasirfarmasi', [kasirFarmasiController::class, 'ambildatapasienkasirfarmasi'])->name('ambildatapasienkasirfarmasi');
 Route::post('/ambillogtransaksikasir', [kasirFarmasiController::class, 'ambillogtransaksikasir'])->name('ambillogtransaksikasir');
+Route::post('/ambilsesikasir', [kasirFarmasiController::class, 'ambilsesikasir'])->name('ambilsesikasir');
 Route::post('/ambilriwayattagihanpasien', [kasirFarmasiController::class, 'ambilriwayattagihanpasien'])->name('ambilriwayattagihanpasien');
 Route::post('/ambilformpembayarankasir', [kasirFarmasiController::class, 'ambilformpembayarankasir'])->name('ambilformpembayarankasir');
 Route::post('/ambildataorderresep', [kasirFarmasiController::class, 'ambildataorderresep'])->name('ambildataorderresep');
@@ -120,4 +124,5 @@ Route::post('/returorderobat', [kasirFarmasiController::class, 'returorderobat']
 Route::post('/returlayanan', [kasirFarmasiController::class, 'returlayanan'])->name('returlayanan');
 Route::post('/returpembayaran', [kasirFarmasiController::class, 'returpembayaran'])->name('returpembayaran');
 Route::post('/detailpembayaran', [kasirFarmasiController::class, 'detailpembayaran'])->name('detailpembayaran');
+Route::post('/detailtagihan', [kasirFarmasiController::class, 'detailtagihan'])->name('detailtagihan');
 Route::get('/kartu-stok.data', [kasirFarmasiController::class, 'getKartuStok'])->name('kartu-stok.data');

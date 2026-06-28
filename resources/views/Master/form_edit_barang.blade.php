@@ -91,6 +91,44 @@
                       placeholder="Contoh: 1 box berisi 100 tablet, maka isi dengan angka 100"
                       value="{{ $data['isi_konversi'] }}">
               </div>
-
+              <div class="col-6">
+                  <label for="isi_konversi" class="form-label small fw-bold text-secondary">Harga Jual Satuan
+                      kecil</label>
+                  <label hidden for="isi_konversi" class="form-label small fw-bold text-secondary"
+                      id="label_asli">Harga Jual Satuan
+                      kecil</label>
+                  <input type="text" class="form-control" id="harga_jual_disp" name="harga_jual_disp"
+                      placeholder="Contoh: 1.000" value="{{ $data['harga_jual'] }}">
+                  <input hidden type="text" class="form-control" id="harga_jual" name="harga_jual"
+                      placeholder="Contoh: 1.000" value="{{ $data['harga_jual'] }}">
+              </div>
           </div>
       </form>
+      <script>
+          $(document).ready(function() {
+
+              const inputMask = document.getElementById('harga_jual_disp');
+              const inputAsli = document.getElementById('harga_jual');
+              const labelAsli = document.getElementById('label_asli');
+
+              inputMask.addEventListener('keyup', function() {
+                  let nominal = this.value.replace(/[^,\d]/g, '').toString();
+                  inputAsli.value = nominal;
+                  labelAsli.innerText = nominal ? formatRupiah(nominal) : '0';
+                  this.value = nominal ? formatRupiah(nominal) : '';
+              });
+              function formatRupiah(angka) {
+                  let number_string = angka.replace(/[^,\d]/g, '').toString(),
+                      split = number_string.split(','),
+                      sisa = split[0].length % 3,
+                      rupiah = split[0].substr(0, sisa),
+                      ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+                  if (ribuan) {
+                      let separator = sisa ? '.' : '';
+                      rupiah += separator + ribuan.join('.');
+                  }
+                  return split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+              }
+          })
+      </script>

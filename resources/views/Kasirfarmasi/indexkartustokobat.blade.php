@@ -33,8 +33,9 @@
                                         <th>keterangan </th>
                                         <th>Tgl Update</th>
                                         <th class="text-end">Stok Awal</th>
-                                        <th class="text-end">Mutasi (In/Out)</th>
-                                        <th class="text-end bg-primary text-dark">Stok Sekarang</th>
+                                        <th class="text-end">Jumlah Transaksi</th>
+                                        <th class="text-end bg-primary text-dark">Jenis transaksi</th>
+                                        <th class="text-end">Stok Akhir</th>
                                     </tr>
                                 </thead>
                                 <tbody></tbody>
@@ -100,31 +101,50 @@
                         class: 'text-center'
                     },
                     {
-                        data: 'tgl_transaksi',
-                        name: 'tgl_transaksi',
+                        data: 'tanggal_log',
+                        name: 'tanggal_log',
                         class: 'text-center'
                     },
                     {
-                        data: 'stok_terakhir',
-                        name: 'stok_terakhir',
+                        data: 'stok_awal',
+                        name: 'stok_awal',
                         class: 'text-end'
                     },
                     {
-                        render: function(data, type, row) {
-                            return `<small class="text-success">+${row.stok_masuk}</small> / 
-                            <small class="text-danger">-${row.stok_keluar}</small>`;
-                        },
-                        class: 'text-center'
+                        data: 'jumlah',
+                        name: 'jumlah',
+                        class: 'text-end'
                     },
                     {
-                        data: 'stok_sekarang',
-                        name: 'stok_sekarang',
-                        class: 'text-end fw-bold text-primary'
+                        data: 'jenis_transaksi',
+                        name: 'jenis_transaksi',
+                        class: 'text-end'
+                    },
+                    {
+                        data: 'stok_akhir',
+                        name: 'stok_akhir',
+                        class: 'text-end'
                     }
+
                 ],
-                language: {
-                    url: "//cdn.datatables.net/plug-ins/1.10.21/i18n/Indonesian.json"
-                }
+                "language": {
+                    "sEmptyTable": "Tidak ada data yang tersedia pada tabel ini",
+                    "sProcessing": "Sedang memproses...",
+                    "sLengthMenu": "Tampilkan _MENU_ data per halaman",
+                    "sZeroRecords": "Data sesi tidak ditemukan",
+                    "sInfo": "Menampilkan halaman _PAGE_ dari _PAGES_",
+                    "sInfoEmpty": "Tidak ada data tersedia",
+                    "sInfoFiltered": "(difilter dari _MAX_ total data)",
+                    "sInfoPostFix": "",
+                    "sSearch": "Cari Sesi Kasir:",
+                    "sUrl": "",
+                    "oPaginate": {
+                        "sFirst": "Pertama",
+                        "sPrevious": "Sebelumnya",
+                        "sNext": "Berikutnya",
+                        "sLast": "Terakhir"
+                    }
+                },
             });
         });
     </script>

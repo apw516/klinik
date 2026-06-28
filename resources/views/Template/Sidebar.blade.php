@@ -79,6 +79,13 @@
                     </a>
                 </li>
                 <li  class="nav-item">
+                    <a href="{{ route('indexlogsesikasir') }}"
+                        class="nav-link @if ($menu == 'indexlogsesikasir') active @endif">
+                        <i class="nav-icon bi bi-file-bar-graph-fill"></i>
+                        <p>Log Sesi Kasir</p>
+                    </a>
+                </li>
+                <li  class="nav-item">
                     <a href="{{ route('indexlogtransaksikasir') }}"
                         class="nav-link @if ($menu == 'indexlogtransaksikasir') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -92,7 +99,7 @@
                         <p>Riwayat Tagihan Pasien</p>
                     </a>
                 </li>
-                <li hidden class="nav-item">
+                <li class="nav-item">
                     <a href="{{ route('indexkartustokobat') }}"
                         class="nav-link @if ($menu == 'indexkartustokobat') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>

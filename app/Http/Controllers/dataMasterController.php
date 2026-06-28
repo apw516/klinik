@@ -50,6 +50,7 @@ class dataMasterController extends Controller
                 'mt_stok_persediaan_barang.tanggal_masuk', // atau created_at
                 'mt_barang.kode_barang',
                 'mt_barang.nama_barang',
+                'mt_stok_persediaan_barang.harga_modal_ppn',
                 'mt_barang.nama_generik',
                 'mt_barang.nama_pabrik',
                 'mt_stok_persediaan_barang.id',
@@ -103,6 +104,7 @@ class dataMasterController extends Controller
                 'no_batch'           => '<span class="badge bg-dark">' . $row->no_batch . '</span>',
                 'no_batch2'           => $row->no_batch,
                 'kode_barang2'           => $row->kode_barang,
+                'harga_modal_ppn'           => $row->harga_modal_ppn,
                 'stok_sekarang2'           => $row->stok_sekarang,
                 // Format Expired Date
                 'tanggal_kadaluwarsa' => date('d-m-Y', strtotime($row->tanggal_kadaluwarsa)),
@@ -756,6 +758,7 @@ class dataMasterController extends Controller
                     'satuan_kecil'   => $dataSet['satuan_kecil'],
                     'isi_konversi'   => $dataSet['isi_konversi'],
                     'bentuk_sediaan' => $dataSet['bentuk_sediaan'],
+                    'harga_jual' => $dataSet['harga_jual'],
                     'updated_at'     => now(), // Cukup updated_at saja saat update
                 ]);
             // Kembalikan response sukses (Ditangkap oleh success: function(response) di AJAX)
