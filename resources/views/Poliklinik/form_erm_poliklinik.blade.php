@@ -282,7 +282,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->SUBJECT }}
                         </div>
                     </div>
                     <div class="row mt-2">
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="card">
                                 <div class="card-header fw-bold fst-italic">Input billing sistem</div>
                                 <div class="card-body">
@@ -304,7 +304,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->SUBJECT }}
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-6">
+                        <div class="col-md-12">
                             <div class="card">
                                 <div class="card-header fw-bold fst-italic">Resep Obat</div>
                                 <div class="card-body">
@@ -579,33 +579,137 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->SUBJECT }}
         })
     });
     $(".pilihobat").on('click', function(event) {
-        kode_barang = $(this).attr('kode_barang')
-        nama_barang = $(this).attr('nama_barang')
-        stok = $(this).attr('stok')
-        aturan_pakai = $(this).attr('aturan_pakai')
+        var kode_barang = $(this).attr('kode_barang');
+        var nama_barang = $(this).attr('nama_barang');
+        var stok = $(this).attr('stok');
         var wrapper = $(".draftbillingobat");
-        $(wrapper).append(
-            '<div class="row text-xs"><div class="form-group col-md-3"><label for="">Nama Tarif</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="namabarang" name="namabarang" value="' +
-            nama_barang +
-            '"><input   hidden readonly type="" class="form-control form-control-sm" id="kodebarang" name="kodebarang" value="' +
-            kode_barang +
-            '"><input   hidden readonly type="" class="form-control form-control-sm" id="harga2" name="harga2" value=""></div><div class="form-group col-md-2"><label for="">Stok</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="stok" name="stok" value="' +
-            stok +
-            '"></div><div class="form-group col-md-2"><label for="">qty</label><input type="" class="form-control form-control-sm text-xs edit_field" id="qty" name="qty" value="0"></div><div class="form-group col-md-3"><label for="">Aturan Pakai</label><textarea readonly type="" class="form-control form-control-sm text-xs edit_field" id="aturanpakai" name="aturanpakai">' +
-            aturan_pakai +
-            '</textarea></div><div class="form-group col-md-1 text-center"><label>Paket?</label><br><div class="form-check form-switch d-inline-block"><input class="form-check-input check-paket" type="checkbox" name="is_paket" value="1" checked><input type="hidden" class="status-paket-val" name="status_paket" value="0"></div></div><i class="bi bi-x-square remove_field form-group col-md-1 text-danger" kode2=""></i></div>'
-        );
+
+        // HTML template menggunakan Backtick (``) agar kode rapi dan tidak pusing dengan string concatenation (+)
+        var htmlRow = `
+        <div class="row text-xs align-items-center mb-2 border-bottom pb-2">
+            <!-- Nama & Kode Barang -->
+            <div class="form-group col-md-2">
+                <label class="fw-bold mb-1">Nama Obat</label>
+                <input readonly type="text" class="form-control form-control-sm text-xs" name="namabarang" value="${nama_barang}">
+                <input hidden readonly type="text" name="kodebarang" value="${kode_barang}">
+                <input hidden readonly type="text" name="harga2" value="">
+            </div>
+
+            <!-- Stok -->
+            <div class="form-group col-md-1">
+                <label class="fw-bold mb-1">Stok</label>
+                <input readonly type="text" class="form-control form-control-sm text-xs text-center" name="stok" value="${stok}">
+            </div>
+
+            <!-- Qty -->
+            <div class="form-group col-md-1">
+                <label class="fw-bold mb-1">Qty</label>
+                <input type="number" min="1" class="form-control form-control-sm text-xs text-center fw-bold" name="qty" value="1">
+            </div>
+
+            <!-- Aturan Pakai Checkbox Grid -->
+            <div class="form-group col-md-4">
+                <label class="fw-bold mb-1 d-block">Aturan Pakai</label>
+                <div class="d-flex flex-wrap gap-2 bg-light p-2 rounded border">
+                    <!-- Waktu Makan -->
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input" type="checkbox" name="sebelum_makan" value="Sebelum Makan">
+                        <label class="form-check-label text-xs">Sebelum Makan</label>
+                    </div>
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input" type="checkbox" name="sesudah_makan" value="Sesudah Makan" checked>
+                        <label class="form-check-label text-xs">Sesudah Makan</label>
+                    </div>
+                    <div class="w-100 my-0 border-top style="opacity:0.2;"></div> <!-- Pembatas baris kecil -->
+                    <!-- Sesi Minum -->
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input" type="checkbox" name="pagi" value="Pagi">
+                        <label class="form-check-label text-xs">Pagi</label>
+                    </div>
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input" type="checkbox" name="siang" value="Siang">
+                        <label class="form-check-label text-xs">Siang</label>
+                    </div>
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input" type="checkbox" name="sore" value="Sore">
+                        <label class="form-check-label text-xs">Sore</label>
+                    </div>
+                    <div class="form-check form-check-inline mb-0">
+                        <input class="form-check-input" type="checkbox" name="malam" value="Malam">
+                        <label class="form-check-label text-xs">Malam</label>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Kolom Keterangan Tambahan -->
+            <div class="form-group col-md-2">
+                <label class="fw-bold mb-1">Keterangan</label>
+                <input type="text" class="form-control form-control-sm text-xs" name="keterangan_obat" placeholder="Contoh: masukan pesan atau catatan ...">
+            </div>
+
+            <!-- Paket Status -->
+            <div class="form-group col-md-1 text-center">
+                <label class="fw-bold mb-1 d-block">Paket?</label>
+                <div class="form-check form-switch d-inline-block mt-1">
+                    <input class="form-check-input check-paket" type="checkbox" name="is_paket" value="1" checked>
+                    <input type="hidden" class="status-paket-val" name="status_paket" value="0">
+                </div>
+            </div>
+
+            <!-- Tombol Hapus Row -->
+            <div class="col-md-1 text-center mt-3">
+                <i class="bi bi-x-square-fill remove_field text-danger fs-5 style="cursor: pointer;" title="Hapus Obat"></i>
+            </div>
+        </div>
+    `;
+
+        // Append baris baru ke wrapper
+        $(wrapper).append(htmlRow);
+
+        // SweetAlert Notifikasi Sukses
         Swal.fire({
-            title: "Obat dipilih " + nama_barang,
-            text: "ok!",
-            icon: "success"
+            title: "Obat dipilih",
+            text: nama_barang + " berhasil ditambahkan ke draf.",
+            icon: "success",
+            timer: 1500,
+            showConfirmButton: false
         });
-        $(wrapper).on("click", ".remove_field", function(e) { //user click on remove
-            e.preventDefault();
-            $(this).parent('div').remove();
-            x--;
-        })
     });
+
+    // PENTING: Pindahkan event handler .remove_field ke luar dari event click induknya (.pilihobat)
+    // Ini agar event click hapus tidak menumpuk (double bind) setiap kali Anda memilih obat baru.
+    $(".draftbillingobat").on("click", ".remove_field", function(e) {
+        e.preventDefault();
+        $(this).closest('.row').remove();
+    });
+    // $(".pilihobat").on('click', function(event) {
+    //     kode_barang = $(this).attr('kode_barang')
+    //     nama_barang = $(this).attr('nama_barang')
+    //     stok = $(this).attr('stok')
+    //     aturan_pakai = $(this).attr('aturan_pakai')
+    //     var wrapper = $(".draftbillingobat");
+    //     $(wrapper).append(
+    //         '<div class="row text-xs"><div class="form-group col-md-3"><label for="">Nama Tarif</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="namabarang" name="namabarang" value="' +
+    //         nama_barang +
+    //         '"><input   hidden readonly type="" class="form-control form-control-sm" id="kodebarang" name="kodebarang" value="' +
+    //         kode_barang +
+    //         '"><input   hidden readonly type="" class="form-control form-control-sm" id="harga2" name="harga2" value=""></div><div class="form-group col-md-2"><label for="">Stok</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="stok" name="stok" value="' +
+    //         stok +
+    //         '"></div><div class="form-group col-md-2"><label for="">qty</label><input type="" class="form-control form-control-sm text-xs edit_field" id="qty" name="qty" value="0"></div><div class="form-group col-md-3"><label for="">Aturan Pakai</label><textarea readonly type="" class="form-control form-control-sm text-xs edit_field" id="aturanpakai" name="aturanpakai">' +
+    //         aturan_pakai +
+    //         '</textarea></div><div class="form-group col-md-1 text-center"><label>Paket?</label><br><div class="form-check form-switch d-inline-block"><input class="form-check-input check-paket" type="checkbox" name="is_paket" value="1" checked><input type="hidden" class="status-paket-val" name="status_paket" value="0"></div></div><i class="bi bi-x-square remove_field form-group col-md-1 text-danger" kode2=""></i></div>'
+    //     );
+    //     Swal.fire({
+    //         title: "Obat dipilih " + nama_barang,
+    //         text: "ok!",
+    //         icon: "success"
+    //     });
+    //     $(wrapper).on("click", ".remove_field", function(e) { //user click on remove
+    //         e.preventDefault();
+    //         $(this).parent('div').remove();
+    //         x--;
+    //     })
+    // });
     $(document).ready(function() {
         ambilriwayatbilling()
         ambilriwayatresep()
@@ -620,6 +724,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->SUBJECT }}
             $row.css('background-color', 'transparent');
         }
     });
+
     function ambilriwayatbilling() {
         idkunjungan = $('#idkunjungan').val()
         spinner = $('#loader')

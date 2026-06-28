@@ -522,11 +522,13 @@ class dataMasterController extends Controller
         $nextDigit = $maxPrefixDigit ? ($maxPrefixDigit + 1) : 1;
 
         // 3. Gabungkan kembali dengan teks 'NP' dan format agar menjadi 2 digit (misal: 01, 02, 10)
-        $newPrefix = 'NP' . str_pad($nextDigit, 2, '0', STR_PAD_LEFT);
+        $newPrefix = 'FR' . str_pad($nextDigit, 2, '0', STR_PAD_LEFT);
+        $newPrefix2 = 'NP' . str_pad($nextDigit, 2, '0', STR_PAD_LEFT);
 
         // 4. Eksekusi Insert ke Database
         DB::table('tabel_master_desa_baru')->insert([
-            'prefix'    => $newPrefix,
+            'prefix2'    => $newPrefix,
+            'prefix'    => $newPrefix2,
             'nama_desa' => $nama,
         ]);
 
@@ -1236,7 +1238,7 @@ class dataMasterController extends Controller
             return response()->json(['error' => 'Desa tidak terdaftar'], 404);
         }
 
-        $idDesa = str_pad($desa->prefix, 3, '0', STR_PAD_LEFT); // Hasil: 001
+        $idDesa = str_pad($desa->prefix2, 3, '0', STR_PAD_LEFT); // Hasil: 001
 
         // 2. Cari nomor RM terakhir yang diawali dengan ID Desa tersebut
         $lastRM = DB::table('master_pasien')
@@ -1264,7 +1266,7 @@ class dataMasterController extends Controller
         $sinc = db::select("WITH PasienBerurut AS (
             SELECT 
                 mp.id, 
-                mdb.prefix,
+                mdb.prefix2,
                 -- Membuat nomor urut otomatis per desa (dimulai dari 1 s.d jumlah pasien di desa tersebut)
                 ROW_NUMBER() OVER (
                     PARTITION BY mdb.nama_desa -- Dikomparasi per desa agar urutan akurat per jumlah pasien desa
@@ -1276,7 +1278,7 @@ class dataMasterController extends Controller
         )
         UPDATE master_pasien mp
         INNER JOIN PasienBerurut pb ON mp.id = pb.id
-        SET mp.nomor_rm = CONCAT(pb.prefix, '-', LPAD(pb.nomor_urut, 5, '0'));");
+        SET mp.nomor_rm = CONCAT(pb.prefix2, '-', LPAD(pb.nomor_urut, 5, '0'));");
         $data2 = [
             'kode' => 200,
             'message' => 'sinkronisasi data pasien berhasil ...'

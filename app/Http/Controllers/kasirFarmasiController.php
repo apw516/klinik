@@ -17,6 +17,17 @@ use Yajra\DataTables\Facades\DataTables;
 
 class kasirFarmasiController extends Controller
 {
+    public function indexorderobatpasien()
+    {
+        $menu_sub = 'indexorderobat';
+        $menu = 'indexorderobat';
+        $datenow = Carbon::now()->format('Y-m-d');
+        return view('Farmasi.indexdatapasien', compact([
+            'menu',
+            'menu_sub',
+            'datenow',
+        ]));
+    }
     public function indexdatapasienkasirfarmasi()
     {
         $menu_sub = 'indexdatapasienkasirfarmasi';
@@ -125,6 +136,58 @@ class kasirFarmasiController extends Controller
             'menu',
             'menu_sub',
             'datenow'
+        ]));
+    }
+    public function ambildataorderobatpasien(Request $request)
+    {
+        $tanggalawal = $request->tanggalawal;
+        $tanggalakhir = $request->tanggalakhir;
+        $data = DB::table('ts_layanan_header as a')
+            ->select(
+                'a.id_kunjungan',
+                'b.tgl_masuk',
+                'b.nomor_rm',
+                'b.unit_tujuan',
+                'b.jenis_kunjungan',
+                'b.dokter',
+                'c.nama_pasien',
+                'd.nama_lengkap as nama_dokter',
+                'e.nama_unit',
+                // 1. Total Semua Layanan (Kecuali Retur/Status 3)
+                DB::raw("COUNT(CASE WHEN a.status_layanan != 3 THEN a.id END) as total_layanan_header"),
+
+                // 2. Kolom Baru: Jumlah Layanan Belum Bayar (Hanya Status 1)
+                DB::raw("COUNT(CASE WHEN a.status_layanan = 1 THEN a.id END) as jumlah_belum_bayar"),
+
+                // 3. Tambahan: Menghitung yang sudah diproses (Status 2) jika perlu
+                DB::raw("COUNT(CASE WHEN a.status_layanan = 2 THEN a.id END) as jumlah_sudah_bayar"),
+                // Menghitung jumlah header layanan dalam satu kunjungan
+                DB::raw('COUNT(a.id) as jumlah_layanan_header'),
+                // Mengambil contoh tgl_layanan terbaru atau pertama (opsional)
+                DB::raw('MAX(a.tgl_layanan) as tgl_layanan_terakhir')
+            )
+            ->join('ts_kunjungan as b', 'a.id_kunjungan', '=', 'b.id')
+            ->join('master_pasien as c', 'b.nomor_rm', '=', 'c.nomor_rm')
+            ->leftJoin('master_pegawai as d', 'b.dokter', '=', 'd.id')
+            ->leftJoin('master_unit as e', 'b.unit_tujuan', '=', 'e.id')
+            ->whereBetween('a.tgl_layanan', [$tanggalawal . ' 00:00:00', $tanggalakhir . ' 23:59:59'])
+            ->where('a.status_layanan', '!=', 3)
+            // Kelompokkan berdasarkan data kunjungan agar tidak duplikat
+            ->groupBy(
+                'a.id_kunjungan',
+                'b.id',
+                'b.tgl_masuk',
+                'b.nomor_rm',
+                'b.unit_tujuan',
+                'b.jenis_kunjungan',
+                'b.dokter',
+                'c.nama_pasien',
+                'd.nama_lengkap',
+                'e.nama_unit'
+            )
+            ->get();
+        return view('Kasirfarmasi.tabel_data_pasien_order', compact([
+            'data'
         ]));
     }
     public function ambildatapasienkasirfarmasi(Request $request)
@@ -255,6 +318,28 @@ class kasirFarmasiController extends Controller
             ->orderBy('a.tgl_masuk', 'desc')
             ->get();
         return view('Kasirfarmasi.tabel_riwayat_tagihan', compact([
+            'data'
+        ]));
+    }
+    public function ambilformpemberianobat(Request $request)
+    {
+        $idlayananheader = $request->idlayanan;
+        $idkunjungan = $request->idkunjungan;
+        $mt_barang = db::select('select * from mt_barang where stok_global > 0');
+        return view('Farmasi.form_pemberian_obat', compact([
+            'idlayananheader',
+            'idkunjungan',
+            'mt_barang'
+        ]));
+    }
+    public function ambildataorderobat(Request $request)
+    {
+        $idlayananheader = $request->idlayananheader;
+        $data = db::select('select a.id as id_header,b.id as id_detail,c.kode_barang,c.nama_barang,b.aturan_pakai,b.jumlah,c.stok_global,b.signa from ts_layanan_header a 
+        inner join ts_layanan_detail b on a.id = b.id_header 
+        inner join mt_barang c on b.kode_barang = c.kode_barang
+        where a.id_kunjungan = ? and a.keterangan = ? and b.status_layanan = ?', [$idlayananheader, 'OBAT', 1]);
+        return view('Farmasi.list_obat', compact([
             'data'
         ]));
     }
@@ -768,7 +853,7 @@ class kasirFarmasiController extends Controller
             // Commit semua transaksi jika berhasil tanpa hambatan
             DB::commit();
 
-          
+
             $data2 = [
                 'kode' => 200,
                 'message' => 'Order berhasil dibatalkan ...'
@@ -778,7 +863,7 @@ class kasirFarmasiController extends Controller
         } catch (\Exception $e) {
             // Rollback database jika terjadi error SQL
             DB::rollBack();
-         
+
             $data2 = [
                 'kode' => 500,
                 'message' => 'Gagal meretur layanan. Terjadi kesalahan: ' . $e->getMessage()
@@ -786,7 +871,6 @@ class kasirFarmasiController extends Controller
             echo json_encode($data2);
             die;
         }
-      
     }
     public function generateKodeLayanan()
     {

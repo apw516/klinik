@@ -3,6 +3,7 @@
         <th>Nama Tarif</th>
         <th>Jumlah</th>
         <th>Tarif</th>
+        <th>Aturan pakai</th>
         <th>Status Layanan</th>
         <th>Status Pembayaran</th>
         <th></th>
@@ -13,6 +14,7 @@
                 <td>{{ $l->nama_tarif }}</td>
                 <td>{{ $l->jumlah }}</td>
                 <td>Rp {{ number_format($l->harga_satuan, 0, ',', '.') }}</td>
+                <td>{{ $l->aturan_pakai}} @if($l->signa != '') ( {{ $l->signa }} ) @endif</td>
                 <td>
                     @if ($l->status_layanan == 1)
                         OK

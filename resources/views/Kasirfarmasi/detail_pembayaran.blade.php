@@ -26,10 +26,9 @@
             <table class="w-100 border-0">
                 <tr>
                     <td style="width: 60%;">
-                        <h4 class="fw-bold text-dark m-0">NP Medika</h4>
+                        <h4 class="fw-bold text-dark m-0">H FARID MEDIKA</h4>
                         {{-- <small class="text-muted d-block mt-1">Sistem Manajemen Klinik Terintegrasi SIMKLINIK</small> --}}
-                        <small class="text-muted d-block" style="font-size: 0.8rem;">Dusun 04 Blok Pelong, RT 001 / RW
-                            005, Desa Gebang, Kecamatan Gebang, Kabupaten Cirebon, Jawa Barat</small>
+                        <small class="text-muted d-block" style="font-size: 0.8rem;">Karangdempel, Kec. Losari, Kabupaten Brebes, Jawa Tengah 52255</small>
                     </td>
                     <td class="text-end" style="width: 40%; vertical-align: top;">
                         <h5 class="fw-bold text-secondary m-0">RESI/NOTA PEMBAYARAN</h5>
@@ -198,7 +197,7 @@
 
         // Header Klinik/Apotek
         htmlThermal += '<div class="text-center">';
-        htmlThermal += '  <span class="fw-bold" style="font-size: 14px;">NP MEDIKA</span><br>';
+        htmlThermal += '  <span class="fw-bold" style="font-size: 14px;">H. FARID MEDIKA</span><br>';
         htmlThermal += '  <span style="font-size: 10px;">Gebang - Cirebon</span><br>';
         htmlThermal += '</div>';
 

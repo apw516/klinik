@@ -104,6 +104,7 @@ Route::post('/ambilriwayatresep', [poliklinikController::class, 'ambilriwayatres
 Route::post('/ambilhasillab', [poliklinikController::class, 'ambilhasillab'])->name('ambilhasillab');
 
 
+Route::get('/indexorderobatpasien', [kasirFarmasiController::class, 'indexorderobatpasien'])->name('indexorderobatpasien');
 Route::get('/indexlogsesikasir', [kasirFarmasiController::class, 'indexlogsesikasir'])->name('indexlogsesikasir');
 Route::post('/simpansesikasir', [kasirFarmasiController::class, 'simpansesikasir'])->name('simpansesikasir');
 Route::post('/tutupsesikasir', [kasirFarmasiController::class, 'tutupsesikasir'])->name('tutupsesikasir');
@@ -111,11 +112,14 @@ Route::get('/indexkartustokobat', [kasirFarmasiController::class, 'indexkartusto
 Route::get('/indexdatapasienkasirfarmasi', [kasirFarmasiController::class, 'indexdatapasienkasirfarmasi'])->name('indexdatapasienkasirfarmasi');
 Route::get('/indexlogtransaksikasir', [kasirFarmasiController::class, 'indexlogtransaksikasir'])->name('indexlogtransaksikasir');
 Route::get('/indexriwayattagihan', [kasirFarmasiController::class, 'indexriwayattagihan'])->name('indexriwayattagihan');
+Route::post('/ambildataorderobatpasien', [kasirFarmasiController::class, 'ambildataorderobatpasien'])->name('ambildataorderobatpasien');
 Route::post('/ambildatapasienkasirfarmasi', [kasirFarmasiController::class, 'ambildatapasienkasirfarmasi'])->name('ambildatapasienkasirfarmasi');
 Route::post('/ambillogtransaksikasir', [kasirFarmasiController::class, 'ambillogtransaksikasir'])->name('ambillogtransaksikasir');
 Route::post('/ambilsesikasir', [kasirFarmasiController::class, 'ambilsesikasir'])->name('ambilsesikasir');
 Route::post('/ambilriwayattagihanpasien', [kasirFarmasiController::class, 'ambilriwayattagihanpasien'])->name('ambilriwayattagihanpasien');
 Route::post('/ambilformpembayarankasir', [kasirFarmasiController::class, 'ambilformpembayarankasir'])->name('ambilformpembayarankasir');
+Route::post('/ambilformpemberianobat', [kasirFarmasiController::class, 'ambilformpemberianobat'])->name('ambilformpemberianobat');
+Route::post('/ambildataorderobat', [kasirFarmasiController::class, 'ambildataorderobat'])->name('ambildataorderobat');
 Route::post('/ambildataorderresep', [kasirFarmasiController::class, 'ambildataorderresep'])->name('ambildataorderresep');
 Route::post('/ambildatatagihan', [kasirFarmasiController::class, 'ambildatatagihan'])->name('ambildatatagihan');
 Route::post('/terimaresep', [kasirFarmasiController::class, 'terimaresep'])->name('terimaresep');
