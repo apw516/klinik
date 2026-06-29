@@ -948,9 +948,15 @@ class dataMasterController extends Controller
                 ]);
 
                 // C. Update total akumulasi stok di tabel master barang
+                // dd($stokAwals[$i]);
+                $getbarang = db::select('select * from mt_barang where kode_barang = ?',[$barangIds[$i]]);
+                $stoklama = $getbarang[0]->stok_global;
+                $dataa = [
+                    'stok_global' => $stoklama + $stokAwals[$i]
+                ];
                 DB::table('mt_barang')
                     ->where('kode_barang', $barangIds[$i])
-                    ->increment('stok_global', $stokAwals[$i]);
+                    ->update($dataa);
 
                 // D. Insert ke tabel log transaksi stok (Kartu Stok)
                 // Sesuaikan 'log_stok_barang' dengan nama tabel log Anda
