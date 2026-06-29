@@ -157,7 +157,7 @@
                         <p>Data ICD 9</p>
                     </a>
                 </li>
-                <li hidden class="nav-item">
+                <li class="nav-item">
                     <a href="{{ route('indexdatatarifpelayanan') }}"
                         class="nav-link @if ($menu == 'indexdatatarifpelayanan') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
