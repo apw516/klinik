@@ -63,7 +63,7 @@
         @endforelse
     </ul>
     <div class="card-footer bg-white py-3 border-top text-end">
-        <button type="submit" class="btn btn-primary btn-sm fw-bold px-4" id="btnSimpanResep">
+        <button disabled type="submit" class="btn btn-primary btn-sm fw-bold px-4" id="btnSimpanResep">
             <i class="bi bi-save2 me-1.5"></i> Simpan Resep Obat
         </button>
     </div>

@@ -1,4 +1,4 @@
- <button class="btn btn-info mt-2" data-bs-toggle="modal" data-bs-target="#modalobat">
+ <button hidden class="btn btn-info mt-2" data-bs-toggle="modal" data-bs-target="#modalobat">
      <i class="bi bi-search"></i> Obat </button>
  <div class="card mt-2">
      <div class="card-header">Data Obat Yang Akan diberikan ...</div>
