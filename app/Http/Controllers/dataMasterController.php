@@ -7,6 +7,7 @@ use App\Models\model_master_generik;
 use App\Models\model_master_pasien;
 use App\Models\model_master_pegawai;
 use App\Models\model_master_supllier;
+use App\Models\model_master_tarif;
 use App\Models\model_mt_unit;
 use App\Models\model_ts_kartu_stok;
 use App\Models\model_ts_stok_batch;
@@ -40,6 +41,91 @@ class dataMasterController extends Controller
             'menu_sub',
             'data'
         ]));
+    }
+    public function simpaneditpersediaan(Request $request)
+    {
+        $data = json_decode($_POST['data'], true);
+        foreach ($data as $nama) {
+            $index =  $nama['name'];
+            $value =  $nama['value'];
+            $dataSet[$index] = $value;
+        }
+        $id_sediaan = $dataSet['edit_id_persediaan'];
+        if ($dataSet['edit_koreksi_stok'] > 0) {
+
+            $stok_sekarang = $dataSet['edit_stok_sekarang'];
+
+            $stok_koreksi = $dataSet['edit_koreksi_stok'];
+
+            $kodeBarang = $dataSet['edit_kode_barang'];
+
+            $masterBarang = DB::table('mt_barang')
+                ->where('kode_barang', $kodeBarang)
+                ->first();
+            $stokAwalGlobal  = $masterBarang ? $masterBarang->stok_global : 0;
+            $stokAkhirGlobal = $stokAwalGlobal - $stok_sekarang;
+
+            DB::table('mt_barang')
+                ->where('kode_barang', $kodeBarang)
+                ->decrement('stok_global', $stok_sekarang);
+
+            // [TABEL 3] Catat mutasi barang KELUAR ke tabel Log Persediaan Barang (Kartu Stok)
+            DB::table('mt_log_persediaan_barang')->insert([
+                'kode_barang'     => $dataSet['edit_kode_barang'],
+                'no_batch'        => $dataSet['edit_no_batch'],
+                'id_persediaan'   => $dataSet['edit_id_persediaan'],
+                'jenis_transaksi' => 'KELUAR', // Ditandai KELUAR karena stok berkurang
+                'keterangan'      => 'Edit Persediaan: ',
+                'jumlah'          => $stok_sekarang,
+                'stok_awal'       => $stokAwalGlobal,  // Saldo global sebelum retur
+                'stok_akhir'      => $stokAkhirGlobal, // Saldo global setelah retur
+                'user_id'         => auth()->id() ?? null, // Siapa yang melakukan retur
+                'tanggal_log'     => now()->toDateString(),
+                'created_at'      => now(),
+                'updated_at'      => now(),
+            ]);
+            $masterBarang1 = DB::table('mt_barang')
+                ->where('kode_barang', $kodeBarang)
+                ->first();
+
+            $stokAwalGlobal  = $masterBarang1 ? $masterBarang1->stok_global : 0;
+            $stokAkhirGlobal = $stokAwalGlobal + $stok_koreksi;
+            DB::table('mt_barang')
+                ->where('kode_barang', $kodeBarang)
+                ->update(['stok_global' => $stokAkhirGlobal ]);
+
+            DB::table('mt_log_persediaan_barang')->insert([
+                'kode_barang'     => $dataSet['edit_kode_barang'],
+                'no_batch'        => $dataSet['edit_no_batch'],
+                'id_persediaan'   => $dataSet['edit_id_persediaan'],
+                'jenis_transaksi' => 'MASUK', // Ditandai KELUAR karena stok berkurang
+                'keterangan'      => 'Edit Persediaan: ',
+                'jumlah'          => $stok_koreksi,
+                'stok_awal'       => $stokAwalGlobal,  // Saldo global sebelum retur
+                'stok_akhir'      => $stokAkhirGlobal, // Saldo global setelah retur
+                'user_id'         => auth()->id() ?? null, // Siapa yang melakukan retur
+                'tanggal_log'     => now()->toDateString(),
+                'created_at'      => now(),
+                'updated_at'      => now(),
+            ]);
+            $stok_sekarang = $stok_koreksi;
+        } else {
+            $stok_sekarang = $dataSet['edit_stok_sekarang'];
+        }
+        $dataedit = [
+            'no_batch' => $dataSet['edit_no_batch'],
+            'tanggal_kadaluwarsa' => $dataSet['edit_ed'],
+            'stok_awal' => $dataSet['edit_stok_awal'],
+            'stok_sekarang' => $stok_sekarang,
+            'harga_modal_ppn' => $dataSet['harga_modal_asli'],
+        ];
+        db::table('mt_stok_persediaan_barang')->where('id', $dataSet['edit_id_persediaan'])->update($dataedit);
+        return response()->json([
+            'kode' => 200,
+            'status' => 'oke',
+            'message'  => 'Data berhasil disimpan !'
+        ]);
+        die;
     }
     public function dataobat(Request $request)
     {
@@ -106,6 +192,7 @@ class dataMasterController extends Controller
                 'kode_barang2'           => $row->kode_barang,
                 'harga_modal_ppn'           => $row->harga_modal_ppn,
                 'stok_sekarang2'           => $row->stok_sekarang,
+                'tglex'           => $row->tanggal_kadaluwarsa,
                 // Format Expired Date
                 'tanggal_kadaluwarsa' => date('d-m-Y', strtotime($row->tanggal_kadaluwarsa)),
                 'stok_awal'          => number_format($row->stok_awal, 0, ',', '.'),
@@ -147,6 +234,28 @@ class dataMasterController extends Controller
         // return view('Master.tabel_pasien', compact([
         //     'data'
         // ])); // Sesuaikan path view Anda
+    }
+    public function simpantarifbaru(Request $request)
+    {
+        $datenow = Carbon::now()->format('Y-m-d');
+        $data = [
+            'nama_tarif' => strtoupper($request->namatarif),
+            'jenis_tarif' => $request->jenis_tarif,
+            'tarif_1' => $request->tarif,
+            'tarif_2' => $request->tarif,
+            'tarif_3' => $request->tarif,
+            'status' => 1,
+            'tgl_entry' => $datenow,
+            'id_klinik' => 1,
+            'pic' => auth()->user()->id
+        ];
+        model_master_tarif::create($data);
+        $data2 = [
+            'kode' => 200,
+            'message' => 'data berhasil disimpan'
+        ];
+        echo json_encode($data2);
+        die;
     }
     public function indexmasterbarang()
     {
@@ -949,7 +1058,7 @@ class dataMasterController extends Controller
 
                 // C. Update total akumulasi stok di tabel master barang
                 // dd($stokAwals[$i]);
-                $getbarang = db::select('select * from mt_barang where kode_barang = ?',[$barangIds[$i]]);
+                $getbarang = db::select('select * from mt_barang where kode_barang = ?', [$barangIds[$i]]);
                 $stoklama = $getbarang[0]->stok_global;
                 $dataa = [
                     'stok_global' => $stoklama + $stokAwals[$i]

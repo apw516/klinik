@@ -34,7 +34,7 @@
                                         <th>Tgl Update</th>
                                         <th class="text-end">Stok Awal</th>
                                         <th class="text-end">Jumlah Transaksi</th>
-                                        <th class="text-end bg-primary text-dark">Jenis transaksi</th>
+                                        <th class="text-end">Jenis transaksi</th>
                                         <th class="text-end">Stok Akhir</th>
                                     </tr>
                                 </thead>
@@ -74,7 +74,7 @@
                 processing: true,
                 serverSide: true,
                 ajax: "{{ route('kartu-stok.data') }}", // Sesuaikan route Anda
-                pageLength: 8, // Default menampilkan 25 baris
+                pageLength: 8, // Default menampilkan 8 baris
                 columns: [{
                         data: 'DT_RowIndex',
                         name: 'DT_RowIndex',
@@ -127,6 +127,19 @@
                     }
 
                 ],
+                // Fungsi createdRow untuk mewarnai baris berdasarkan kondisi data
+                createdRow: function(row, data, dataIndex) {
+                    // Ambil data jenis_transaksi, ubah ke lowercase untuk perbandingan yang aman
+                    // Sesuaikan 'masuk' dan 'keluar' dengan nilai yang dikirimkan oleh backend Anda
+                    var jenis = data.jenis_transaksi.toLowerCase();
+
+                    // Gunakan kelas Bootstrap untuk pewarnaan
+                    if (jenis === 'keluar') {
+                        $(row).addClass('table-warning'); // Merah untuk transaksi keluar
+                    } else if (jenis === 'masuk') {
+                        $(row).addClass('table-success'); // Hijau untuk transaksi masuk
+                    }
+                },
                 "language": {
                     "sEmptyTable": "Tidak ada data yang tersedia pada tabel ini",
                     "sProcessing": "Sedang memproses...",

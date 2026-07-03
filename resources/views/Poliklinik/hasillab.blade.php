@@ -3,7 +3,7 @@
          <h6 class="fw-bold text-secondary text-uppercase mb-3 d-flex align-items-center"
              style="font-size: 0.8rem; letter-spacing: 0.5px;">
              <i class="bi bi-file-earmark-medical-fill text-primary me-2"></i>
-             Hasil Laboratorium            
+             Riwayat tindakan, riwayat obat dan Hasil Laboratorium
          </h6>
      </div>
      <div class="card-body">
@@ -64,7 +64,86 @@
              }
          </style>
          <div class="border rounded-3 bg-white overflow-hidden mb-5 shadow-xs">
-             <table class="table table-sm table-bordered table-input-seamless">
+             <table class="table table-hover align-middle mb-0" style="font-size: 0.9rem;">
+                 <thead class="table-light text-uppercase tracking-wider" style="font-size: 0.75rem;">
+                     <tr>
+                         <th class="text-center py-3" style="width: 5%;">No</th>
+                         <th class="py-3" style="width: 35%;">Nama Layanan / Obat</th>
+                         <th class="text-center py-3" style="width: 15%;">Jenis</th>
+                         <th class="text-center py-3" style="width: 10%;">Qty</th>
+                         <th class="py-3" style="width: 23%;">Catatan / Aturan Pakai</th>
+                         {{-- <th class="text-center py-3" style="width: 12%;">Aksi</th> --}}
+                     </tr>
+                 </thead>
+                 <tbody>
+                     @forelse($datalayanan as $l)
+                         <tr
+                             class="{{ $l->status_layanan == 3 ? 'table-light text-muted text-decoration-line-through' : '' }}">
+                             <td class="text-center fw-bold text-secondary">{{ $loop->iteration }}</td>
+                             <td>
+                                 <div class="fw-semibold text-dark">{{ $l->nama_tarif }}</div>
+                                 @if ($l->kode_barang && $l->kode_barang != '0')
+                                     <small class="text-muted d-block" style="font-size: 0.75rem;">
+                                         <i class="bi bi-box-seam me-1"></i>Kode: {{ $l->kode_barang }}
+                                     </small>
+                                 @endif
+                             </td>
+                             <td class="text-center">
+                                 @if ($l->kode_barang == '0' || empty($l->kode_barang))
+                                     <span
+                                         class="badge bg-info-subtle text-info border border-info-subtle rounded-pill px-2.5 py-1">
+                                         <i class="bi bi-heart-pulse-fill me-1"></i>Tindakan/Jasa
+                                     </span>
+                                 @else
+                                     <span
+                                         class="badge bg-success-subtle text-success border border-success-subtle rounded-pill px-2.5 py-1">
+                                         <i class="bi bi-capsule me-1"></i>Obat/Alkes
+                                     </span>
+                                 @endif
+                             </td>
+                             <td class="text-center fw-bold fs-6">
+                                 {{ number_format($l->jumlah, 0, ',', '.') }}
+                             </td>
+                             <td>
+                                 @if ($l->status_layanan == 3)
+                                     <span class="text-danger small fw-semibold"><i
+                                             class="bi bi-x-circle-fill me-1"></i>Item ini telah
+                                         diretur/dibatalkan</span>
+                                 @else
+                                     <span
+                                         class="text-secondary">{{ $l->aturan_pakai ?? ($l->keterangan ?? '-') }}</span>
+                                 @endif
+                             </td>
+                             {{-- <td class="text-center">
+                                        @if ($l->status_layanan != 3)
+                                            <button type="button"
+                                                class="btn btn-sm btn-outline-danger btn-retur-billing px-2.5 py-1 rounded-2"
+                                                data-id="{{ $l->id }}" data-nama="{{ $l->nama_tarif }}"
+                                                title="Retur Item">
+                                                <i class="bi bi-arrow-counterclockwise me-1"></i>Retur
+                                            </button>
+                                        @else
+                                            <span
+                                                class="badge bg-secondary-subtle text-secondary rounded-1 px-2 py-1">Selesai</span>
+                                        @endif
+                                    </td> --}}
+                         </tr>
+                     @empty
+                         <tr>
+                             <td colspan="6" class="text-center py-5 text-muted">
+                                 <i class="bi bi-folder-x d-block fs-2 mb-2 text-secondary"></i>
+                                 Belum ada data rincian transaksi billing untuk pasien ini.
+                             </td>
+                         </tr>
+                     @endforelse
+                 </tbody>
+             </table>
+             <br>
+             <br>
+             <br>
+             <br>
+             <h2>Hasil Laboratoriumm</h2>
+             <table class="table table-sm table-bordered table-input-seamless mt-4">
                  <thead class="bg-light text-center">
                      <tr>
                          <th class="align-middle">JENIS PEMERIKSAAN</th>
@@ -165,7 +244,6 @@
                      </tr>
                  </tbody>
              </table>
-
              {{-- INFORMASI TAMBAHAN STATUS DATA DI BAWAH TABEL --}}
              <div class="mt-2 text-right">
                  @if (empty($hasillab))

@@ -66,6 +66,8 @@ Route::post('/hapusmasterbarang', [dataMasterController::class, 'hapusmasterbara
 Route::post('/ambilformeditbarang', [dataMasterController::class, 'ambilformeditbarang'])->name('ambilformeditbarang');
 Route::post('/stok-obat/data', [dataMasterController::class, 'dataobat']);
 Route::post('simpanstokpersediaan', [dataMasterController::class, 'simpanstokpersediaan'])->name('simpanstokpersediaan');
+Route::post('simpantarifbaru', [dataMasterController::class, 'simpantarifbaru'])->name('simpantarifbaru');
+Route::post('simpaneditpersediaan', [dataMasterController::class, 'simpaneditpersediaan'])->name('simpaneditpersediaan');
 Route::post('stok-obat/proses-retur', [dataMasterController::class, 'returstokpersediaan'])->name('stok-obat/proses-retur');
 
 

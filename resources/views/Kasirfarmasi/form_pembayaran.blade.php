@@ -416,7 +416,6 @@
 
         spinner.show();
         $('#tombolbayar').prop('disabled', true);
-
         $.ajax({
             async: true,
             type: 'post',

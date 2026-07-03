@@ -37,7 +37,7 @@
                                     <th>ED</th>
                                     <th>Stok Awal</th>
                                     <th>Stok Sekarang</th>
-                                    <th>Harga</th>
+                                    <th>Harga Modal</th>
                                     <th class="text-center" style="width: 10%">Aksi</th>
                                 </tr>
                             </thead>
@@ -128,7 +128,7 @@
         aria-labelledby="modalReturSediaanLabel" aria-hidden="true">
         <div class="modal-dialog modal-dialog-centered">
             <div class="modal-content">
-                <div class="modal-header bg-warning text-dark">
+                <div class="modal-header bg-danger text-light">
                     <h5 class="modal-title" id="modalReturSediaanLabel"><i class="bi bi-arrow-counterclockwise"></i> Form
                         Retur Persediaan Barang</h5>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
@@ -180,7 +180,7 @@
                     </div>
                     <div class="modal-footer bg-light">
                         <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
-                        <button type="submit" class="btn btn-warning fw-semibold" id="btnProsesRetur">
+                        <button type="submit" class="btn btn-success fw-semibold" id="btnProsesRetur">
                             <i class="bi bi-check-circle-fill"></i> Proses Retur
                         </button>
                     </div>
@@ -188,7 +188,133 @@
             </div>
         </div>
     </div>
+    <div class="modal fade" id="modalEditSediaan" data-bs-backdrop="static" data-bs-keyboard="false" tabindex="-1"
+        aria-labelledby="modalReturSediaanLabel" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+                <div class="modal-header bg-warning text-dark">
+                    <h5 class="modal-title" id="modalReturSediaanLabel"><i class="bi bi-arrow-counterclockwise"></i> Form
+                        Edit Persediaan Barang</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <form id="formSubmitedit" class="formSubmitedit" name="formSubmitedit">
+                    @csrf
+                    <div class="modal-body">
+                        <input type="hidden" id="edit_id_persediaan" name="edit_id_persediaan">
+                        <input type="hidden" id="edit_kode_barang" name="edit_kode_barang">
+                        <div class="mb-3">
+                            <label class="form-label fw-bold">Nama Barang</label>
+                            <input type="text" id="edit_nama_barang"
+                                class="form-control-plaintext fw-semibold text-secondary pt-0" readonly>
+                        </div>
+
+                        <div class="row mb-3">
+                            <div class="col-6">
+                                <label class="form-label fw-bold">No. Batch</label>
+                                <input type="text" name="edit_no_batch" id="edit_no_batch" class="form-control-plaintext text-dark pt-0">
+                            </div>
+                            <div class="col-6">
+                                <label class="form-label fw-bold">Expired Date</label>
+                                <input type="date" id="edit_ed" name="edit_ed"
+                                    class="form-control-plaintext text-dark pt-0">
+                            </div>
+                        </div>
+                        <div class="row mb-3">
+                            <div class="col-4">
+                                <label class="form-label fw-bold">Stok Awal</label>
+                                <input type="text" id="edit_stok_awal" name="edit_stok_awal"
+                                    class="form-control text-dark pt-0">
+                            </div>
+                            <div class="col-4">
+                                <label class="form-label fw-bold">Stok Sekarang</label>
+                                <input type="text" id="edit_stok_sekarang" name="edit_stok_sekarang" readonly
+                                    class="form-control text-dark pt-0">
+                            </div>
+
+                        </div>
+                        <hr>
+                        <div class="mb-3">
+                            <label for="harga_modal" class="form-label fw-bold text-dark">Harga Modal (Satuan Terkecil)
+                                <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="edit_harga_modal" name="edit_harga_modal"
+                                min="1" placeholder="Masukkan harga per satuan terkecil..." required>
+                            <input hidden type="number" class="form-control" id="harga_modal_asli"
+                                name="harga_modal_asli" min="1"
+                                placeholder="Masukkan harga per satuan terkecil..." required>
+                            <div class="form-text text-muted">
+                                Masukkan harga untuk <strong>1 unit terkecil</strong> (misal: harga per 1
+                                tablet/kapsul/ampul, bukan per box/strip).
+                            </div>
+                        </div>
+                        <!-- Input Koreksi Stok -->
+                        <div class="mb-3">
+                            <label for="koreksi_stok" class="form-label fw-bold text-danger">Koreksi Jumlah Stok Fisik
+                                <span class="text-danger">*</span></label>
+                            <input type="number" class="form-control" id="edit_koreksi_stok" name="edit_koreksi_stok"
+                                min="0" placeholder="Masukkan jumlah stok fisik yang benar..." value="0">
+                            <div class="form-text text-danger fw-medium">
+                                Penting: Jika jumlah di sistem berbeda dengan stok asli di rak, ketik <strong>total stok
+                                    fisik yang benar saat ini</strong> di sini.
+                            </div>
+                        </div>
+                    </div>
+                    <div class="modal-footer bg-light">
+                        <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
+                        <button type="button" class="btn btn-success fw-semibold" id="btnsimpanedit"
+                            onclick="simpanedit()">
+                            <i class="bi bi-check-circle-fill"></i> Simpan
+                        </button>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </div>
     <script>
+        function simpanedit() {
+            var data3 = $('.formSubmitedit').serializeArray();
+            spinner = $('#loader')
+            spinner.show();
+            $.ajax({
+                async: true,
+                type: 'post',
+                dataType: 'json',
+                data: {
+                    _token: "{{ csrf_token() }}",
+                    data: JSON.stringify(data3),
+                },
+                url: '<?= route('simpaneditpersediaan') ?>',
+                error: function(data) {
+                    spinner.hide()
+                    Swal.fire({
+                        icon: 'error',
+                        title: 'Ooops....',
+                        text: 'Sepertinya ada masalah......',
+                        footer: ''
+                    })
+                },
+                success: function(data) {
+                    spinner.hide()
+                    if (data.kode == 500) {
+                        Swal.fire({
+                            icon: 'error',
+                            title: 'Oopss...',
+                            text: data.message,
+                            footer: ''
+                        })
+                    } else {
+                        Swal.fire({
+                            icon: 'success',
+                            title: 'OK',
+                            text: data.message,
+                            footer: ''
+                        })
+                        location.reload()
+                        const myForm = document.getElementById('formSubmitedit');
+                        myForm.reset();
+                    }
+                }
+            });
+        }
         $(document).ready(function() {
             $('#tbstokpersediaan').DataTable({
                 processing: true,
@@ -214,9 +340,9 @@
                         render: function(data, type, row) {
                             let supplier = row.id_supplier ? row.id_supplier : '-';
                             return `<div>${data}</div>
-                    <small class="text-muted d-block" style="font-size: 0.75rem; margin-top: 2px;">
-                        <i class="bi bi-truck me-1"></i>Supplier: <span class="fw-semibold">${supplier}</span>
-                    </small>`;
+                <small class="text-muted d-block" style="font-size: 0.75rem; margin-top: 2px;">
+                    <i class="bi bi-truck me-1"></i>Supplier: <span class="fw-semibold">${supplier}</span>
+                </small>`;
                         }
                     },
                     {
@@ -233,7 +359,26 @@
                     },
                     {
                         data: 'tanggal_kadaluwarsa',
-                        name: 'stok_batch_obat.tanggal_kadaluwarsa'
+                        name: 'stok_batch_obat.tanggal_kadaluwarsa',
+                        render: function(data, type, row) {
+                            if (!data) return '-';
+
+                            // Tambahkan teks status ED di dalam kolom tanggal agar lebih informatif
+                            let tglED = new Date(data);
+                            let hariIni = new Date();
+                            hariIni.setHours(0, 0, 0, 0);
+
+                            let selisihWaktu = tglED.getTime() - hariIni.getTime();
+                            let selisihHari = Math.ceil(selisihWaktu / (1000 * 3600 * 24));
+
+                            if (selisihHari < 0) {
+                                return `<div>${data}</div><span class="badge bg-danger">SUDAH ED</span>`;
+                            } else if (selisihHari <= 30) {
+                                return `<div>${data}</div><span class="badge bg-warning text-dark">HAMPIR ED</span>`;
+                            }
+
+                            return data;
+                        }
                     },
                     {
                         data: 'stok_awal',
@@ -248,47 +393,76 @@
                     {
                         data: 'harga_modal_ppn',
                         name: 'stok_batch_obat.harga_modal_ppn',
-                        className: 'text-right', // REKOMENDASI: Format uang sebaiknya rata kanan agar rapi
+                        className: 'text-right',
                         render: function(data, type, row) {
-                            // Jika data kosong, null, atau bkn angka, kembalikan Rp 0
                             if (data === null || data === undefined || isNaN(data)) {
                                 return 'Rp 0';
                             }
-
-                            // Mengubah string/angka ke tipe float
                             var angka = parseFloat(data);
-
-                            // Format ke Rupiah menggunakan toLocaleString standar Indonesia
                             return 'Rp ' + angka.toLocaleString('id-ID', {
                                 minimumFractionDigits: 0,
                                 maximumFractionDigits: 0
                             });
                         }
-                    }, {
-                        // TAMBAHAN KOLOM BARU: AKSI RETUR
+                    },
+                    {
                         data: null,
                         name: 'aksi',
                         orderable: false,
                         searchable: false,
                         className: 'text-center',
                         render: function(data, type, row) {
-                            // Tombol retur dikunci (disabled) jika stok_sekarang sudah 0
                             let isDisabled = row.stok_sekarang <= 0 ? 'disabled' : '';
-
                             return `
-                        <button type='button' 
-                                class='btn btn-sm btn-warning btn-retur-sediaan' 
-                                data-id='${row.id}' 
-                                data-kode='${row.kode_barang2}' 
-                                data-nama='${row.nama_barang}' 
-                                data-batch='${row.no_batch2}' 
-                                data-stok='${row.stok_sekarang2}'
-                                ${isDisabled}>
-                            <i class="bi bi-arrow-counterclockwise"></i></button>
-                    `;
+                    <button type='button' 
+                            class='btn btn-sm btn-danger btn-retur-sediaan' 
+                            data-id='${row.id}' 
+                            data-kode='${row.kode_barang2}' 
+                            data-nama='${row.nama_barang}' 
+                            data-batch='${row.no_batch2}' 
+                            data-stok='${row.stok_sekarang2}'
+                            ${isDisabled}>
+                        <i class="bi bi-arrow-counterclockwise"></i>
+                    </button>
+                    <button type='button' 
+                            class='btn btn-sm btn-warning btn-edit-sediaan' 
+                            data-id='${row.id}' 
+                            data-kode='${row.kode_barang2}' 
+                            data-nama='${row.nama_barang}' 
+                            data-batch='${row.no_batch2}' 
+                            data-stok='${row.stok_sekarang2}'
+                            data-stokawal='${row.stok_awal}'
+                            data-harga_modal_ppn='${row.harga_modal_ppn}'
+                            data-tanggal_kadaluwarsa='${row.tglex}'
+                            ${isDisabled}>
+                        <i class="bi bi-pencil-square"></i>
+                    </button>
+                `;
                         }
                     }
                 ],
+                // Menggunakan callback createdRow untuk memberikan warna pada baris TR
+                createdRow: function(row, data, dataIndex) {
+                    if (data.tanggal_kadaluwarsa) {
+                        var tglED = new Date(data.tanggal_kadaluwarsa);
+                        var hariIni = new Date();
+
+                        // Reset jam ke 00:00:00 agar kalkulasi hari akurat
+                        hariIni.setHours(0, 0, 0, 0);
+
+                        // Hitung selisih dalam milidetik lalu ubah ke hari
+                        var selisihWaktu = tglED.getTime() - hariIni.getTime();
+                        var selisihHari = Math.ceil(selisihWaktu / (1000 * 3600 * 24));
+
+                        if (selisihHari < 0) {
+                            // Jika sudah melewati hari ini (Sudah ED) -> Warna Merah
+                            $(row).addClass('table-danger');
+                        } else if (selisihHari <= 30) {
+                            // Jika kurang dari atau sama dengan 30 hari (Hampir ED) -> Warna Kuning
+                            $(row).addClass('table-warning');
+                        }
+                    }
+                },
                 order: [
                     [0, 'desc']
                 ],
@@ -319,11 +493,41 @@
             // Tampilkan Modal Retur
             $('#modalReturSediaan').modal('show');
         });
+        $('#tbstokpersediaan').on('click', '.btn-edit-sediaan', function() {
+            // Ambil data dari atribut data- di dalam button tombol retur
+            let idPersediaan = $(this).data('id');
+            let kodeBarang = $(this).data('kode');
+            let namaBarang = $(this).data('nama');
+            let noBatch = $(this).data('batch');
+            let stok = $(this).data('stok');
+            let stokawal = $(this).data('stokawal');
+            let tanggal_kadaluwarsa = $(this).data('tanggal_kadaluwarsa');
+            let harga_modal_ppn = $(this).data('harga_modal_ppn');
+            // Suntikkan data ke dalam field input yang ada di dalam Modal Retur
+            $('#edit_id_persediaan').val(idPersediaan);
+            $('#edit_kode_barang').val(kodeBarang);
+            $('#edit_nama_barang').val(namaBarang);
+            $('#edit_no_batch').val(noBatch);
+
+            var angka = parseFloat(harga_modal_ppn);
+            modal = angka.toLocaleString('id-ID', {
+                minimumFractionDigits: 0,
+                maximumFractionDigits: 0
+            });
+            $('#edit_stok_awal').val(stokawal)
+            $('#edit_stok_sekarang').val(stok)
+            $('#harga_modal_asli').val(harga_modal_ppn)
+            $('#edit_harga_modal').val(modal)
+            $('#edit_ed').val(tanggal_kadaluwarsa)
+
+
+            // Tampilkan Modal Retur
+            $('#modalEditSediaan').modal('show');
+        });
 
         // 2. Event Handler saat Form Retur di-Submit via Ajax
         $('#formSubmitRetur').on('submit', function(e) {
             e.preventDefault(); // Mencegah reload halaman
-
             // Validasi tambahan di sisi client sebelum kirim data
             let jmlRetur = parseInt($('#jumlah_retur').val());
             let maksStok = parseInt($('#retur_stok_maksimal').val());
@@ -483,6 +687,30 @@
                 }
             }
             // Fungsi format rupiah pelengkap
+            const inputMask = document.getElementById('edit_harga_modal');
+            const inputAsli = document.getElementById('harga_modal_asli');
+            // const labelAsli = document.getElementById('label_asli');
+            inputMask.addEventListener('keyup', function() {
+                let nominal = this.value.replace(/[^,\d]/g, '').toString();
+                inputAsli.value = nominal;
+                // labelAsli.innerText = nominal ? formatRupiah2(nominal) : '0';
+                this.value = nominal ? formatRupiah2(nominal) : '';
+            });
+
+            function formatRupiah2(angka) {
+                let number_string = angka.replace(/[^,\d]/g, '').toString(),
+                    split = number_string.split(','),
+                    sisa = split[0].length % 3,
+                    rupiah = split[0].substr(0, sisa),
+                    ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+                if (ribuan) {
+                    let separator = sisa ? '.' : '';
+                    rupiah += separator + ribuan.join('.');
+                }
+                return split[1] != undefined ? rupiah + ',' + split[1] : rupiah;
+            }
+
             function formatRupiah(angka, prefix) {
                 var number_string = angka.replace(/[^,\d]/g, '').toString(),
                     split = number_string.split(','),

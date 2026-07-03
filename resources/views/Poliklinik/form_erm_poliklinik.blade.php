@@ -47,7 +47,7 @@
                                 <th width="16%">Dokter</th>
                                 <th width="16%">Keluhan Utama</th>
                                 <th>S.O.A.P</th>
-                                <th>Hasil Lab</th>
+                                <th>Lainnya</th>
                             </thead>
                             <tbody>
                                 @foreach ($data_kunjungan as $t)
@@ -420,7 +420,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->SUBJECT }}
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Hasil Laboratorium</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Riwayat Tindakan , Riwayat Obat & Hasil Laboratorium</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -750,7 +750,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->SUBJECT }}
             type: 'post',
             data: {
                 _token: "{{ csrf_token() }}",
-                idkunjungan
+                kode_kunjungan
             },
             url: '<?= route('ambilhasillab') ?>',
             success: function(response) {
