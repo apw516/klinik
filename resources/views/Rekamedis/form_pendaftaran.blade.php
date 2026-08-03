@@ -192,6 +192,40 @@
                                 <span class="input-group-text" id="basic-addon2">%</span>
                             </div>
                         </div>
+                        <div class="col-md-6">
+                            <label for="exampleFormControlInput1" class="form-label">Tinggi Badan</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="masukan tinggi badan ..."
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="tinggi_badan"
+                                    id="tinggi_badan">
+                                <span class="input-group-text" id="basic-addon2"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="exampleFormControlInput1" class="form-label">Berat Badan</label>
+                            <div class="input-group mb-3">
+                                <input type="text" class="form-control" placeholder="masukan berat badan ..."
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="berat_badan"
+                                    id="berat_badan">
+                                <span class="input-group-text" id="basic-addon2"></span>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="exampleFormControlInput1" class="form-label">Riwayat Alergi</label>
+                            <div class="input-group mb-3">
+                                <textarea type="text" class="form-control" placeholder="masukan riwayat alergi ..."
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="riwayat_alergi"
+                                    id="riwayat_alergi"></textarea>
+                            </div>
+                        </div>
+                        <div class="col-md-6">
+                            <label for="exampleFormControlInput1" class="form-label">Riwayat penyakit</label>
+                            <div class="input-group mb-3">
+                                <textarea type="text" class="form-control" placeholder="masukan riwayat penyakit ..."
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="riwayat_penyakit"
+                                    id="riwayat_penyakit"></textarea>
+                            </div>
+                        </div>
                     </div>
                     <label for="exampleFormControlInput1" class="form-label">Keluhan Utama</label>
                     <div class="input-group mb-3">
