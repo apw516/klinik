@@ -92,7 +92,7 @@ class dataMasterController extends Controller
             $stokAkhirGlobal = $stokAwalGlobal + $stok_koreksi;
             DB::table('mt_barang')
                 ->where('kode_barang', $kodeBarang)
-                ->update(['stok_global' => $stokAkhirGlobal ]);
+                ->update(['stok_global' => $stokAkhirGlobal]);
 
             DB::table('mt_log_persediaan_barang')->insert([
                 'kode_barang'     => $dataSet['edit_kode_barang'],
@@ -1353,7 +1353,7 @@ class dataMasterController extends Controller
             return response()->json(['error' => 'Desa tidak terdaftar'], 404);
         }
 
-        $idDesa = str_pad($desa->prefix2, 3, '0', STR_PAD_LEFT); // Hasil: 001
+        $idDesa = str_pad($desa->prefix, 3, '0', STR_PAD_LEFT); // Hasil: 001
 
         // 2. Cari nomor RM terakhir yang diawali dengan ID Desa tersebut
         $lastRM = DB::table('master_pasien')
