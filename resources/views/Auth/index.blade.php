@@ -4,7 +4,7 @@
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Selamat Datang di H. Farid Medika </title>
+    <title>Selamat Datang di NP Medika </title>
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@4.6.2/dist/css/bootstrap.min.css"
         integrity="sha384-xOolHFLEh07PJGoPkLv1IbcEPTNtaed2xpHsD9ESMhqIYd0nLMwNLD69Npy4HI+N" crossorigin="anonymous">
     <style>
@@ -55,8 +55,8 @@
 
         button {
             border-radius: 20px;
-            border: 1px solid rgb(29, 115, 132);
-            background-color: rgb(29, 115, 132);
+            border: 1px solid rgb(193, 115, 196);
+            background-color: rgb(193, 115, 196);
             color: #FFFFFF;
             font-size: 12px;
             font-weight: bold;
@@ -173,8 +173,8 @@
 
         .overlay {
             background: rgb(112, 49, 114);
-            background: -webkit-linear-gradient(to right, rgb(29, 115, 132), rgb(29, 115, 132));
-            background: linear-gradient(to right, rgb(29, 115, 132), rgb(29, 115, 132));
+            background: -webkit-linear-gradient(to right, rgb(193, 115, 196), rgb(193, 115, 196));
+            background: linear-gradient(to right, rgb(193, 115, 196), rgb(193, 115, 196));
             background-repeat: no-repeat;
             background-size: cover;
             background-position: 0 0;
@@ -272,7 +272,7 @@
             <form action="{{ route('register') }}" method="post">
                 @csrf
                 <h1>Buat Akun</h1>
-                <input name="nama" type="text" placeholder="Masukan Nama Lengkap anda dan gelar ..."
+                <<input name="nama" type="text" placeholder="Masukan Nama Lengkap anda dan gelar ..."
                     value="{{ old('nama') }}" />
                 @error('nama')
                     <small style="color: red;">{{ $message }}</small>
@@ -313,7 +313,7 @@
         <div class="overlay-container">
             <div class="overlay">
                 <div class="overlay-panel overlay-left">
-                    <img src="{{ asset('/public/img/h_farid2.png') }}" alt="" width="50%"
+                    <img src="{{ asset('/public/img/NP_MEDIKA_LOGO2.png') }}" alt="" width="50%"
                         style="margin-bottom:20px">
 
                     <h1>Welcome Back!</h1>
@@ -321,7 +321,7 @@
                     <button class="ghost" id="signIn">Login</button>
                 </div>
                 <div class="overlay-panel overlay-right">
-                    <img src="{{ asset('/public/img/h_farid2.png') }}" alt="" width="50%"
+                    <img src="{{ asset('/public/img/NP_MEDIKA_LOGO2.png') }}" alt="" width="50%"
                         style="margin-bottom:20px">
                     <h1>Hello, Friend!</h1>
                     <p>Masukan data anda dan dapatkan akun akun baru ...</p>
