@@ -189,7 +189,7 @@
                                 </div>
                                 <div class="col-12">
                                     <div class="row g-3">
-                                        <div class="col-md-4 border-end-md">
+                                        <div class="col-md-3 border-end-md">
                                             <div class="d-flex align-items-start">
                                                 <i class="bi bi-person-bounding-box text-secondary me-2 mt-1"></i>
                                                 <div>
@@ -200,8 +200,30 @@
                                                 </div>
                                             </div>
                                         </div>
+                                        <div class="col-md-3 border-end-md">
+                                            <div class="d-flex align-items-start">
+                                                <i class="bi bi-person-bounding-box text-secondary me-2 mt-1"></i>
+                                                <div>
+                                                    <small class="text-muted d-block text-uppercase fw-bold mb-1"
+                                                        style="font-size: 0.75rem;">Tinggi Badan</small>
+                                                    <p class="mb-0 fw-semibold text-dark">
+                                                        {{ $dk[0]->tinggi_badan ?: '-' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3 border-end-md">
+                                            <div class="d-flex align-items-start">
+                                                <i class="bi bi-person-bounding-box text-secondary me-2 mt-1"></i>
+                                                <div>
+                                                    <small class="text-muted d-block text-uppercase fw-bold mb-1"
+                                                        style="font-size: 0.75rem;">Berat Badan</small>
+                                                    <p class="mb-0 fw-semibold text-dark">
+                                                        {{ $dk[0]->berat_badan ?: '-' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
 
-                                        <div class="col-md-8">
+                                        <div class="col-md-3">
                                             <div class="d-flex align-items-start">
                                                 <i class="bi bi-chat-right-text text-secondary me-2 mt-1"></i>
                                                 <div>
@@ -209,6 +231,28 @@
                                                         style="font-size: 0.75rem;">Keluhan Utama</small>
                                                     <p class="mb-0 fw-semibold text-dark text-break">
                                                         {{ $dk[0]->keluhan_utama ?: '-' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="d-flex align-items-start">
+                                                <i class="bi bi-chat-right-text text-secondary me-2 mt-1"></i>
+                                                <div>
+                                                    <small class="text-muted d-block text-uppercase fw-bold mb-1"
+                                                        style="font-size: 0.75rem;">Riwayat Alergi</small>
+                                                    <p class="mb-0 fw-semibold text-dark text-break">
+                                                        {{ $dk[0]->riwayat_alergi ?: '-' }}</p>
+                                                </div>
+                                            </div>
+                                        </div>
+                                        <div class="col-md-3">
+                                            <div class="d-flex align-items-start">
+                                                <i class="bi bi-chat-right-text text-secondary me-2 mt-1"></i>
+                                                <div>
+                                                    <small class="text-muted d-block text-uppercase fw-bold mb-1"
+                                                        style="font-size: 0.75rem;">Riwayat Penyakit</small>
+                                                    <p class="mb-0 fw-semibold text-dark text-break">
+                                                        {{ $dk[0]->riwayat_penyakit ?: '-' }}</p>
                                                 </div>
                                             </div>
                                         </div>

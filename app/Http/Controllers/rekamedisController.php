@@ -43,7 +43,7 @@ class rekamedisController extends Controller
     public function getDataPasien(Request $request)
     {
         if ($request->ajax()) {
-            $data = DB::table('master_pasien')->select('*'); // Sesuaikan nama tabel
+            $data = DB::table('master_pasien')->select('*')->where('is_active',1); // Sesuaikan nama tabel
 
             return DataTables::of($data)
                 ->addIndexColumn()
@@ -268,7 +268,7 @@ class rekamedisController extends Controller
     {
         $id = $request->id;
         $status = $request->status;
-        $data = model_ts_kunjungan::where('id', $id)->update(['status_kunjungan' => $status]);
+        $data = model_ts_kunjungan::where('id', $id)->update(['status_kunjungan' => $status,'keluhan_utama' => $request->keluhanutama]);
         if ($status == 3) {
             $status_antri = 5;
             $data33 = model_ts_antrian::where('id_kunjungan', $id)->update(['status' => $status_antri]);

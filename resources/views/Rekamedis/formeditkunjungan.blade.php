@@ -1,3 +1,9 @@
+<label for="exampleFormControlInput1" class="form-label">Keluhan Utama</label>
+<div class="input-group mb-3">
+    <textarea rows="5" type="text" class="form-control" placeholder="masukan keluhan pasien ..."
+        aria-label="Recipient’s username" aria-describedby="basic-addon2" name="keluhanutama" name="keluhanutama">@foreach ($data as $item){{ $item->keluhan_utama}} @endforeach
+</textarea>
+</div>
 <label for="" class="mb-2">Pilih Status Kunjungan</label>
 <select class="form-select" aria-label="Default select example" id="status_kunjungan">
     @foreach ($data as $item)

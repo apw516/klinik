@@ -131,6 +131,13 @@
                                         placeholder="Masukan nomor kartu identitas ..." aria-describedby="emailHelp">
                                 </div>
                             </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="exampleInputEmail1" class="form-label">Nomor Telepon</label>
+                                    <input type="text" class="form-control" id="nomortelp" name="nomortelp"
+                                        placeholder="Masukan nomor kartu identitas ..." aria-describedby="emailHelp">
+                                </div>
+                            </div>
                             <div hidden class="col-md-4">
                                 <div class="mb-3">
                                     <label for="exampleInputEmail1" class="form-label">Nomor Asuransi</label>

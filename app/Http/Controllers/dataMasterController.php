@@ -599,6 +599,7 @@ class dataMasterController extends Controller
             'tempat_lahir' => $dataSet['tempatlahir'],
             'alamat_ktp' => $dataSet['alamatktp'],
             'alamat_domisili' => $dataSet['alamatlengkap'],
+            'nomortelp' => $dataSet['nomortelp'],
             // 'provinsi' => $dataSet['idprovinsi'],
             // 'kabupaten' => $dataSet['idkabupaten'],
             // 'kecamatan' => $dataSet['idkecamatan'],

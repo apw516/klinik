@@ -33,6 +33,10 @@
                                 </td>
                             </tr>
                             <tr>
+                                <td>No Telepon</td>
+                                <td>{{ $mt_pasien[0]->nomortelp }}</td>
+                            </tr>
+                            <tr>
                                 <td>Jenis Kelamin</td>
                                 <td>{{ $mt_pasien[0]->jenis_kelamin }}</td>
                             </tr>
@@ -393,6 +397,7 @@
             if (result.isConfirmed) {
                 status = $('#status_kunjungan').val()
                 id = $('#idkunjungan').val()
+                keluhanutama = $('#keluhanutama').val()
                 spinner = $('#loader')
                 spinner.show();
                 $.ajax({
@@ -402,7 +407,8 @@
                     data: {
                         _token: "{{ csrf_token() }}",
                         id,
-                        status
+                        status,
+                        keluhanutama
                     },
                     url: '<?= route('simpaneditstatus') ?>',
                     error: function(data) {
