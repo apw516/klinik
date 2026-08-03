@@ -1,7 +1,7 @@
 <aside class="app-sidebar bg-body-secondary shadow" data-bs-theme="dark">
-    <div class="sidebar-brand">
+     <div class="sidebar-brand">
         <a href="./index.html" class="brand-link">
-            <img src="./public/img/h_farid2.png" alt="AdminLTE Logo" class="brand-image shadow" />
+            <img src="./public/img/NP_MEDIKA_LOGO2.png" alt="AdminLTE Logo" class="brand-image shadow" />
             <span class="brand-text fw-bold">NP MEDIKA</span>
         </a>
     </div>
