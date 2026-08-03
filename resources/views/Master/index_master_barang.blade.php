@@ -412,5 +412,15 @@
                 }
             });
         }
+        $(function() {
+            $("#tabelnamagenerik").DataTable({
+                "responsive": true,
+                "lengthChange": false,
+                "autoWidth": false,
+                "pageLength": 12,
+                "searching": true,
+                "ordering": false,
+            })
+        });
     </script>
 @endsection

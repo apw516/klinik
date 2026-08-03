@@ -232,11 +232,7 @@
                                                 placeholder="Ketik keluhan pasien, riwayat penyakit sekarang... ">
 @if ($dk[0]->SUBJECT == '')
 Keluhan Utama : {{ $dk[0]->keluhan_utama }}
-Tekanan darah : {{ $dk[0]->tekanan_darah }} mmHg
-Suhu Tubuh : {{ $dk[0]->suhu_tubuh }} °C
-Frekuensi Nadi : {{ $dk[0]->frekuensi_nadi }} x/mnt
-Frekuensi nafas : {{ $dk[0]->frekuensi_nafas }} x/mnt
-Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->SUBJECT }}
+@else{{ $dk[0]->SUBJECT }}
 @endif
 </textarea>
                                         </div>
@@ -250,7 +246,13 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->SUBJECT }}
                                                 <i class="bi bi-capsule fs-5 text-muted opacity-50"></i>
                                             </label>
                                             <textarea class="form-control form-control-modern" id="object" name="object" rows="10"
-                                                placeholder="Ketik hasil pemeriksaan fisik, lab, rontgen... ">{{ $dk[0]->OBJECT }}</textarea>
+                                                placeholder="Ketik hasil pemeriksaan fisik, lab, rontgen... ">@if ($dk[0]->SUBJECT == '')
+Tekanan darah : {{ $dk[0]->tekanan_darah }} mmHg
+Suhu Tubuh : {{ $dk[0]->suhu_tubuh }} °C
+Frekuensi Nadi : {{ $dk[0]->frekuensi_nadi }} x/mnt
+Frekuensi nafas : {{ $dk[0]->frekuensi_nafas }} x/mnt
+Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
+@endif</textarea>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-lg-3">
@@ -662,7 +664,6 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->SUBJECT }}
             </div>
         </div>
     `;
-
         // Append baris baru ke wrapper
         $(wrapper).append(htmlRow);
 

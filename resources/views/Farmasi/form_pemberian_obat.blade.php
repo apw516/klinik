@@ -27,7 +27,6 @@
                              <tr class="btn-pilih-barang" style="cursor: pointer;" data-kode="{{ $item->kode_barang }}"
                                  data-nama="{{ $item->nama_barang }}" data-stok="{{ $item->stok_global }}"
                                  data-aturan="{{ $item->aturan_pakai ?? 'Sesudah Makan' }}">
-
                                  <td class="fw-semibold text-dark">{{ $item->nama_barang }}</td>
                                  <td class="text-center">
                                      <span
@@ -52,7 +51,16 @@
      $(document).ready(function() {
          tampilkanorderresep();
      });
-
+     $(function() {
+         $("#tabelstok").DataTable({
+             "responsive": true,
+             "lengthChange": false,
+             "autoWidth": false,
+             "pageLength": 6,
+             "searching": true,
+             "ordering": false,
+         })
+     });
      function tampilkanorderresep() {
          let idlayananheader = $('#idlayananheader').val();
          let spinner = $('#loader');

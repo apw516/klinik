@@ -131,4 +131,8 @@ Route::post('/returlayanan', [kasirFarmasiController::class, 'returlayanan'])->n
 Route::post('/returpembayaran', [kasirFarmasiController::class, 'returpembayaran'])->name('returpembayaran');
 Route::post('/detailpembayaran', [kasirFarmasiController::class, 'detailpembayaran'])->name('detailpembayaran');
 Route::post('/detailtagihan', [kasirFarmasiController::class, 'detailtagihan'])->name('detailtagihan');
+Route::post('/savenewbill', [kasirFarmasiController::class, 'savenewbill'])->name('savenewbill');
+Route::post('/saveobt', [kasirFarmasiController::class, 'saveobt'])->name('saveobt');
+Route::post('/berikanobatpasien', [kasirFarmasiController::class, 'berikanobatpasien'])->name('berikanobatpasien');
 Route::get('/kartu-stok.data', [kasirFarmasiController::class, 'getKartuStok'])->name('kartu-stok.data');
+Route::get('/kasir/cetak-struk/{idheader}', [kasirFarmasiController::class, 'cetaknotakasir'])->name('kasir/cetak-struk');

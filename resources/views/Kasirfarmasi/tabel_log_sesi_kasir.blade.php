@@ -10,23 +10,37 @@
                         <th class="py-3 text-secondary">Tanggal Mulai</th>
                         <th class="py-3 text-secondary">Tanggal Selesai</th>
                         <th class="text-end py-3 text-secondary">Saldo Awal</th>
-                        <th class="text-end py-3 text-secondary">Saldo Akhir</th>
+                        <th class="text-end py-3 text-secondary">Pendapatan</th>
+                        <th class="text-end py-3 text-secondary">Subtotal</th>
                         <th class="text-center py-3 text-secondary" style="width: 12%;">Status</th>
                     </tr>
                 </thead>
                 <tbody>
                     @forelse($data as $d)
+                        @php
+                            // PERBAIKAN 1: Pastikan null-handling diproses sebelum penjumlahan
+                            $saldoAwal = $d->saldo_awal ?? 0;
+                            $saldoAkhir = $d->saldo_akhir ?? 0;
+                            $subtotal = $saldoAwal + $saldoAkhir;
+                        @endphp
                         <tr>
                             <td class="text-center fw-semibold text-secondary">{{ $loop->iteration }}</td>
                             <td class="fw-bold text-dark">{{ $d->nama_user }}</td>
                             <td class="text-secondary">
-                                {{ $d->tgl_mulai ? date('d/m/Y H:i', strtotime($d->tgl_mulai)) : '-' }} WIB</td>
+                                {{ $d->tgl_mulai ? date('d/m/Y H:i', strtotime($d->tgl_mulai)) : '-' }} WIB
+                            </td>
                             <td class="text-secondary">
-                                {{ $d->tgl_selesai ? date('d/m/Y H:i', strtotime($d->tgl_selesai)) : '-' }} WIB</td>
-                            <td class="text-end fw-semibold text-dark">Rp
-                                {{ number_format($d->saldo_awal ?? 0, 0, ',', '.') }}</td>
-                            <td class="text-end fw-bold text-primary">Rp
-                                {{ number_format($d->saldo_akhir ?? 0, 0, ',', '.') }}</td>
+                                {{ $d->tgl_selesai ? date('d/m/Y H:i', strtotime($d->tgl_selesai)) : '-' }} WIB
+                            </td>
+                            <td class="text-end fw-semibold text-dark">
+                                Rp {{ number_format($saldoAwal, 0, ',', '.') }}
+                            </td>
+                            <td class="text-end fw-bold text-primary">
+                                Rp {{ number_format($saldoAkhir, 0, ',', '.') }}
+                            </td>
+                            <td class="text-end fw-bold text-success">
+                                Rp {{ number_format($subtotal, 0, ',', '.') }}
+                            </td>
                             <td class="text-center">
                                 @if ($d->status == 1)
                                     <span
@@ -43,18 +57,19 @@
                         </tr>
                     @empty
                         <tr>
-                            <td colspan="7" class="text-center py-4 text-muted">Belum ada riwayat sesi kasir.</td>
+                            <td colspan="8" class="text-center py-4 text-muted">Belum ada riwayat sesi kasir.</td>
                         </tr>
                     @endforelse
                 </tbody>
                 <tfoot class="table-light fw-bold border-top-2" style="font-size: 0.85rem;">
                     <tr>
-                        <td colspan="5" class="text-end text-secondary py-2">Total per Halaman:</td>
+                        <td colspan="6" class="text-end text-secondary py-2">Total Subtotal Halaman Ini:</td>
                         <td id="totalHalaman" class="text-end text-primary py-2">Rp 0</td>
                         <td></td>
                     </tr>
                     <tr>
-                        <td colspan="5" class="text-end text-secondary py-2">Grand Total Seluruh Halaman:</td>
+                        <td colspan="6" class="text-end text-secondary py-2">Grand Total Subtotal Seluruh Halaman:
+                        </td>
                         <td id="totalSemua" class="text-end text-dark py-2">Rp 0</td>
                         <td></td>
                     </tr>
@@ -92,34 +107,33 @@
             ],
             "columnDefs": [{
                 "orderable": false,
-                "targets": [0, 6]
+                "targets": [0, 7] // Matikan sorting untuk kolom No dan Status
             }],
 
-            // Perubahan Utama: Logic Kalkulasi Total Saldo Akhir (Kolom indeks ke-5)
             "footerCallback": function(row, data, start, end, display) {
                 var api = this.api();
 
-                // Helper untuk membersihkan format Rp dan titik ribuan menjadi integer murni
+                // Helper untuk konversi teks format 'Rp 10.000' menjadi angka 10000
                 var intVal = function(i) {
                     if (typeof i === 'string') {
-                        // Hilangkan teks 'Rp ', titik (ribuan), dan spasi
                         var cleaned = i.replace(/[\sR p.]/g, '');
                         return cleaned ? parseInt(cleaned, 10) : 0;
                     }
                     return typeof i === 'number' ? i : 0;
                 };
 
-                // 1. Hitung Total Seluruh Halaman (Global)
+                // PERBAIKAN 2: Mengambil data dari Kolom Index 6 (Subtotal)
+                // 1. Total Subtotal Seluruh Halaman
                 var totalSemua = api
-                    .column(5) // Indeks kolom Saldo Akhir adalah 5
+                    .column(6)
                     .data()
                     .reduce(function(a, b) {
                         return intVal(a) + intVal(b);
                     }, 0);
 
-                // 2. Hitung Total Hanya Halaman yang Sedang Aktif (Page Total)
+                // 2. Total Subtotal Halaman Aktif
                 var totalHalaman = api
-                    .column(5, {
+                    .column(6, {
                         page: 'current'
                     })
                     .data()
@@ -127,14 +141,14 @@
                         return intVal(a) + intVal(b);
                     }, 0);
 
-                // Helper Fungsi Format Rupiah untuk Output Tampilan
+                // Helper Format Rupiah
                 function formatRupiahJs(angka) {
                     return 'Rp ' + angka.toLocaleString('id-ID', {
                         minimumFractionDigits: 0
                     });
                 }
 
-                // Masukkan hasil kalkulasi ke dalam element DOM footer tadi
+                // Render ke DOM
                 $('#totalHalaman').html(formatRupiahJs(totalHalaman));
                 $('#totalSemua').html(formatRupiahJs(totalSemua));
             }

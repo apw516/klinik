@@ -1,6 +1,6 @@
-<table class="table table-sm table-bordered table-hover">
+<table class="table table-sm table-bordered table-hover" style="font-size: 12px">
     <thead>
-        <th>Kode layanan</th>
+        {{-- <th>Kode layanan</th> --}}
         <th>tgl layanan</th>
         <th>Nama tarif</th>
         <th>Jumlah</th>
@@ -14,7 +14,7 @@
         @endphp
         @foreach ($data as $d)
             <tr>
-                <td>{{ $d->kode_layanan_header }}</td>
+                {{-- <td>{{ $d->kode_layanan_header }}</td> --}}
                 <td>{{ \Carbon\Carbon::parse($d->tgl_layanan)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('d F Y') }}
                 </td>
                 <td>{{ $d->nama_tarif }}</td>

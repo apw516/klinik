@@ -19,9 +19,7 @@
             </button>
         </div>
     </div>
-
     <div class="card-body p-4" id="areaCetakNota">
-
         <div class="d-none d-print-block mb-4">
             <table class="w-100 border-0">
                 <tr>
@@ -92,7 +90,6 @@
                         </tr>
                     @endforelse
                 </tbody>
-
                 <tfoot class="border-top-2">
                     <tr>
                         <td colspan="3" class="border-0 d-none d-print-table-cell"></td>

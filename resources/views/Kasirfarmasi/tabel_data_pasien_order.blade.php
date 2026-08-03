@@ -34,9 +34,10 @@
                     @else
                         <span class="badge bg-success">Lunas</span>
                     @endif
+                    / {{ $d->status_order}}
                 </td>
                 <td class="text-right">
-                    <button class="btn btn-info pilihheader" idlayanan="{{ $d->id_kunjungan }}"
+                    <button class="btn btn-info pilihheader" idlayanan="{{ $d->id_header }}"
                         idkunjungan="{{ $d->id_kunjungan }}">
                         <i class="bi bi-box-arrow-in-right"></i>
                     </button>
