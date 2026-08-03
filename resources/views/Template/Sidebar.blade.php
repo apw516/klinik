@@ -2,7 +2,7 @@
     <div class="sidebar-brand">
         <a href="./index.html" class="brand-link">
             <img src="./public/img/h_farid2.png" alt="AdminLTE Logo" class="brand-image shadow" />
-            <span class="brand-text fw-bold">H. FARID MEDIKA</span>
+            <span class="brand-text fw-bold">NP MEDIKA</span>
         </a>
     </div>
     <div class="sidebar-wrapper">
