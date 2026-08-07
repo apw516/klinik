@@ -24,9 +24,9 @@
             <table class="w-100 border-0">
                 <tr>
                     <td style="width: 60%;">
-                        <h4 class="fw-bold text-dark m-0">H FARID MEDIKA</h4>
-                        {{-- <small class="text-muted d-block mt-1">Sistem Manajemen Klinik Terintegrasi SIMKLINIK</small> --}}
-                        <small class="text-muted d-block" style="font-size: 0.8rem;">Karangdempel, Kec. Losari, Kabupaten Brebes, Jawa Tengah 52255</small>
+                        <h4 class="fw-bold text-dark m-0">NP MEDIKA</h4>
+                        <small class="text-muted d-block" style="font-size: 0.8rem;">Jalan Pangeran Sutajaya, Desa
+                            Gebang, Kecamatan Gebang, Kabupaten Cirebon, Jawa Barat 45191</small>
                     </td>
                     <td class="text-end" style="width: 40%; vertical-align: top;">
                         <h5 class="fw-bold text-secondary m-0">RESI/NOTA PEMBAYARAN</h5>
@@ -63,7 +63,27 @@
                             class="{{ $item->status_layanan == 3 ? 'table-light text-muted text-decoration-line-through' : '' }}">
                             <td class="text-center fw-bold text-secondary">{{ $loop->iteration }}</td>
                             <td>
-                                <div class="fw-semibold text-dark">{{ $item->nama_tarif ?? 'Layanan Tidak Ditemukan' }}
+                                <div class="fw-semibold text-dark">
+                                    @php
+                                        $namaLayananFull = $item->nama_tarif ?? 'Layanan Tidak Ditemukan';
+                                        $kodeBarang = $item->kode_barang ?? '';
+                                        // Jika kode_barang berawalan 'B' (case-insensitive)
+                                        if ($kodeBarang != 0) {
+                                            if (auth()->user()->hak_akses == 2) {
+                                                $namaLayananTampil = \Illuminate\Support\Str::limit(
+                                                    $namaLayananFull,
+                                                    3,
+                                                    'ObT',
+                                                );
+                                            } else {
+                                                $namaLayananTampil = $namaLayananFull;
+                                            }
+                                        } else {
+                                            $namaLayananTampil = $namaLayananFull;
+                                        }
+                                    @endphp
+
+                                    {{ $namaLayananTampil }}
                                 </div>
                                 @if ($item->kode_barang && $item->kode_barang != '0')
                                     <small class="text-muted d-block ps-0" style="font-size: 0.75rem;">
@@ -103,14 +123,14 @@
                         <td colspan="3" class="border-0 d-none d-print-table-cell"></td>
                         <td colspan="3" class="text-end fw-bold py-3 text-secondary border-0 fs-6">Total Bayar :</td>
                         <td class="text-end fw-bold py-3 text-dark border-0 fs-6">
-                            Rp {{ number_format($header[0]->bayar, 0, ',', '.') }}
+                            Rp {{ number_format($header[0]->bayar ?? 0, 0, ',', '.') }}
                         </td>
                     </tr>
                     <tr>
                         <td colspan="3" class="border-0 d-none d-print-table-cell"></td>
                         <td colspan="3" class="text-end fw-bold py-3 text-secondary border-0 fs-6">Kembalian :</td>
                         <td class="text-end fw-bold py-3 text-dark border-0 fs-6">
-                            Rp {{ number_format($header[0]->kembalian, 0, ',', '.') }}
+                            Rp {{ number_format($header[0]->kembalian ?? 0, 0, ',', '.') }}
                         </td>
                     </tr>
                 </tfoot>
@@ -128,24 +148,20 @@
                     <td class="text-center" style="width: 30%; vertical-align: top;">
                         <span class="small d-block text-secondary mb-5">Petugas Kasir / Farmasi,</span>
                         <div class="fw-bold text-dark border-bottom d-inline-block px-4 pb-1">
-                            {{ auth()->user()->name ?? 'Petugas Klinik' }}</div>
+                            {{ auth()->user()->name ?? 'Petugas Klinik' }}
+                        </div>
                     </td>
                 </tr>
             </table>
         </div>
-
     </div>
 </div>
 
 <script>
     function cetakNotaIni() {
-        // 1. Tangkap element HTML yang berada di dalam area ID #areaCetakNota
         var isiNota = document.getElementById("areaCetakNota").innerHTML;
-
-        // 2. Buka tab/jendela popup browser baru secara temporary
         var jendelaCetak = window.open('', '_blank', 'width=900,height=700');
 
-        // 3. Suntikkan HTML struktur dasar beserta asset CSS Bootstrap 5 agar style pratinjau cetakan tetap rapi
         jendelaCetak.document.write('<html><head><title>Cetak Nota Pembayaran - {{ $idtrans }}</title>');
         jendelaCetak.document.write(
             '<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.2/dist/css/bootstrap.min.css">'
@@ -164,7 +180,6 @@
 
         jendelaCetak.document.close();
 
-        // 4. Beri delay beberapa milidetik agar library CSS Bootstrap selesai ter-load sempurna sebelum dialog printer keluar
         setTimeout(function() {
             jendelaCetak.focus();
             jendelaCetak.print();
@@ -173,10 +188,8 @@
     }
 
     function cetakNotaThermal() {
-        // 1. Buat window pop-up kosong untuk render nota kecil
         var jendelaCetak = window.open('', '_blank', 'width=400,height=600');
 
-        // 2. Susun HTML khusus dengan struktur struk belanja kasir (Roll Paper)
         var htmlThermal = '<html><head><title>Thermal - {{ $idtrans }}</title>';
         htmlThermal += '<style>';
         htmlThermal += '@page { size: auto; margin: 0mm; }';
@@ -194,8 +207,9 @@
 
         // Header Klinik/Apotek
         htmlThermal += '<div class="text-center">';
-        htmlThermal += '  <span class="fw-bold" style="font-size: 14px;">H. FARID MEDIKA</span><br>';
-        htmlThermal += '  <span style="font-size: 10px;">Gebang - Cirebon</span><br>';
+        htmlThermal += '  <span class="fw-bold" style="font-size: 14px;">NP MEDIKA</span><br>';
+        htmlThermal +=
+            '  <span style="font-size: 10px;">Jalan Pangeran Sutajaya, Desa Gebang, Kecamatan Gebang</span><br>';
         htmlThermal += '</div>';
 
         htmlThermal += '<div class="divider"></div>';
@@ -209,11 +223,11 @@
 
         htmlThermal += '<div class="divider"></div>';
 
-        // Loop Item Belanjaan dari Data Blade PHP
+        // Loop Item Belanjaan
         htmlThermal += '<table class="item-table">';
         @php
             $gTotal = 0;
-            $nomorItem = 1; // Menggunakan counter manual agar nomor urut tidak loncat saat ada item di-skip
+            $nomorItem = 1;
         @endphp
 
         @foreach ($data as $item)
@@ -221,20 +235,21 @@
                 $hargaSatuan = $item->harga_satuan ?? 0;
                 $sub = $item->subtotal ?? 0;
 
-                // PERBAIKAN: Skip jika status_layanan batal (3) ATAU harga obat Rp 0
                 if (($item->status_layanan ?? 0) == 3 || $hargaSatuan == 0 || $sub == 0) {
                     continue;
                 }
 
                 $gTotal += $sub;
+
+                // Penyingkatan otomatis nama obat/layanan (dibatasi 25 karakter)
+                $namaLayananFull = $item->nama_tarif ?? 'Layanan';
+                $namaLayananSingkat = \Illuminate\Support\Str::limit($namaLayananFull, 25, '...');
             @endphp
 
-            // Baris 1: Nama Layanan / Obat
             htmlThermal += '<tr>';
-            htmlThermal += '  <td colspan="2" class="fw-bold">{{ $nomorItem }}. {{ $item->nama_tarif }}</td>';
+            htmlThermal += '  <td colspan="2" class="fw-bold">{{ $nomorItem }}. {{ $namaLayananSingkat }}</td>';
             htmlThermal += '</tr>';
 
-            // Baris 2: Detail Qty x Harga Satuan = Subtotal
             htmlThermal += '<tr>';
             htmlThermal +=
                 '  <td>   {{ number_format($item->jumlah ?? 0, 0, ',', '.') }} x Rp{{ number_format($hargaSatuan, 0, ',', '.') }}</td>';
@@ -247,9 +262,9 @@
 
         htmlThermal += '<div class="divider"></div>';
 
-        // Total Belanja, Pembayaran, dan Kembalian Langsung dari Database ($header)
+        // Ringkasan Pembayaran
         htmlThermal += '<table class="item-table" style="font-size: 11px;">';
-        htmlThermal += '  <tr class="fw-bold" style="font-size: 11px;">';
+        htmlThermal += '  <tr class="fw-bold">';
         htmlThermal += '    <td>TOTAL BILL:</td>';
         htmlThermal += '    <td class="text-right">Rp{{ number_format($gTotal, 0, ',', '.') }}</td>';
         htmlThermal += '  </tr>';
@@ -260,7 +275,7 @@
         htmlThermal += '  <tr class="fw-bold">';
         htmlThermal += '    <td>KEMBALIAN:</td>';
         htmlThermal +=
-        '    <td class="text-right">Rp{{ number_format($header[0]->kembalian ?? 0, 0, ',', '.') }}</td>';
+            '    <td class="text-right">Rp{{ number_format($header[0]->kembalian ?? 0, 0, ',', '.') }}</td>';
         htmlThermal += '  </tr>';
         htmlThermal += '</table>';
 
@@ -275,7 +290,6 @@
 
         htmlThermal += '</body></html>';
 
-        // 3. Tulis html ke pop-up window dan langsung eksekusi cetak
         jendelaCetak.document.write(htmlThermal);
         jendelaCetak.document.close();
 

@@ -27,24 +27,26 @@
                     <small class="text-muted">{{ $d->nama_pasien }}</small>
                 </td>
                 {{-- <td><span class="badge bg-info text-dark">{{ $d->nama_unit }}</span></td> --}}
+                
                 <td class="text-end fw-bold text-dark">
-                    Rp {{ number_format($d->total_bruto, 0, ',', '.') }}
+                    {{ auth()->user()->hak_akses == 2 ? 'xxx' : 'Rp ' . number_format($d->total_bruto, 0, ',', '.') }}
                 </td>
                 <td class="text-end text-success">
-                    Rp {{ number_format($d->bayar, 0, ',', '.') }}
+                    {{ auth()->user()->hak_akses == 2 ? 'xxx' : 'Rp ' . number_format($d->bayar, 0, ',', '.') }}
                 </td>
                 <td class="text-end text-success">
-                    Rp {{ number_format($d->total_diskon, 0, ',', '.') }}
+                    {{ auth()->user()->hak_akses == 2 ? 'xxx' : 'Rp ' . number_format($d->total_diskon, 0, ',', '.') }}
                 </td>
                 <td class="text-end text-danger">
-                    Rp {{ number_format($d->kembalian, 0, ',', '.') }}
+                    {{ auth()->user()->hak_akses == 2 ? 'xxx' : 'Rp ' . number_format($d->kembalian, 0, ',', '.') }}
                 </td>
                 <td class="text-end text-danger">
-                    Rp {{ number_format($d->total_neto, 0, ',', '.') }}
+                    {{ auth()->user()->hak_akses == 2 ? 'xxx' : 'Rp ' . number_format($d->total_neto, 0, ',', '.') }}
                 </td>
+                
                 <td class="text-center">
                     <div class="btn-group" role="group" aria-label="Basic example">
-                        <button type="button" class="btn btn-danger returpembayaran" idheader="{{ $d->idtx }}"
+                        <button @if(auth()->user()->hak_akses == 2) disabled @endif type="button" class="btn btn-danger returpembayaran" idheader="{{ $d->idtx }}"
                             idtrans="{{ $d->id_transaksi }}"><i class="bi bi-x-square"></i></button>
                         <button type="button" class="btn btn-info detailpembayaran" idheader="{{ $d->idtx }}"
                             idtrans="{{ $d->id_transaksi }}" data-bs-toggle="modal" data-bs-target="#modaldt"><i
@@ -55,7 +57,7 @@
             </tr>
         @empty
             <tr>
-                <td colspan="9" class="text-center py-4 text-muted italic">Data tidak ditemukan untuk periode ini.
+                <td colspan="10" class="text-center py-4 text-muted italic">Data tidak ditemukan untuk periode ini.
                 </td>
             </tr>
         @endforelse
@@ -63,11 +65,14 @@
     <tfoot class="table-secondary">
         <tr>
             <th colspan="5" class="text-end">TOTAL PENDAPATAN :</th>
-            <th class="text-end">Rp {{ number_format($grandTotal, 0, ',', '.') }}</th>
-            <th colspan="3"></th>
+            <th class="text-end">
+                {{ auth()->user()->hak_akses == 2 ? 'xxx' : 'Rp ' . number_format($grandTotal, 0, ',', '.') }}
+            </th>
+            <th colspan="4"></th>
         </tr>
     </tfoot>
 </table>
+
 <!-- Modal -->
 <div class="modal fade" id="modaldt" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
     <div class="modal-dialog modal-xl">
@@ -87,20 +92,12 @@
         </div>
     </div>
 </div>
+
 <script>
     $(".detailpembayaran").on('click', function(event) {
         idheader = $(this).attr('idheader')
         idtrans = $(this).attr('idtrans')
-        // Swal.fire({
-        //     title: "Anda yakin ?",
-        //     text: "Pembayaran Dengan ID " + idtrans + " Akan dibatalkan ...",
-        //     icon: "warning",
-        //     showCancelButton: true,
-        //     confirmButtonColor: "#3085d6",
-        //     cancelButtonColor: "#d33",
-        //     confirmButtonText: "Ya, batalkan !"
-        // }).then((result) => {
-        // if (result.isConfirmed) {
+        
         spinner = $('#loader')
         spinner.show();
         $.ajax({
@@ -135,9 +132,8 @@
                 }
             }
         });
-        //     }
-        // });
     })
+
     $(".returpembayaran").on('click', function(event) {
         idheader = $(this).attr('idheader')
         idtrans = $(this).attr('idtrans')

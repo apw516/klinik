@@ -96,10 +96,12 @@ class poliklinikController extends Controller
             'OBJECT' => $dataSet['object'],
             'ASSESMENT' => $dataSet['assesmen'],
             'PLANNING' => $dataSet['planning'],
+            'namadiagnosa' => $dataSet['namadiagnosa'],
+            'kodediagnosa' => $dataSet['kodediagnosa'],
             'status_periksa' => 2
         ];
         $data_kunjungan = db::select('select * from ts_kunjungan where id = ?', [$dataSet['idkunjungan']]);
-        $mt_pasien = db::select('select * from master_pasien where nomor_rm = ? ',[$data_kunjungan[0]->nomor_rm]);
+        $mt_pasien = db::select('select * from master_pasien where nomor_rm = ? ', [$data_kunjungan[0]->nomor_rm]);
         $namapasien = $mt_pasien[0]->nama_pasien;
         model_ts_kunjungan::where('id', $dataSet['idkunjungan'])->update($dataup);
         model_ts_antrian::where('id_kunjungan', $dataSet['idkunjungan'])->update(['status' => 3]);
@@ -289,7 +291,7 @@ class poliklinikController extends Controller
                         'id_persediaan'   => $sediaan->id,
                         'id_layanan_detail'   => $ts_layanan_detail->id,
                         'jenis_transaksi' => 'KELUAR',
-                        'keterangan'      => 'Pengurangan Obat Pasien '.$namapasien . '(Detail Layanan ID: ' . $h->id . ')',
+                        'keterangan'      => 'Pengurangan Obat Pasien ' . $namapasien . '(Detail Layanan ID: ' . $h->id . ')',
                         'jumlah'          => $jumlahDiambil,
                         'stok_awal'       => $stokAwalGlobal,
                         'stok_akhir'      => $stokAkhirGlobal,
@@ -439,5 +441,31 @@ class poliklinikController extends Controller
             'status' => 'success',
             'url_cetak' => url('cetak_nota_laboratorium/' . $kode) // Route halaman cetak PDF
         ]);
+    }
+    public function searchDiagnosa(Request $request)
+    {
+        $search = $request->get('term');
+
+        // Validasi backend: batasi pencarian hanya jika panjang karakter > 3
+        if (!$search || strlen(trim($search)) <= 3) {
+            return response()->json([]);
+        }
+
+        $result = DB::table('mt_icd10')
+            ->where('nama', 'LIKE', '%' . $search . '%')
+            ->orWhere('diag', 'LIKE', '%' . $search . '%')
+            ->limit(15)
+            ->get();
+
+        $response = [];
+        foreach ($result as $item) {
+            $response[] = [
+                'label' => $item->diag . ' - ' . $item->nama,
+                'value' => $item->nama,
+                'kode'  => $item->diag,
+            ];
+        }
+
+        return response()->json($response);
     }
 }

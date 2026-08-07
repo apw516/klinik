@@ -104,7 +104,7 @@ Route::post('/simpancatatanmedis', [poliklinikController::class, 'simpancatatanm
 Route::post('/ambilriwayatbilling', [poliklinikController::class, 'ambilriwayatbilling'])->name('ambilriwayatbilling');
 Route::post('/ambilriwayatresep', [poliklinikController::class, 'ambilriwayatresep'])->name('ambilriwayatresep');
 Route::post('/ambilhasillab', [poliklinikController::class, 'ambilhasillab'])->name('ambilhasillab');
-
+Route::get('/search-diagnosa', [poliklinikController::class, 'searchDiagnosa'])->name('search.diagnosa');
 
 Route::get('/indexorderobatpasien', [kasirFarmasiController::class, 'indexorderobatpasien'])->name('indexorderobatpasien');
 Route::get('/indexlogsesikasir', [kasirFarmasiController::class, 'indexlogsesikasir'])->name('indexlogsesikasir');

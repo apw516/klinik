@@ -1,3 +1,14 @@
+<style>
+    .ui-autocomplete {
+        max-height: 200px;
+        overflow-y: auto;
+        overflow-x: hidden;
+        z-index: 9999 !important;
+        /* Mencegah tertutup oleh modal Bootstrap */
+        border-radius: 0.375rem;
+        box-shadow: 0 0.5rem 1rem rgba(0, 0, 0, 0.15);
+    }
+</style>
 <div class="card mt-2">
     <div class="card-header mt-2">Info Pasien</div>
     <div class="card-body">
@@ -59,10 +70,10 @@
                                         <td>{{ $t->keluhan_utama }}</td>
                                         <td>
                                             {{ $t->SUBJECT }}
-                                            ,{{ $t->OBJECT }},{{ $t->ASSESMENT }},{{ $t->PLANNING }}
+                                            <br>{{ $t->OBJECT }} <br>Diagnosa : {{ $t->kodediagnosa}}- {{ $t->namadiagnosa}} , {{ $t->ASSESMENT }},{{ $t->PLANNING }}
                                             <span class="badge text-bg-secondary pilihriwayat"
                                                 subject="{{ $t->SUBJECT }}" object="{{ $t->OBJECT }}"
-                                                assesmen="{{ $t->ASSESMENT }}" planning="{{ $t->PLANNING }}"><i
+                                                assesmen="{{ $t->ASSESMENT }}" planning="{{ $t->PLANNING }}" namadiagnosa="{{ $t->namadiagnosa}}" kodediagnosa="{{ $t->kodediagnosa}}"><i
                                                     class="bi bi-cursor"></i></span>
                                         </td>
                                         <td>
@@ -290,13 +301,15 @@ Keluhan Utama : {{ $dk[0]->keluhan_utama }}
                                                 <i class="bi bi-capsule fs-5 text-muted opacity-50"></i>
                                             </label>
                                             <textarea class="form-control form-control-modern" id="object" name="object" rows="10"
-                                                placeholder="Ketik hasil pemeriksaan fisik, lab, rontgen... ">@if ($dk[0]->SUBJECT == '')
+                                                placeholder="Ketik hasil pemeriksaan fisik, lab, rontgen... ">
+@if ($dk[0]->SUBJECT == '')
 Tekanan darah : {{ $dk[0]->tekanan_darah }} mmHg
 Suhu Tubuh : {{ $dk[0]->suhu_tubuh }} °C
 Frekuensi Nadi : {{ $dk[0]->frekuensi_nadi }} x/mnt
 Frekuensi nafas : {{ $dk[0]->frekuensi_nafas }} x/mnt
 Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
-@endif</textarea>
+@endif
+</textarea>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-lg-3">
@@ -307,8 +320,23 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                                 3. Assessment (A)
                                                 <i class="bi bi-clipboard-pulse fs-5 text-muted opacity-50"></i>
                                             </label>
+                                            <div class="mb-2 position-relative">
+                                                <label for="namadiagnosa" class="form-label">Nama Diagnosa ICD -
+                                                    10</label>
+                                                <input type="text" class="form-control mb-3" id="namadiagnosa"
+                                                    name="namadiagnosa"
+                                                    placeholder="Ketik nama atau kode diagnosa ..." value="{{ $dk[0]->namadiagnosa }}">
+                                            </div>
+
+                                            <div class="mb-3">
+                                                <label for="kodediagnosa" class="form-label">Kode Diagnosa ICD -
+                                                    10</label>
+                                                <input type="text" class="form-control mb-3" id="kodediagnosa"
+                                                    name="kodediagnosa" placeholder="Kode ICD-10 otomatis terisi..."
+                                                    readonly value="{{ $dk[0]->kodediagnosa }}">
+                                            </div>
                                             <textarea class="form-control form-control-modern" id="assesmen" name="assesmen" rows="10"
-                                                placeholder="Ketik diagnosis medis, diagnosis banding... ">{{ $dk[0]->ASSESMENT }}</textarea>
+                                                placeholder="Ketik keterangan assesmen lain jika ada ... ">{{ $dk[0]->ASSESMENT }}</textarea>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-lg-3">
@@ -466,7 +494,8 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Riwayat Tindakan , Riwayat Obat & Hasil Laboratorium</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Riwayat Tindakan , Riwayat Obat & Hasil
+                    Laboratorium</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -591,10 +620,14 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
         object = $(this).attr('object')
         assesmen = $(this).attr('assesmen')
         planning = $(this).attr('planning')
+        namadiagnosa = $(this).attr('namadiagnosa')
+        kodediagnosa = $(this).attr('kodediagnosa')
         $('#subject').val(subject)
         $('#object').val(object)
         $('#assesmen').val(assesmen)
         $('#planning').val(planning)
+        $('#namadiagnosa').val(namadiagnosa)
+        $('#kodediagnosa').val(kodediagnosa)
     });
     $(".pilihtarif").on('click', function(event) {
         idtarif = $(this).attr('idtarif')
@@ -727,34 +760,33 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
         e.preventDefault();
         $(this).closest('.row').remove();
     });
-    // $(".pilihobat").on('click', function(event) {
-    //     kode_barang = $(this).attr('kode_barang')
-    //     nama_barang = $(this).attr('nama_barang')
-    //     stok = $(this).attr('stok')
-    //     aturan_pakai = $(this).attr('aturan_pakai')
-    //     var wrapper = $(".draftbillingobat");
-    //     $(wrapper).append(
-    //         '<div class="row text-xs"><div class="form-group col-md-3"><label for="">Nama Tarif</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="namabarang" name="namabarang" value="' +
-    //         nama_barang +
-    //         '"><input   hidden readonly type="" class="form-control form-control-sm" id="kodebarang" name="kodebarang" value="' +
-    //         kode_barang +
-    //         '"><input   hidden readonly type="" class="form-control form-control-sm" id="harga2" name="harga2" value=""></div><div class="form-group col-md-2"><label for="">Stok</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="stok" name="stok" value="' +
-    //         stok +
-    //         '"></div><div class="form-group col-md-2"><label for="">qty</label><input type="" class="form-control form-control-sm text-xs edit_field" id="qty" name="qty" value="0"></div><div class="form-group col-md-3"><label for="">Aturan Pakai</label><textarea readonly type="" class="form-control form-control-sm text-xs edit_field" id="aturanpakai" name="aturanpakai">' +
-    //         aturan_pakai +
-    //         '</textarea></div><div class="form-group col-md-1 text-center"><label>Paket?</label><br><div class="form-check form-switch d-inline-block"><input class="form-check-input check-paket" type="checkbox" name="is_paket" value="1" checked><input type="hidden" class="status-paket-val" name="status_paket" value="0"></div></div><i class="bi bi-x-square remove_field form-group col-md-1 text-danger" kode2=""></i></div>'
-    //     );
-    //     Swal.fire({
-    //         title: "Obat dipilih " + nama_barang,
-    //         text: "ok!",
-    //         icon: "success"
-    //     });
-    //     $(wrapper).on("click", ".remove_field", function(e) { //user click on remove
-    //         e.preventDefault();
-    //         $(this).parent('div').remove();
-    //         x--;
-    //     })
-    // });
+    $(document).ready(function() {
+        $("#namadiagnosa").autocomplete({
+            source: function(request, response) {
+                // Hanya kirim AJAX jika panjang karakter > 3
+                if (request.term.length > 3) {
+                    $.ajax({
+                        url: "{{ route('search.diagnosa') }}", // Sesuaikan dengan nama route Anda
+                        dataType: "json",
+                        data: {
+                            term: request.term
+                        },
+                        success: function(data) {
+                            response(data);
+                        }
+                    });
+                } else {
+                    response([]); // Kosongkan dropdown jika <= 3 karakter
+                }
+            },
+            minLength: 4, // Trigger autocomplete baru berjalan saat karakter minimal 4 (> 3)
+            select: function(event, ui) {
+                $("#namadiagnosa").val(ui.item.value);
+                $("#kodediagnosa").val(ui.item.kode);
+                return false;
+            }
+        });
+    });
     $(document).ready(function() {
         ambilriwayatbilling()
         ambilriwayatresep()

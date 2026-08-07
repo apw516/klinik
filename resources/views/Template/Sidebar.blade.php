@@ -33,102 +33,102 @@
                         </li>
                     </ul>
                 </li>
-                <li @if (auth()->user()->hak_akses == 3) hidden @endif class="nav-header">REKAMEDIS</li>
-                <li @if (auth()->user()->hak_akses == 3) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 ) hidden @endif class="nav-header">REKAMEDIS</li>
+                <li @if(auth()->user()->hak_akses == 3  ) hidden @endif  class="nav-item">
                     <a href="{{ route('indexdaftarpelayanan') }}"
                         class="nav-link @if ($menu == 'indexdaftarpelayanan') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Daftar Pelayanan</p>
                     </a>
                 </li>
-                <li @if (auth()->user()->hak_akses == 3) hidden @endif class="nav-item">
+                <li  @if(auth()->user()->hak_akses == 3  ) hidden @endif class="nav-item">
                     <a href="{{ route('indexdataantrian') }}"
                         class="nav-link @if ($menu == 'indexdataantrian') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Antrian</p>
                     </a>
                 </li>
-                <li @if (auth()->user()->hak_akses == 3) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3  ) hidden @endif  class="nav-item">
                     <a href="{{ route('indexriwayatpendaftaran') }}"
                         class="nav-link @if ($menu == 'indexriwayatpendaftaran') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Riwayat Pendaftaran</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->hak_akses == 3) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3  ) hidden @endif  class="nav-item">
                     <a href="{{ route('indexmasterpasien') }}"
                         class="nav-link @if ($menu == 'indexmasterpasien') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Master Pasien</p>
                     </a>
                 </li>
-                <li @if (auth()->user()->hak_akses == 2) hidden @endif class="nav-header">POLIKLINIK</li>
-                <li @if (auth()->user()->hak_akses == 2) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 2  ) hidden @endif  class="nav-header">POLIKLINIK</li>
+                <li @if(auth()->user()->hak_akses == 2  ) hidden @endif  class="nav-item">
                     <a href="{{ route('indexdatapasienpoli') }}"
                         class="nav-link @if ($menu == 'indexdatapasienpoli') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Pasien</p>
                     </a>
                 </li>
-                <li @if (auth()->user()->hak_akses == 2) hidden @endif class="nav-header">Kasir</li>
-                <li @if (auth()->user()->hak_akses == 2) hidden @endif class="nav-item">
+                <li  @if(auth()->user()->hak_akses == 3 ) hidden @endif class="nav-header">Kasir</li>
+                <li  @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif class="nav-item">
                     <a href="{{ route('indexdatapasienkasirfarmasi') }}"
                         class="nav-link @if ($menu == 'indexdatapasienkasirfarmasi') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Pasien</p>
                     </a>
                 </li>
-                <li @if (auth()->user()->hak_akses == 2) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif class="nav-item">
                     <a href="{{ route('indexlogsesikasir') }}"
                         class="nav-link @if ($menu == 'indexlogsesikasir') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Log Sesi Kasir</p>
                     </a>
                 </li>
-                <li @if (auth()->user()->hak_akses == 2) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 ) hidden @endif class="nav-item">
                     <a href="{{ route('indexlogtransaksikasir') }}"
                         class="nav-link @if ($menu == 'indexlogtransaksikasir') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Log Transaksi Kasir</p>
                     </a>
                 </li>
-                <li @if (auth()->user()->hak_akses == 2) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif class="nav-item">
                     <a href="{{ route('indexriwayattagihan') }}"
                         class="nav-link @if ($menu == 'indexriwayatpembayaran') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Riwayat Tagihan Pasien</p>
                     </a>
                 </li>
-                <li @if (auth()->user()->hak_akses == 3) hidden @endif class="nav-header">FARMASI</li>
-                <li @if (auth()->user()->hak_akses == 3) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif  class="nav-header">FARMASI</li>
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif  class="nav-item">
                     <a href="{{ route('indexorderobatpasien') }}"
                         class="nav-link @if ($menu == 'indexorderobat') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Order Obat Pasien</p>
                     </a>
                 </li>
-                <li @if (auth()->user()->hak_akses == 3) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif  class="nav-item">
                     <a href="{{ route('indexkartustokobat') }}"
                         class="nav-link @if ($menu == 'indexkartustokobat') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Kartu Stok Obat</p>
                     </a>
                 </li>
-                <li @if (auth()->user()->hak_akses == 3) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif  class="nav-item">
                     <a href="{{ route('indexstokpersediaan') }}"
                         class="nav-link @if ($menu == 'indexstokpersediaan') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Stok Persediaan Barang</p>
                     </a>
                 </li>
-                <li @if (auth()->user()->hak_akses == 3) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif  class="nav-item">
                     <a href="{{ route('indexmasterbarang') }}"
                         class="nav-link @if ($menu == 'indexmasterbarang') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Master Barang</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->hak_akses == 3) hidden @endif class="nav-header">DATA MASTER</li>
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif class="nav-header">DATA MASTER</li>
                 <li hidden class="nav-item">
                     <a href="{{ route('indexmasterpasien') }}"
                         class="nav-link @if ($menu == 'indexmasterpasien') active @endif">
@@ -157,21 +157,21 @@
                         <p>Data ICD 9</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif class="nav-item">
                     <a href="{{ route('indexdatatarifpelayanan') }}"
                         class="nav-link @if ($menu == 'indexdatatarifpelayanan') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Tarif Pelayanan</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->hak_akses == 3) hidden @endif  class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif  class="nav-item">
                     <a href="{{ route('indexdatapegawai') }}"
                         class="nav-link @if ($menu == 'indexdatapegawai') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Data Pegawai</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->hak_akses == 3) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2) hidden @endif class="nav-item">
                     <a href="{{ route('indexdataunit') }}"
                         class="nav-link @if ($menu == 'indexdataunit') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -217,7 +217,7 @@
                         </li>
                     </ul>
                 </li>
-                <li @if(auth()->user()->hak_akses == 3) hidden @endif class="nav-item">
+                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2) hidden @endif class="nav-item">
                     <a href="{{ route('indexdatauser') }}"
                         class="nav-link @if ($menu == 'indexdatauser') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
