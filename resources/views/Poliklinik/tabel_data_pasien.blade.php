@@ -1,4 +1,4 @@
-<table class="table table-sm table-hover table-bordered">
+<table class="table table-sm table-hover table-bordered" id="tabelpasien">
     <thead>
         <th>Nomor Antrian</th>
         <th>Tanggal masuk</th>
@@ -36,6 +36,16 @@
     </tbody>
 </table>
 <script>
+      $(function() {
+        $("#tabelpasien").DataTable({
+            "responsive": true,
+            "lengthChange": false,
+            "autoWidth": false,
+            "pageLength": 12,
+            "searching": true,
+            "ordering": false,
+        })
+    });
     $(".pilihpasien").on('click', function(event) {
         idkunjungan = $(this).attr('idkunjungan')
         spinner = $('#loader')

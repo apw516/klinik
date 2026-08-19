@@ -16,8 +16,8 @@
             <tr>
                 <td class="text-center">{{ $key + 1 }}</td>
                 <td class="text-center">
-                    {{ \Carbon\Carbon::parse($d->tgl_masuk)->format('d-m-Y') }}<br>
-                    <small class="text-muted">{{ \Carbon\Carbon::parse($d->tgl_masuk)->format('H:i') }} WIB</small>
+                    {{ \Carbon\Carbon::parse($d->tgl_entry)->format('d-m-Y') }}<br>
+                    <small class="text-muted">{{ \Carbon\Carbon::parse($d->tgl_entry)->format('H:i') }} WIB</small>
                 </td>
                 <td class="text-center fw-bold text-primary">{{ $d->nomor_antrian }}</td>
                 <td>
@@ -50,12 +50,17 @@
                             data-bs-target="#modaldetail">
                             <i class="bi bi-search"></i>
                         </button>
+                        <button type="button" class="btn btn-outline-warning" title="Edit TTV"
+                            onclick="formeditttv('{{ $d->id_kunjungan }}')" data-bs-toggle="modal"
+                            data-bs-target="#modaleditttv">
+                            <i class="bi bi-search"></i>
+                        </button>
                         <button type="button" class="btn btn-outline-vla" title="Input Hasil Laboratorium"
                             onclick="inputLaboratorium('{{ $d->id_kunjungan }}')" data-bs-toggle="modal"
                             data-bs-target="#modalinputlab">
                             <i class="bi bi-flask"></i> </button>
 
-                        <button HIDDEN @if ($d->status_kunjungan == 3 || $d->status_kunjungan == 2) disabled @endif type="button"
+                        <button hidden @if ($d->status_kunjungan == 3 || $d->status_kunjungan == 2) disabled @endif type="button"
                             class="btn btn-outline-success" title="Input Layanan"
                             onclick="inputLayanan('{{ $d->id_kunjungan }}')" data-bs-toggle="modal"
                             data-bs-target="#modalinputlayanan">
@@ -90,6 +95,22 @@
             </div>
             <div class="modal-body">
                 <div class="v_detail"></div>
+            </div>
+            <div class="modal-footer">
+                <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="modal fade" id="modaleditttv" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
+    <div class="modal-dialog modal-xl">
+        <div class="modal-content">
+            <div class="modal-header">
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Edit Tanda Tanda Vital</h1>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                <div class="v_edit"></div>
             </div>
             <div class="modal-footer">
                 <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
@@ -312,6 +333,23 @@
             success: function(response) {
                 spinner.hide();
                 $('.v_detail').html(response);
+            }
+        });
+    }
+
+    function formeditttv(idkunjungan) {
+        spinner = $('#loader')
+        spinner.show();
+        $.ajax({
+            type: 'post',
+            data: {
+                _token: "{{ csrf_token() }}",
+                idkunjungan
+            },
+            url: '<?= route('ambildetailkunjungan_editttv') ?>',
+            success: function(response) {
+                spinner.hide();
+                $('.v_edit').html(response);
             }
         });
     }

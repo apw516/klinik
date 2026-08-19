@@ -600,7 +600,7 @@
                 "responsive": true,
                 "lengthChange": false,
                 "autoWidth": false,
-                "pageLength": 5,
+                "pageLength": 10,
                 "searching": true,
                 "ordering": false,
                 "dom": "<'row'<'col-md-6'><'col-md-6 mb-2'f>>" + "<'row'<'col-12'tr>>" +
@@ -633,13 +633,13 @@
                     <input type="hidden" name="harga_modal[]" class="harga-modal-asli">
                 </td>
                 <td>
-                    <input type="text" name="no_batch[]" class="form-control form-control-sm text-uppercase" placeholder="Batch Pabrik" required>
+                    <input type="text" name="no_batch[]" class="form-control form-control-sm text-uppercase" placeholder="Batch Pabrik" required value="${idBarang}">
                 </td>
                 <td>
-                    <input type="date" name="tanggal_kadaluwarsa[]" class="form-control form-control-sm" required>
+                    <input type="text" name="tanggal_kadaluwarsa[]" class="form-control form-control-sm" value="2030-01-01" required>
                 </td>
                 <td>
-                    <input type="number" name="stok_awal[]" min="1" class="form-control form-control-sm text-center" placeholder="0" required>
+                    <input type="number" name="stok_awal[]" min="1" class="form-control form-control-sm text-center" placeholder="0" value="10000" required>
                 </td>
                 <td class="text-center">
                     <button type="button" class="btn btn-sm btn-danger btnHapusBaris" idbarang="${idBarang}">

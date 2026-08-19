@@ -77,10 +77,12 @@ Route::post('/caridatapasien', [rekamedisController::class, 'caridatapasien'])->
 Route::post('/master-pasien/data', [rekamedisController::class, 'getDataPasien'])->name('masterpasien.data');
 Route::post('/ambilformpendaftaran', [rekamedisController::class, 'ambilformpendaftaran'])->name('ambilformpendaftaran');
 Route::post('/simpanpendaftaranpasien', [rekamedisController::class, 'simpanpendaftaranpasien'])->name('simpanpendaftaranpasien');
+Route::post('/simpaneditpendaftaranpasien', [rekamedisController::class, 'simpaneditpendaftaranpasien'])->name('simpaneditpendaftaranpasien');
 Route::post('/formeditkunjungan', [rekamedisController::class, 'formeditkunjungan'])->name('formeditkunjungan');
 Route::post('/simpaneditstatus', [rekamedisController::class, 'simpaneditstatus'])->name('simpaneditstatus');
 Route::post('/ambildetailkunjungan', [rekamedisController::class, 'ambildetailkunjungan'])->name('ambildetailkunjungan');
 Route::post('/ambildetailkunjungan_billing', [rekamedisController::class, 'ambildetailkunjungan_billing'])->name('ambildetailkunjungan_billing');
+Route::post('/ambildetailkunjungan_editttv', [rekamedisController::class, 'ambildetailkunjungan_editttv'])->name('ambildetailkunjungan_editttv');
 Route::post('/ambilriwayatpendaftaran', [rekamedisController::class, 'ambilriwayatpendaftaran'])->name('ambilriwayatpendaftaran');
 Route::post('/ambilforminputlayanan', [rekamedisController::class, 'ambilforminputlayanan'])->name('ambilforminputlayanan');
 Route::post('/simpanbilling', [rekamedisController::class, 'simpanbilling'])->name('simpanbilling');

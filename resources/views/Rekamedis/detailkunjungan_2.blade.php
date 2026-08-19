@@ -14,7 +14,6 @@
             Kunjungan Ke-{{ $data->counter }}
         </span>
     </div>
-
     <div class="card-body p-4">
         <div class="row g-3 mb-4 bg-light rounded-3 p-3 border mx-0">
             <div class="col-md-3">

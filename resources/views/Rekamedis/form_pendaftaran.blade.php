@@ -64,7 +64,8 @@
                             <tbody>
                                 @foreach ($data_kunjungan as $t)
                                     <tr>
-                                        <td>{{ \Carbon\Carbon::parse($t->tgl_masuk)->locale('id')->translatedFormat('d F Y') }} | {{ $t->counter}}</td>
+                                        <td>{{ \Carbon\Carbon::parse($t->tgl_masuk)->locale('id')->translatedFormat('d F Y') }}
+                                            | {{ $t->counter }}</td>
                                         <td>{{ $t->nama_unit }}</td>
                                         <td>{{ $t->nama_dokter }}</td>
                                         <td>{{ $t->keluhan_utama }}</td>
@@ -99,6 +100,30 @@
         <div class="card" style="min-height: 650px;">
             <div class="card-header bg-light fw-bold">Form Pendaftaran</div>
             <div class="card-body">
+                @if (!empty($last_kunjungan))
+                    <div class="alert alert-warning alert-dismissible fade show mb-4 border-left-warning shadow-sm"
+                        role="alert">
+                        <h6 class="font-weight-bold text-dark mb-2">
+                            <i class="fas fa-exclamation-triangle text-warning mr-2"></i>Informasi dari Kunjungan
+                            Terakhir:
+                        </h6>
+                        <div class="row text-sm">
+                            <div class="col-md-6 mb-1">
+                                <strong><i class="fas fa-allergies mr-1 text-danger"></i> Riwayat Alergi:</strong>
+                                <div class="p-2 bg-white rounded border mt-1 text-dark">
+                                    {{ !empty($last_kunjungan->riwayat_alergi) ? $last_kunjungan->riwayat_alergi : 'Tidak ada riwayat alergi.' }}
+                                </div>
+                            </div>
+                            <div class="col-md-6 mb-1">
+                                <strong><i class="fas fa-notes-medical mr-1 text-info"></i> Riwayat Penyakit:</strong>
+                                <div class="p-2 bg-white rounded border mt-1 text-dark">
+                                    {{ !empty($last_kunjungan->riwayat_penyakit) ? $last_kunjungan->riwayat_penyakit : 'Tidak ada riwayat penyakit.' }}
+                                </div>
+                            </div>
+                        </div>
+                        <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+                    </div>
+                @endif
                 <form class="formpendaftaran">
                     <label for="exampleFormControlInput1" class="form-label">Tanggal Kunjungan</label>
                     <input type="date" class="form-control" id="tanggalkunjungan" name="tanggalkunjungan"
@@ -147,7 +172,8 @@
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" placeholder="masukan tekanan darah ..."
                                     aria-label="Recipient’s username" aria-describedby="basic-addon2"
-                                    name="usia_kunjungan" id="usia_kunjungan" value="{{ \Carbon\Carbon::parse($mt_pasien[0]->tanggal_lahir)->diff(\Carbon\Carbon::now())->format('%y Tahun, %m Bulan, %d Hari') }}">
+                                    name="usia_kunjungan" id="usia_kunjungan"
+                                    value="{{ \Carbon\Carbon::parse($mt_pasien[0]->tanggal_lahir)->diff(\Carbon\Carbon::now())->format('%y Tahun, %m Bulan, %d Hari') }}">
                                 <span class="input-group-text" id="basic-addon2"></span>
                             </div>
                         </div>
@@ -164,8 +190,8 @@
                             <label for="exampleFormControlInput1" class="form-label">Suhu Tubuh</label>
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" placeholder="masukan suhu tubuh ..."
-                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="suhutubuh"
-                                    id="suhutubuh">
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2"
+                                    name="suhutubuh" id="suhutubuh">
                                 <span class="input-group-text" id="basic-addon2">°C </span>
                             </div>
                         </div>
@@ -182,8 +208,8 @@
                             <label for="exampleFormControlInput1" class="form-label">Frekuensi Nafas</label>
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" placeholder="masukan frekuensi Nafas ..."
-                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="frekuensinafas"
-                                    id="frekuensinafas">
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2"
+                                    name="frekuensinafas" id="frekuensinafas">
                                 <span class="input-group-text" id="basic-addon2">x / menit</span>
                             </div>
                         </div>
@@ -191,8 +217,8 @@
                             <label for="exampleFormControlInput1" class="form-label">Saturasi ( SpO₂ )</label>
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" placeholder="masukan saturasi oksigen ..."
-                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="saturasi_oksigen"
-                                    id="saturasi_oksigen">
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2"
+                                    name="saturasi_oksigen" id="saturasi_oksigen">
                                 <span class="input-group-text" id="basic-addon2">%</span>
                             </div>
                         </div>
@@ -200,8 +226,8 @@
                             <label for="exampleFormControlInput1" class="form-label">Tinggi Badan</label>
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" placeholder="masukan tinggi badan ..."
-                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="tinggi_badan"
-                                    id="tinggi_badan">
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2"
+                                    name="tinggi_badan" id="tinggi_badan">
                                 <span class="input-group-text" id="basic-addon2"></span>
                             </div>
                         </div>
@@ -209,8 +235,8 @@
                             <label for="exampleFormControlInput1" class="form-label">Berat Badan</label>
                             <div class="input-group mb-3">
                                 <input type="text" class="form-control" placeholder="masukan berat badan ..."
-                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="berat_badan"
-                                    id="berat_badan">
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2"
+                                    name="berat_badan" id="berat_badan">
                                 <span class="input-group-text" id="basic-addon2"></span>
                             </div>
                         </div>
@@ -218,16 +244,14 @@
                             <label for="exampleFormControlInput1" class="form-label">Riwayat Alergi</label>
                             <div class="input-group mb-3">
                                 <textarea type="text" class="form-control" placeholder="masukan riwayat alergi ..."
-                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="riwayat_alergi"
-                                    id="riwayat_alergi"></textarea>
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="riwayat_alergi" id="riwayat_alergi"></textarea>
                             </div>
                         </div>
                         <div class="col-md-6">
                             <label for="exampleFormControlInput1" class="form-label">Riwayat penyakit</label>
                             <div class="input-group mb-3">
                                 <textarea type="text" class="form-control" placeholder="masukan riwayat penyakit ..."
-                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="riwayat_penyakit"
-                                    id="riwayat_penyakit"></textarea>
+                                    aria-label="Recipient’s username" aria-describedby="basic-addon2" name="riwayat_penyakit" id="riwayat_penyakit"></textarea>
                             </div>
                         </div>
                     </div>

@@ -85,6 +85,7 @@
                                     <th>Nomor RM</th>
                                     <th>Identitas & Nama</th>
                                     <th>Tempat, Tgl Lahir & JK</th>
+                                    <th>Pekerjaan</th>
                                     <th>Alamat Domisili</th>
                                     <th>Aksi</th>
                                 </tr>
@@ -157,12 +158,19 @@
                             <div class="col-md-2">
                                 <div class="mb-3">
                                     <label for="exampleInputEmail1" class="form-label">Status Pernikahan</label>
-                                    <select class="form-select" aria-label="Default select example" name="status_pernikahan"
-                                        id="status_pernikahan">
+                                    <select class="form-select" aria-label="Default select example"
+                                        name="status_pernikahan" id="status_pernikahan">
                                         <option value="0">-</option>
                                         <option value="1">Menikah</option>
                                         <option value="2">Belum Menikah</option>
                                     </select>
+                                </div>
+                            </div>
+                            <div class="col-md-4">
+                                <div class="mb-3">
+                                    <label for="exampleInputEmail1" class="form-label">Pekerjaan Pasien</label>
+                                    <input type="text" class="form-control" id="pekerjaan" name="pekerjaan"
+                                        aria-describedby="emailHelp" placeholder="Masukan Pekerjaan Pasien ...">
                                 </div>
                             </div>
                         </div>
@@ -274,7 +282,7 @@
                 </div>
                 <div class="modal-body">
                     <form class="formmasterdesa" id="formmasterdesa">
-                        <div class="row">                         
+                        <div class="row">
                             <div class="col-md-12">
                                 <div class="mb-3">
                                     <label for="exampleInputEmail1" class="form-label">Masukan Nama Desa</label>
@@ -422,6 +430,7 @@
                 }
             });
         }
+
         function simpanpasien() {
             Swal.fire({
                 title: "Data Pasien akan disimpan !",
@@ -484,6 +493,7 @@
                 }
             });
         }
+
         function simpanpasienx() {
             var data = $('.formmasterpasien').serializeArray();
             spinner = $('#loader')
@@ -558,6 +568,10 @@
                         render: function(data, type, row) {
                             return `${row.tempat_lahir}, ${data} , ${row.jenis_kelamin}`;
                         }
+                    },
+                    {
+                        data: 'nomor_asuransi',
+                        name: 'nomor_asuransi'
                     },
                     {
                         data: 'alamat_ktp',

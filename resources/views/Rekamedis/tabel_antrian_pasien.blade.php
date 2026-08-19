@@ -1,10 +1,11 @@
-<table class="table table-sm table-hover" id="tabelantrian">
+<table class="table table-sm table-hover text-sm" id="tabelantrian">
     <thead>
         <th>Tanggal Antrian</th>
         <th>Nomor Antrian</th>
         <th>Nomor Urut</th>
         <th>Nomor RM</th>
         <th>Nama Pasien</th>
+        <th>Alamat</th>
         <th>Unit Tujuan</th>
         <th>Status</th>
         <th></th>
@@ -17,6 +18,7 @@
                 <td>{{ $item->nomor_urut }}</td>
                 <td>{{ $item->nomor_rm }}</td>
                 <td>{{ $item->nama_pasien }}</td>
+                <td>{{ $item->alamat_ktp }} / {{ $item->alamat_domisili }}</td>
                 <td>{{ $item->nama_unit }}</td>
                 <td>
                     @if ($item->status == 1)

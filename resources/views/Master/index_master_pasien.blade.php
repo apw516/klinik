@@ -36,6 +36,7 @@
                                 <th>Nomor Identitas</th>
                                 <th>Nama Pasien</th>
                                 <th>Info Lahir & JK</th>
+                                <th>Pekerjaan</th>
                                 <th>Alamat Domisili</th>
                                 <th>Status</th>
                                 <th>Aksi</th>
@@ -697,6 +698,10 @@
                         render: function(data, type, row) {
                             return data + ', ' + row.tanggal_lahir + ' | ' + row.jenis_kelamin;
                         }
+                    },
+                    {
+                        data: 'nomor_asuransi',
+                        name: 'nomor_asuransi'
                     },
                     {
                         data: 'alamat_domisili',

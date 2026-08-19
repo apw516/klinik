@@ -21,11 +21,11 @@
                          value="{{ $pasien[0]->id }}">
                  </div>
              </div>
-             <div hidden class="col-md-4">
+             <div class="col-md-4">
                  <div class="mb-3">
-                     <label for="exampleInputEmail1" class="form-label">Nomor Asuransi</label>
-                     <input type="email" class="form-control" id="nomorasuransi" name="editnomorasuransi"
-                         aria-describedby="emailHelp" value="{{ $pasien[0]->nomor_asuransi }}">
+                     <label for="exampleInputEmail1" class="form-label">Nomor Telepon</label>
+                     <input type="email" class="form-control" id="nomortelp" name="editnomortelp"
+                         aria-describedby="emailHelp" value="{{ $pasien[0]->nomortelp }}">
                  </div>
              </div>
          </div>
@@ -47,6 +47,14 @@
                          <option value="1" @if ($pasien[0]->status_pernikahan == 1) selected @endif>Menikah</option>
                          <option value="2" @if ($pasien[0]->status_pernikahan == 2) selected @endif>Belum Menikah</option>
                      </select>
+                 </div>
+             </div>
+             <div class="col-md-4">
+                 <div class="mb-3">
+                     <label for="exampleInputEmail1" class="form-label">Pekerjaan</label>
+                     <input type="email" class="form-control" id="pekerjaan" name="editpekerjaan"
+                         aria-describedby="emailHelp" placeholder="Masukan Pekerjaan Pasien ..."
+                         value="{{ $pasien[0]->nomor_asuransi }}">
                  </div>
              </div>
          </div>

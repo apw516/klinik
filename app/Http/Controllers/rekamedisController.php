@@ -43,8 +43,7 @@ class rekamedisController extends Controller
     public function getDataPasien(Request $request)
     {
         if ($request->ajax()) {
-            $data = DB::table('master_pasien')->select('*')->where('is_active',1); // Sesuaikan nama tabel
-
+            $data = DB::table('master_pasien')->select('*')->where('is_active', 1); // Sesuaikan nama tabel
             return DataTables::of($data)
                 ->addIndexColumn()
                 // Kita handle formatting via JavaScript (Render) di atas agar lebih ringan
@@ -83,6 +82,13 @@ class rekamedisController extends Controller
             ->where('k.nomor_rm', $rm)
             ->orderBy('k.id', 'desc')
             ->get();
+        $last_kunjungan = DB::table('ts_kunjungan as k')
+            ->leftJoin('master_pegawai as p', 'k.dokter', '=', 'p.id')
+            ->leftJoin('master_unit as u', 'k.unit_tujuan', '=', 'u.id')
+            ->select('k.*', 'p.nama_lengkap as nama_dokter', 'u.nama_unit')
+            ->where('k.nomor_rm', $rm)
+            ->orderBy('k.id', 'desc')
+            ->first();
         $datenow = Carbon::now()->format('Y-m-d');
         return view('Rekamedis.form_pendaftaran', compact([
             'mt_pasien',
@@ -90,7 +96,8 @@ class rekamedisController extends Controller
             'dokter',
             'data_kunjungan',
             'datenow',
-            'rm'
+            'rm',
+            'last_kunjungan'
         ]));
     }
     public function simpanpendaftaranpasien(Request $request)
@@ -101,7 +108,7 @@ class rekamedisController extends Controller
             $value =  $nama['value'];
             $dataSet[$index] = $value;
         }
-        $datenow = Carbon::now()->format('Y-m-d');
+        $datenow = Carbon::now()->toDateTimeString();
         $cek_kunjungan = db::select('select status_kunjungan from ts_kunjungan where nomor_rm = ? and status_kunjungan = ? order by id desc', [$dataSet['no_rm'], 1]);
         if ($dataSet['tujuankunjungan'] != 5) {
             if ($dataSet['dokter'] == 0) {
@@ -169,6 +176,42 @@ class rekamedisController extends Controller
         echo json_encode($data2);
         die;
     }
+    public function simpaneditpendaftaranpasien(Request $request)
+    {
+        $data = json_decode($_POST['data'], true);
+        foreach ($data as $nama) {
+            $index =  $nama['name'];
+            $value =  $nama['value'];
+            $dataSet[$index] = $value;
+        }
+        $data_save = [
+            'tgl_masuk' => $dataSet['tanggalkunjungan'],
+            'unit_tujuan' => $dataSet['tujuankunjungan'],
+            'jenis_kunjungan' => $dataSet['jeniskunjungan'],
+            'dokter' => $dataSet['dokter'],
+            'tekanan_darah' => $dataSet['tekanandarah'],
+            'suhu_tubuh' => $dataSet['suhutubuh'],
+            'frekuensi_nafas' => $dataSet['frekuensinafas'],
+            'frekuensi_nadi' => $dataSet['frekuensinadi'],
+            'usia_kunjungan' => $dataSet['usia_kunjungan'],
+            'suhu_tubuh' => $dataSet['suhutubuh'],
+            'saturasi_oksigen' => $dataSet['saturasi_oksigen'],
+            'tinggi_badan' => $dataSet['tinggi_badan'],
+            'berat_badan' => $dataSet['berat_badan'],
+            'riwayat_alergi' => $dataSet['riwayat_alergi'],
+            'riwayat_penyakit' => $dataSet['riwayat_penyakit'],
+            'keluhan_utama' => $dataSet['keluhanutama'],
+            'pic' => auth()->user()->id,
+            'id_klinik' => 1,
+        ];
+        $k = model_ts_kunjungan::where('id',$dataSet['id_kunjungan'])->update($data_save);
+        $data2 = [
+            'kode' => 200,
+            'message' => 'data berhasil disimpan'
+        ];
+        echo json_encode($data2);
+        die;
+    }
     public function formeditkunjungan(Request $request)
     {
         $id = $request->idkunjungan;
@@ -182,7 +225,7 @@ class rekamedisController extends Controller
     {
         $id = $request->idkunjungan;
         // $data = model_ts_kunjungan::where('id', $id)->get();
-       
+
         $data = model_ts_kunjungan::where('ts_kunjungan.id', $id)
             ->leftJoin('master_pegawai', 'ts_kunjungan.dokter', '=', 'master_pegawai.id')
             ->leftJoin('master_unit', 'ts_kunjungan.unit_tujuan', '=', 'master_unit.id')
@@ -221,6 +264,32 @@ class rekamedisController extends Controller
             'id',
             'hasillab',
             'layanan'
+        ]));
+    }
+    public function ambildetailkunjungan_editttv(Request $request)
+    {
+        $id = $request->idkunjungan;
+        $data = model_ts_kunjungan::where('ts_kunjungan.id', $id)
+            ->leftJoin('master_pegawai', 'ts_kunjungan.dokter', '=', 'master_pegawai.id')
+            ->leftJoin('master_unit', 'ts_kunjungan.unit_tujuan', '=', 'master_unit.id')
+            ->select(
+                'ts_kunjungan.*',
+                'master_pegawai.nama_lengkap as nama_dokter',
+                'master_unit.nama_unit',
+                \DB::raw('DATE(ts_kunjungan.tgl_entry) as tgl_entry'), // Mengambil format Y-m-d
+            )
+            ->first();
+        $rm = $data->nomor_rm;
+        $mt_pasien = db::select('select * from master_pasien where nomor_rm = ?', [$rm]);
+        $mt_unit = db::select('select * from master_unit where id_klinik = ?', [auth()->user()->id_klinik]);
+        $dokter = db::select('select * from master_pegawai where id_klinik = ? and posisi_kerja = ?', [auth()->user()->id_klinik, 'DOKTER']);
+        // $hasillab = model_hasil_lab::where('kode_kunjungan', $id)->first();
+        // $layanan = db::select('select * from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.status_layanan != 3 and b.status_layanan != 3', [$id]);
+        return view('Rekamedis.form_edit_ttv', compact([
+            'data',
+            'mt_pasien',
+            'dokter',
+            'mt_unit'
         ]));
     }
     public function ambilforminputlayanan(Request $request)
@@ -268,7 +337,7 @@ class rekamedisController extends Controller
     {
         $id = $request->id;
         $status = $request->status;
-        $data = model_ts_kunjungan::where('id', $id)->update(['status_kunjungan' => $status,'keluhan_utama' => $request->keluhanutama]);
+        $data = model_ts_kunjungan::where('id', $id)->update(['status_kunjungan' => $status, 'keluhan_utama' => $request->keluhanutama]);
         if ($status == 3) {
             $status_antri = 5;
             $data33 = model_ts_antrian::where('id_kunjungan', $id)->update(['status' => $status_antri]);
@@ -346,7 +415,7 @@ class rekamedisController extends Controller
         $data = model_ts_antrian::whereRaw('DATE(tgl_antri) = ?', [$tanggal])
             ->join('master_unit', 'ts_antrian_pasien.unit', '=', 'master_unit.id')
             ->join('master_pasien', 'ts_antrian_pasien.nomor_rm', '=', 'master_pasien.nomor_rm')
-            ->select('ts_antrian_pasien.*', 'master_unit.nama_unit', 'master_pasien.nama_pasien') // Ambil semua kolom antrian + nama unit
+            ->select('ts_antrian_pasien.*', 'master_unit.nama_unit', 'master_pasien.nama_pasien', 'master_pasien.alamat_ktp', 'master_pasien.alamat_domisili') // Ambil semua kolom antrian + nama unit
             ->orderBy('ts_antrian_pasien.nomor_urut', 'asc')
             ->get();
         return view('Rekamedis.tabel_antrian_pasien', compact([
@@ -362,6 +431,7 @@ class rekamedisController extends Controller
                 'a.id as id_kunjungan',
                 'a.id as id_kunjungan',
                 'a.tgl_masuk',
+                'a.tgl_entry',
                 'e.nomor_antrian',
                 'a.nomor_rm',
                 'b.nama_pasien',
