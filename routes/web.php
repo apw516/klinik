@@ -15,6 +15,9 @@ Route::post('/login', [authController::class, 'authenticate']);
 Route::post('/register', [authController::class, 'register'])->name('register');
 Route::get('/dashboard', [dashboardController::class, 'index']);
 
+Route::get('/icd10/data', [dataMasterController::class, 'getDataIcd'])->name('icd10.data');
+Route::post('/storeicd10', [dataMasterController::class, 'storeicd10'])->name('icd10.store');
+Route::put('/icd10/update', [dataMasterController::class, 'updateICD10'])->name('icd10.update');
 
 Route::get('/indexstokpersediaan', [dataMasterController::class, 'indexstokpersediaan'])->name('indexstokpersediaan');
 Route::get('/indexmasterpasien', [dataMasterController::class, 'indexmasterpasien'])->name('indexmasterpasien');
@@ -138,3 +141,6 @@ Route::post('/saveobt', [kasirFarmasiController::class, 'saveobt'])->name('saveo
 Route::post('/berikanobatpasien', [kasirFarmasiController::class, 'berikanobatpasien'])->name('berikanobatpasien');
 Route::get('/kartu-stok.data', [kasirFarmasiController::class, 'getKartuStok'])->name('kartu-stok.data');
 Route::get('/kasir/cetak-struk/{idheader}', [kasirFarmasiController::class, 'cetaknotakasir'])->name('kasir/cetak-struk');
+
+
+Route::get('/layanan/check-payment-count', [kasirFarmasiController::class, 'checkPaymentCount'])->name('layanan.checkPaymentCount');

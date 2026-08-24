@@ -143,7 +143,7 @@
                         <p>Data Nama Generik</p>
                     </a>
                 </li>
-                <li hidden class="nav-item">
+                <li class="nav-item">
                     <a href="{{ route('indexdataicd10') }}"
                         class="nav-link @if ($menu == 'indexdataicd10') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>

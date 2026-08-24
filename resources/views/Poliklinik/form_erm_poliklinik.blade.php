@@ -70,10 +70,13 @@
                                         <td>{{ $t->keluhan_utama }}</td>
                                         <td>
                                             {{ $t->SUBJECT }}
-                                            <br>{{ $t->OBJECT }} <br>Diagnosa : {{ $t->kodediagnosa}}- {{ $t->namadiagnosa}} , {{ $t->ASSESMENT }},{{ $t->PLANNING }}
+                                            <br>{{ $t->OBJECT }} <br>Diagnosa : {{ $t->kodediagnosa }}-
+                                            {{ $t->namadiagnosa }} , {{ $t->ASSESMENT }},{{ $t->PLANNING }}
                                             <span class="badge text-bg-secondary pilihriwayat"
                                                 subject="{{ $t->SUBJECT }}" object="{{ $t->OBJECT }}"
-                                                assesmen="{{ $t->ASSESMENT }}" planning="{{ $t->PLANNING }}" namadiagnosa="{{ $t->namadiagnosa}}" kodediagnosa="{{ $t->kodediagnosa}}"><i
+                                                assesmen="{{ $t->ASSESMENT }}" planning="{{ $t->PLANNING }}"
+                                                namadiagnosa="{{ $t->namadiagnosa }}"
+                                                kodediagnosa="{{ $t->kodediagnosa }}"><i
                                                     class="bi bi-cursor"></i></span>
                                         </td>
                                         <td>
@@ -275,7 +278,7 @@
                                 @csrf <input hidden type="text" value="{{ $idkunjungan }}" name="idkunjungan"
                                     id="idkunjungan">
                                 <div class="row g-4">
-                                    <div class="col-md-6 col-lg-3">
+                                    <div class="col-md-6 col-lg-4">
                                         <div
                                             class="form-group-soap p-3 rounded-3 border-start border-primary border-4 bg-white shadow-sm h-100">
                                             <label for="subject"
@@ -292,7 +295,7 @@ Keluhan Utama : {{ $dk[0]->keluhan_utama }}
 </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-lg-3">
+                                    <div class="col-md-6 col-lg-4">
                                         <div
                                             class="form-group-soap p-3 rounded-3 border-start border-success border-4 bg-white shadow-sm h-100">
                                             <label for="object"
@@ -312,7 +315,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
 </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-lg-3">
+                                    <div class="col-md-6 col-lg-4">
                                         <div
                                             class="form-group-soap p-3 rounded-3 border-start border-warning border-4 bg-white shadow-sm h-100">
                                             <label for="assesmen"
@@ -325,7 +328,8 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                                     10</label>
                                                 <input type="text" class="form-control mb-3" id="namadiagnosa"
                                                     name="namadiagnosa"
-                                                    placeholder="Ketik nama atau kode diagnosa ..." value="{{ $dk[0]->namadiagnosa }}">
+                                                    placeholder="Ketik nama atau kode diagnosa ..."
+                                                    value="{{ $dk[0]->namadiagnosa }}">
                                             </div>
 
                                             <div class="mb-3">
@@ -339,7 +343,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                                 placeholder="Ketik keterangan assesmen lain jika ada ... ">{{ $dk[0]->ASSESMENT }}</textarea>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-lg-3">
+                                    <div hidden class="col-md-6 col-lg-3">
                                         <div
                                             class="form-group-soap p-3 rounded-3 border-start border-info border-4 bg-white shadow-sm h-100">
                                             <label for="planning"
@@ -353,6 +357,152 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                     </div>
                                 </div>
                             </form>
+                        </div>
+                    </div>
+
+                    <div
+                        class="form-group-soap p-3 rounded-3 border-start border-info border-4 bg-white shadow-sm h-100">
+                        <label for="planning"
+                            class="form-label fw-bold text-info text-uppercase d-flex align-items-center justify-content-between">
+                            4. Planning (P)
+                            <i class="bi bi-journal-medical fs-5 text-muted opacity-50"></i>
+                        </label>
+                        <div class="card">
+                            <div class="card-header fw-bold fst-italic">Resep Obat</div>
+                            <div class="card-body">
+                                <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalobat">
+                                    <i class="bi bi-search"></i> Obat </button>
+                                <form action="" method="post" class="formbillingobat mt-2">
+                                    <div class="draftbillingobat">
+                                        <div>
+                                            @foreach ($dataobat as $d)
+                                                <div class="row text-xs align-items-center mb-2 border-bottom pb-2">
+                                                    <!-- Nama & Kode Barang -->
+                                                    <div class="form-group col-md-2">
+                                                        <label class="fw-bold mb-1">Nama Obat</label>
+                                                        <input readonly type="text"
+                                                            class="form-control form-control-sm text-xs"
+                                                            name="namabarang" value="{{ $d->nama_tarif }}">
+                                                        <input hidden readonly type="text" name="kodebarang"
+                                                            value="{{ $d->kode_barang}}">
+                                                        <input hidden readonly type="text" name="harga2"
+                                                            value="">
+                                                        <input hidden readonly type="text" name="kode_kunjungan"
+                                                            value="{{ $d->id_kunjungan}}">
+                                                    </div>
+
+                                                    <!-- Stok -->
+                                                    <div class="form-group col-md-1">
+                                                        <label class="fw-bold mb-1">Stok</label>
+                                                        <input readonly type="text"
+                                                            class="form-control form-control-sm text-xs text-center"
+                                                            name="stok" value="">
+                                                    </div>
+
+                                                    <!-- Qty -->
+                                                    <div class="form-group col-md-1">
+                                                        <label class="fw-bold mb-1">Qty</label>
+                                                        <input type="number" min="1"
+                                                            class="form-control form-control-sm text-xs text-center fw-bold"
+                                                            name="qty" value="{{ $d->jumlah }}">
+                                                    </div>
+                                                    @php
+                                                        $array = isset($d->aturan_pakai)
+                                                            ? array_map('trim', explode(',', $d->aturan_pakai))
+                                                            : [];
+                                                    @endphp
+                                                   
+                                                    <div class="form-group col-md-4">
+                                                        <label class="fw-bold mb-1 d-block">Aturan Pakai</label>
+                                                        <div
+                                                            class="d-flex flex-wrap gap-2 bg-light p-2 rounded border">
+
+                                                            <!-- Waktu Makan -->
+                                                            <div class="form-check form-check-inline mb-0">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    name="sebelum_makan" value="Sebelum Makan"
+                                                                    {{ in_array('Sebelum Makan', $array) ? 'checked' : '' }}>
+                                                                <label class="form-check-label text-xs">Sebelum
+                                                                    Makan</label>
+                                                            </div>
+
+                                                            <div class="form-check form-check-inline mb-0">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    name="sesudah_makan" value="Sesudah Makan"
+                                                                    {{ in_array('Sesudah Makan', $array) ? 'checked' : '' }}>
+                                                                <label class="form-check-label text-xs">Sesudah
+                                                                    Makan</label>
+                                                            </div>
+
+                                                            <!-- Pembatas baris kecil -->
+                                                            <div class="w-100 my-0 border-top" style="opacity:0.2;">
+                                                            </div>
+
+                                                            <!-- Sesi Minum -->
+                                                            <div class="form-check form-check-inline mb-0">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    name="pagi" value="Pagi"
+                                                                    {{ in_array('Pagi', $array) ? 'checked' : '' }}>
+                                                                <label class="form-check-label text-xs">Pagi</label>
+                                                            </div>
+
+                                                            <div class="form-check form-check-inline mb-0">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    name="siang" value="Siang"
+                                                                    {{ in_array('Siang', $array) ? 'checked' : '' }}>
+                                                                <label class="form-check-label text-xs">Siang</label>
+                                                            </div>
+
+                                                            <div class="form-check form-check-inline mb-0">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    name="sore" value="Sore"
+                                                                    {{ in_array('Sore', $array) ? 'checked' : '' }}>
+                                                                <label class="form-check-label text-xs">Sore</label>
+                                                            </div>
+
+                                                            <div class="form-check form-check-inline mb-0">
+                                                                <input class="form-check-input" type="checkbox"
+                                                                    name="malam" value="Malam"
+                                                                    {{ in_array('Malam', $array) ? 'checked' : '' }}>
+                                                                <label class="form-check-label text-xs">Malam</label>
+                                                            </div>
+
+                                                        </div>
+                                                    </div>
+                                                    <!-- Kolom Keterangan Tambahan -->
+                                                    <div class="form-group col-md-2">
+                                                        <label class="fw-bold mb-1">Keterangan</label>
+                                                        <input type="text"
+                                                            class="form-control form-control-sm text-xs"
+                                                            name="keterangan_obat"
+                                                            placeholder="Contoh: masukan pesan atau catatan ..."
+                                                            value="{{ $d->keterangan }}">
+                                                    </div>
+
+                                                    <!-- Paket Status -->
+                                                    <div class="form-group col-md-1 text-center">
+                                                        <label class="fw-bold mb-1 d-block">Paket?</label>
+                                                        <div class="form-check form-switch d-inline-block mt-1">
+                                                            <input class="form-check-input check-paket"
+                                                                type="checkbox" name="is_paket" value="1"
+                                                                @if ($d->status_paket == 'YA') checked @endif>
+                                                            <input type="hidden" class="status-paket-val"
+                                                                name="status_paket" value="0"
+                                                                @if ($d->status_paket == 'TIDAK') checked @endif>
+                                                        </div>
+                                                    </div>
+
+                                                    <!-- Tombol Hapus Row -->
+                                                    <div class="col-md-1 text-center mt-3">
+                                                        <i class="bi bi-x-square-fill remove_field text-danger fs-5 style="cursor:
+                                                            pointer;" title="Hapus Obat"></i>
+                                                    </div>
+                                                </div>
+                                            @endforeach
+                                        </div>
+                                    </div>
+                                </form>
+                            </div>
                         </div>
                     </div>
                     <div class="row mt-2">
@@ -378,32 +528,10 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                 </div>
                             </div>
                         </div>
-                        <div class="col-md-12">
-                            <div class="card">
-                                <div class="card-header fw-bold fst-italic">Resep Obat</div>
-                                <div class="card-body">
-                                    <button class="btn btn-info" data-bs-toggle="modal" data-bs-target="#modalobat">
-                                        <i class="bi bi-search"></i> Obat </button>
-                                    <form action="" method="post" class="formbillingobat mt-2">
-                                        <div class="draftbillingobat">
-                                            <div>
-                                            </div>
-                                        </div>
-                                    </form>
-                                    {{-- <div class="card mt-4">
-                                        <div class="card-header fw-bold fst-italic bg-light">data resep yang sudah
-                                            tersimpan ...</div>
-                                        <div class="card-body">
-                                            <div class="v_riwayat_resep"></div>
-                                        </div>
-                                    </div> --}}
-                                </div>
-                            </div>
-                        </div>
                     </div>
                     <div class="col-md-12 mt-2">
                         <div class="card">
-                            <div class="card-header">Data Tagihan yang sudah tersimpan</div>
+                            <div class="card-header fw-bold">Data Tagihan yang sudah tersimpan</div>
                             <div class="card-body">
                                 <div class="v_riwayat_billing"></div>
                             </div>
@@ -672,6 +800,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                 <input readonly type="text" class="form-control form-control-sm text-xs" name="namabarang" value="${nama_barang}">
                 <input hidden readonly type="text" name="kodebarang" value="${kode_barang}">
                 <input hidden readonly type="text" name="harga2" value="">
+                 <input hidden readonly type="text" name="kode_kunjungan" value="0">
             </div>
 
             <!-- Stok -->
@@ -789,7 +918,6 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
     });
     $(document).ready(function() {
         ambilriwayatbilling()
-        ambilriwayatresep()
     })
     $(document).on('change', '.check-paket', function() {
         let $row = $(this).closest('.row');

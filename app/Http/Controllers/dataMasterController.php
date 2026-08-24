@@ -1403,4 +1403,76 @@ class dataMasterController extends Controller
         echo json_encode($data2);
         die;
     }
+    public function getDataIcd(Request $request)
+    {
+        if ($request->ajax()) {
+            $query = DB::table('mt_icd10') // Sesuaikan nama tabel database Anda
+                ->select(['diag', 'nama', 'dtd']);
+
+            return DataTables::of($query)
+                ->filterColumn('nama', function ($query, $keyword) {
+                    $query->where('nama', 'LIKE', "%{$keyword}%");
+                })
+                ->filterColumn('diag', function ($query, $keyword) {
+                    $query->where('diag', 'LIKE', "%{$keyword}%");
+                })
+                ->make(true);
+        }
+    }
+    public function storeicd10(Request $request)
+    {
+        // 1. Validasi Input
+        $request->validate([
+            'diag' => 'required|string|max:10|unique:mt_icd10,diag', // Pastikan kode DIAG belum digunakan
+            'nama' => 'required|string',
+            'dtd'  => 'nullable|string|max:20',
+        ], [
+            'diag.required' => 'Kode Diagnosa (DIAG) wajib diisi.',
+            'diag.unique'   => 'Kode Diagnosa (DIAG) sudah terdaftar di sistem.',
+            'nama.required' => 'Nama Diagnosa / Keterangan wajib diisi.',
+        ]);
+
+        DB::beginTransaction();
+        try {
+            // 2. Insert ke Database
+            DB::table('mt_icd10')->insert([
+                'diag'       => strtoupper(trim($request->diag)),
+                'nama'       => trim($request->nama),
+                'dtd'        => $request->dtd ? trim($request->dtd) : null,
+            ]);
+
+            DB::commit();
+
+            return response()->json([
+                'status'  => 'success',
+                'message' => 'Data Diagnosa ICD 10 berhasil disimpan!'
+            ], 200);
+        } catch (\Exception $e) {
+            DB::rollBack();
+
+            return response()->json([
+                'status'  => 'error',
+                'message' => 'Gagal menyimpan data: ' . $e->getMessage()
+            ], 500);
+        }
+    }
+    public function updateICD10(Request $request)
+    {
+        $request->validate([
+            'diag_old' => 'required',
+            'nama'     => 'required|string',
+            'dtd'      => 'nullable|string|max:20',
+        ]);
+        try {
+            DB::table('mt_icd10')
+                ->where('diag', $request->diag_old)
+                ->update([
+                    'nama'       => trim($request->nama),
+                    'dtd'        => $request->dtd ? trim($request->dtd) : null,
+                ]);
+            return response()->json(['status' => 'success', 'message' => 'Data berhasil diperbarui']);
+        } catch (\Exception $e) {
+            return response()->json(['status' => 'error', 'message' => $e->getMessage()], 500);
+        }
+    }
 }

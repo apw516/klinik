@@ -13,7 +13,7 @@
                     {{ number_format($kembalian, 0, ',', '.') }}</h1>
             </div>
         </div>
-        <input type="text" value="{{ $id_header }}" id="idheader">
+        <input hidden type="text" value="{{ $id_header }}" id="idheader">
         <div class="d-grid gap-2">
             <button type="button" class="btn btn-primary btn-lg" onclick="cetakStruk()">
                 <i class="bi bi-printer"></i> Cetak Struk

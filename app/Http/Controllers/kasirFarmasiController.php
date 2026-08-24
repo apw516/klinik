@@ -234,6 +234,7 @@ class kasirFarmasiController extends Controller
                 'e.nama_unit'
             )
             ->get();
+
         return view('Kasirfarmasi.tabel_data_pasien', compact([
             'data'
         ]));
@@ -697,7 +698,7 @@ class kasirFarmasiController extends Controller
             ->join('ts_layanan_detail as b', 'a.id', '=', 'b.id_header')
             ->where('a.id_kunjungan', $id_kunjungan)
             ->where('b.status_layanan', 1)
-            ->where('a.status_layanan', 1)
+            ->where('a.status_bayar', 0)
             ->get();
         return view('Kasirfarmasi.tabeltagihan', compact([
             'data'
@@ -1250,5 +1251,16 @@ class kasirFarmasiController extends Controller
             ->sum('a.subtotal'); // Sesuaikan 'total_tarif' dengan nama kolom harga di tabel Anda
 
         return view('Kasirfarmasi.cetak_nota', compact('header', 'totalPaket'));
+    }
+    public function checkPaymentCount()
+    {
+        $count = DB::table('ts_layanan_header')
+            ->where('status_bayar', 1)
+            ->whereDate('tgl_layanan', now()->today()) // atau date('Y-m-d')
+            ->count();
+
+        return response()->json([
+            'total' => $count
+        ]);
     }
 }

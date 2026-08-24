@@ -209,7 +209,7 @@
         htmlThermal += '<div class="text-center">';
         htmlThermal += '  <span class="fw-bold" style="font-size: 14px;">NP MEDIKA</span><br>';
         htmlThermal +=
-            '  <span style="font-size: 10px;">Jalan Pangeran Sutajaya, Desa Gebang, Kecamatan Gebang</span><br>';
+            '  <span style="font-size: 10px;">Jalan Pangeran Sutajaya, Desa Gebang, Kecamatan Gebang, Kabupaten Cirebon, Jawa Barat 45191</span><br>';
         htmlThermal += '</div>';
 
         htmlThermal += '<div class="divider"></div>';

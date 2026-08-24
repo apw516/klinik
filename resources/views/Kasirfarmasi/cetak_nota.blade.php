@@ -67,7 +67,7 @@
 
     <!-- Header Klinik / Rumah Sakit -->
     <div class="text-center">
-        <h3 style="margin: 0; text-transform: uppercase;">KLINIK / RUMAH SAKIT</h3>
+        <h3 style="margin: 0; text-transform: uppercase;">NP MEDIKA</h3>
         <p style="margin: 2px 0;">Jl. Kesehatan No. 123, Jakarta</p>
         <p style="margin: 2px 0;">Telp: (021) 12345678</p>
     </div>
