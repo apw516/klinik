@@ -357,34 +357,34 @@
             "ordering": false,
         })
     });
-    $(".pilihtarif").on('click', function(event) {
-        idtarif = $(this).attr('idtarif')
-        nama = $(this).attr('nama')
-        harga1 = $(this).attr('harga1')
-        harga2 = $(this).attr('harga2')
-        var wrapper = $(".draftbilling");
-        $(wrapper).append(
-            '<div class="row text-xs"><div class="form-group col-md-6"><label for="">Nama Tarif</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="namatarif" name="namatarif" value="' +
-            nama +
-            '"><input   hidden readonly type="" class="form-control form-control-sm" id="idtarif" name="idtarif" value="' +
-            idtarif +
-            '"><input   hidden readonly type="" class="form-control form-control-sm" id="harga2" name="harga2" value="' +
-            harga2 +
-            '"></div><div class="form-group col-md-4"><label for="">Harga</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="harga" name="harga" value="' +
-            harga1 +
-            '"></div><i class="bi bi-x-square remove_field form-group col-md-1 text-danger" kode2=""></i></div>'
-        );
-        Swal.fire({
-            title: "Tarif dipilih " + nama,
-            text: "ok!",
-            icon: "success"
-        });
-        $(wrapper).on("click", ".remove_field", function(e) { //user click on remove
-            e.preventDefault();
-            $(this).parent('div').remove();
-            x--;
-        })
-    });
+    // $(".pilihtarif").on('click', function(event) {
+    //     idtarif = $(this).attr('idtarif')
+    //     nama = $(this).attr('nama')
+    //     harga1 = $(this).attr('harga1')
+    //     harga2 = $(this).attr('harga2')
+    //     var wrapper = $(".draftbilling");
+    //     $(wrapper).append(
+    //         '<div class="row text-xs"><div class="form-group col-md-6"><label for="">Nama Tarif</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="namatarif" name="namatarif" value="' +
+    //         nama +
+    //         '"><input   hidden readonly type="" class="form-control form-control-sm" id="idtarif" name="idtarif" value="' +
+    //         idtarif +
+    //         '"><input   hidden readonly type="" class="form-control form-control-sm" id="harga2" name="harga2" value="' +
+    //         harga2 +
+    //         '"></div><div class="form-group col-md-4"><label for="">Harga</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="harga" name="harga" value="' +
+    //         harga1 +
+    //         '"></div><i class="bi bi-x-square remove_field form-group col-md-1 text-danger" kode2=""></i></div>'
+    //     );
+    //     Swal.fire({
+    //         title: "Tarif dipilih " + nama,
+    //         text: "ok!",
+    //         icon: "success"
+    //     });
+    //     $(wrapper).on("click", ".remove_field", function(e) { //user click on remove
+    //         e.preventDefault();
+    //         $(this).parent('div').remove();
+    //         x--;
+    //     })
+    // });
     $(".pilihobat").on('click', function(event) {
         var kode_barang = $(this).attr('kode_barang');
         var nama_barang = $(this).attr('nama_barang');
@@ -484,10 +484,10 @@
 
     // PENTING: Pindahkan event handler .remove_field ke luar dari event click induknya (.pilihobat)
     // Ini agar event click hapus tidak menumpuk (double bind) setiap kali Anda memilih obat baru.
-    $(".draftbillingobat").on("click", ".remove_field", function(e) {
-        e.preventDefault();
-        $(this).closest('.row').remove();
-    });
+    // $(".draftbillingobat").on("click", ".remove_field", function(e) {
+    //     e.preventDefault();
+    //     $(this).closest('.row').remove();
+    // });
     $(document).on('change', '.check-paket', function() {
         let $row = $(this).closest('.row');
         if ($(this).is(':checked')) {
@@ -546,6 +546,82 @@
             });
         });
     }
+    // Helper fungsi format ke Rupiah
+    function formatRupiah(angka) {
+        var number_string = angka.toString().replace(/[^,\d]/g, ''),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            var separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+        return rupiah ? 'Rp ' + rupiah : '';
+    }
+
+    // Event saat tombol tarif diklik
+    $(".pilihtarif").on('click', function(event) {
+        var idtarif = $(this).attr('idtarif');
+        var nama = $(this).attr('nama');
+        var harga1 = $(this).attr('harga1') || '0';
+        var harga2 = $(this).attr('harga2') || harga1; // Default ke harga1 jika harga2 kosong
+        var wrapper = $(".draftbilling");
+
+        // Format tampilan awal harga1
+        var hargaFormatted = formatRupiah(harga1);
+
+        $(wrapper).append(
+            '<div class="row text-xs">' +
+            '<div class="form-group col-md-6">' +
+            '<label>Nama Tarif</label>' +
+            '<input readonly type="text" class="form-control form-control-sm text-xs edit_field" name="namatarif" value="' +
+            nama + '">' +
+            '<input hidden readonly type="text" class="form-control form-control-sm" name="idtarif" value="' +
+            idtarif + '">' +
+            '<!-- Input ini yang dikirim ke database (Nilai Murni/Raw) -->' +
+            '<input hidden type="text" class="form-control form-control-sm input-harga2" name="harga2" value="' +
+            harga2 + '">' +
+            '</div>' +
+            '<div class="form-group col-md-4">' +
+            '<label>Harga</label>' +
+            '<!-- Input ini yang diketik user (Format Rupiah) -->' +
+            '<input type="text" class="form-control form-control-sm text-xs edit_field input-harga-display" value="' +
+            hargaFormatted + '">' +
+            '</div>' +
+            '<i class="bi bi-x-square remove_field form-group col-md-1 text-danger" style="cursor:pointer"></i>' +
+            '</div>'
+        );
+
+        Swal.fire({
+            title: "Tarif dipilih " + nama,
+            text: "ok!",
+            icon: "success"
+        });
+    });
+
+    // Event Delegation: Format Rupiah saat diketik & Sinkronisasi ke input harga2
+    $(".draftbilling").on("input", ".input-harga-display", function() {
+        var value = $(this).val();
+
+        // Ambil angka murni tanpa huruf/titik/karakter lain
+        var cleanValue = value.replace(/[^0-9]/g, '');
+
+        // Update tampilan input ini ke format Rupiah
+        $(this).val(formatRupiah(cleanValue));
+
+        // Masukkan angka murni ke hidden input harga2 di baris (row) yang sama
+        $(this).closest('.row').find('.input-harga2').val(cleanValue);
+    });
+
+    // Event Delegation: Hapus baris draft
+    $(".draftbilling").on("click", ".remove_field", function(e) {
+        e.preventDefault();
+        $(this).closest('.row').remove();
+    });
 
     function savebill() {
         var data3 = $('.formbilling').serializeArray();
