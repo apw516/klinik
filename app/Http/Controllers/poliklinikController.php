@@ -79,7 +79,7 @@ class poliklinikController extends Controller
             $index2 = $nama2['name'];
             $value2 = $nama2['value'];
             $dataSet2[$index2] = $value2;
-            if ($index2 == 'harga') {
+            if ($index2 == 'harga2') {
                 $arraytarif[] = $dataSet2;
             }
         }

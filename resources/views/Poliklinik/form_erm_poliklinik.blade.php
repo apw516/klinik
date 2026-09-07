@@ -246,13 +246,15 @@ Keluhan Utama : {{ $dk[0]->keluhan_utama }}
                                                 <i class="bi bi-capsule fs-5 text-muted opacity-50"></i>
                                             </label>
                                             <textarea class="form-control form-control-modern" id="object" name="object" rows="10"
-                                                placeholder="Ketik hasil pemeriksaan fisik, lab, rontgen... ">@if ($dk[0]->SUBJECT == '')
+                                                placeholder="Ketik hasil pemeriksaan fisik, lab, rontgen... ">
+@if ($dk[0]->SUBJECT == '')
 Tekanan darah : {{ $dk[0]->tekanan_darah }} mmHg
 Suhu Tubuh : {{ $dk[0]->suhu_tubuh }} °C
 Frekuensi Nadi : {{ $dk[0]->frekuensi_nadi }} x/mnt
 Frekuensi nafas : {{ $dk[0]->frekuensi_nafas }} x/mnt
 Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
-@endif</textarea>
+@endif
+</textarea>
                                         </div>
                                     </div>
                                     <div class="col-md-6 col-lg-3">
@@ -422,7 +424,8 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
     <div class="modal-dialog modal-xl">
         <div class="modal-content">
             <div class="modal-header">
-                <h1 class="modal-title fs-5" id="exampleModalLabel">Riwayat Tindakan , Riwayat Obat & Hasil Laboratorium</h1>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Riwayat Tindakan , Riwayat Obat & Hasil
+                    Laboratorium</h1>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
             <div class="modal-body">
@@ -552,34 +555,34 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
         $('#assesmen').val(assesmen)
         $('#planning').val(planning)
     });
-    $(".pilihtarif").on('click', function(event) {
-        idtarif = $(this).attr('idtarif')
-        nama = $(this).attr('nama')
-        harga1 = $(this).attr('harga1')
-        harga2 = $(this).attr('harga2')
-        var wrapper = $(".draftbilling");
-        $(wrapper).append(
-            '<div class="row text-xs"><div class="form-group col-md-6"><label for="">Nama Tarif</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="namatarif" name="namatarif" value="' +
-            nama +
-            '"><input   hidden readonly type="" class="form-control form-control-sm" id="idtarif" name="idtarif" value="' +
-            idtarif +
-            '"><input   hidden readonly type="" class="form-control form-control-sm" id="harga2" name="harga2" value="' +
-            harga2 +
-            '"></div><div class="form-group col-md-4"><label for="">Harga</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="harga" name="harga" value="' +
-            harga1 +
-            '"></div><i class="bi bi-x-square remove_field form-group col-md-1 text-danger" kode2=""></i></div>'
-        );
-        Swal.fire({
-            title: "Tarif dipilih " + nama,
-            text: "ok!",
-            icon: "success"
-        });
-        $(wrapper).on("click", ".remove_field", function(e) { //user click on remove
-            e.preventDefault();
-            $(this).parent('div').remove();
-            x--;
-        })
-    });
+    // $(".pilihtarif").on('click', function(event) {
+    //     idtarif = $(this).attr('idtarif')
+    //     nama = $(this).attr('nama')
+    //     harga1 = $(this).attr('harga1')
+    //     harga2 = $(this).attr('harga2')
+    //     var wrapper = $(".draftbilling");
+    //     $(wrapper).append(
+    //         '<div class="row text-xs"><div class="form-group col-md-6"><label for="">Nama Tarif</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="namatarif" name="namatarif" value="' +
+    //         nama +
+    //         '"><input   hidden readonly type="" class="form-control form-control-sm" id="idtarif" name="idtarif" value="' +
+    //         idtarif +
+    //         '"><input type="" class="form-control form-control-sm" id="harga2" name="harga2" value="' +
+    //         harga2 +
+    //         '"></div><div class="form-group col-md-4"><label for="">Harga</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="harga" name="harga" value="' +
+    //         harga1 +
+    //         '"></div><i class="bi bi-x-square remove_field form-group col-md-1 text-danger" kode2=""></i></div>'
+    //     );
+    //     Swal.fire({
+    //         title: "Tarif dipilih " + nama,
+    //         text: "ok!",
+    //         icon: "success"
+    //     });
+    //     $(wrapper).on("click", ".remove_field", function(e) { //user click on remove
+    //         e.preventDefault();
+    //         $(this).parent('div').remove();
+    //         x--;
+    //     })
+    // });
     $(".pilihobat").on('click', function(event) {
         var kode_barang = $(this).attr('kode_barang');
         var nama_barang = $(this).attr('nama_barang');
@@ -683,34 +686,6 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
         e.preventDefault();
         $(this).closest('.row').remove();
     });
-    // $(".pilihobat").on('click', function(event) {
-    //     kode_barang = $(this).attr('kode_barang')
-    //     nama_barang = $(this).attr('nama_barang')
-    //     stok = $(this).attr('stok')
-    //     aturan_pakai = $(this).attr('aturan_pakai')
-    //     var wrapper = $(".draftbillingobat");
-    //     $(wrapper).append(
-    //         '<div class="row text-xs"><div class="form-group col-md-3"><label for="">Nama Tarif</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="namabarang" name="namabarang" value="' +
-    //         nama_barang +
-    //         '"><input   hidden readonly type="" class="form-control form-control-sm" id="kodebarang" name="kodebarang" value="' +
-    //         kode_barang +
-    //         '"><input   hidden readonly type="" class="form-control form-control-sm" id="harga2" name="harga2" value=""></div><div class="form-group col-md-2"><label for="">Stok</label><input readonly type="" class="form-control form-control-sm text-xs edit_field" id="stok" name="stok" value="' +
-    //         stok +
-    //         '"></div><div class="form-group col-md-2"><label for="">qty</label><input type="" class="form-control form-control-sm text-xs edit_field" id="qty" name="qty" value="0"></div><div class="form-group col-md-3"><label for="">Aturan Pakai</label><textarea readonly type="" class="form-control form-control-sm text-xs edit_field" id="aturanpakai" name="aturanpakai">' +
-    //         aturan_pakai +
-    //         '</textarea></div><div class="form-group col-md-1 text-center"><label>Paket?</label><br><div class="form-check form-switch d-inline-block"><input class="form-check-input check-paket" type="checkbox" name="is_paket" value="1" checked><input type="hidden" class="status-paket-val" name="status_paket" value="0"></div></div><i class="bi bi-x-square remove_field form-group col-md-1 text-danger" kode2=""></i></div>'
-    //     );
-    //     Swal.fire({
-    //         title: "Obat dipilih " + nama_barang,
-    //         text: "ok!",
-    //         icon: "success"
-    //     });
-    //     $(wrapper).on("click", ".remove_field", function(e) { //user click on remove
-    //         e.preventDefault();
-    //         $(this).parent('div').remove();
-    //         x--;
-    //     })
-    // });
     $(document).ready(function() {
         ambilriwayatbilling()
         ambilriwayatresep()
@@ -759,5 +734,83 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                 $('.v_h').html(response);
             }
         });
+    });
+
+    // Fungsi pembantu untuk format angka ke Rupiah
+    function formatRupiah(angka) {
+        var number_string = angka.replace(/[^,\d]/g, '').toString(),
+            split = number_string.split(','),
+            sisa = split[0].length % 3,
+            rupiah = split[0].substr(0, sisa),
+            ribuan = split[0].substr(sisa).match(/\d{3}/gi);
+
+        if (ribuan) {
+            separator = sisa ? '.' : '';
+            rupiah += separator + ribuan.join('.');
+        }
+
+        rupiah = split[1] !== undefined ? rupiah + ',' + split[1] : rupiah;
+        return rupiah ? 'Rp ' + rupiah : '';
+    }
+
+    // 1. Event Click Pilih Tarif
+    $(".pilihtarif").on('click', function(event) {
+        var idtarif = $(this).attr('idtarif');
+        var nama = $(this).attr('nama');
+        var harga1 = $(this).attr('harga1') || '0';
+        var harga2 = $(this).attr('harga2') || harga1; // Raw value untuk database
+
+        var wrapper = $(".draftbilling");
+
+        // Format harga awal ke Rupiah untuk tampilan
+        var hargaFormatted = formatRupiah(harga1.toString());
+
+        $(wrapper).append(
+            '<div class="row text-xs">' +
+            '<div class="form-group col-md-6">' +
+            '<label for="">Nama Tarif</label>' +
+            '<input readonly type="text" class="form-control form-control-sm text-xs edit_field" name="namatarif" value="' +
+            nama + '">' +
+            '<input hidden readonly type="text" class="form-control form-control-sm" name="idtarif" value="' +
+            idtarif + '">' +
+            '<!-- Input murni untuk Database -->' +
+            '<input hidden type="text" class="form-control form-control-sm raw_harga" name="harga2" value="' +
+            harga2 + '">' +
+            '</div>' +
+            '<div class="form-group col-md-4">' +
+            '<label for="">Harga</label>' +
+            '<!-- Input Tampilan Format Rupiah (Bisa diketik) -->' +
+            '<input type="text" class="form-control form-control-sm text-xs edit_field input_harga_format" value="' +
+            hargaFormatted + '">' +
+            '</div>' +
+            '<i class="bi bi-x-square remove_field form-group col-md-1 text-danger" style="cursor:pointer;"></i>' +
+            '</div>'
+        );
+
+        Swal.fire({
+            title: "Tarif dipilih " + nama,
+            text: "ok!",
+            icon: "success"
+        });
+    });
+
+    // 2. Format otomatis ke Rupiah saat diketik & update nilai mentah di harga2
+    $(".draftbilling").on("keyup input", ".input_harga_format", function() {
+        var val = $(this).val();
+
+        // Ambil angka murni tanpa karakter non-digit
+        var rawValue = val.replace(/[^0-9]/g, '');
+
+        // Set nilai Rupiah pada input tampilan
+        $(this).val(formatRupiah(val));
+
+        // Set nilai murni (tanpa format) ke input harga2 di row yang sama
+        $(this).closest('.row').find('.raw_harga').val(rawValue);
+    });
+
+    // 3. Event Hapus Item (Ditempatkan di luar agar tidak double binding)
+    $(".draftbilling").on("click", ".remove_field", function(e) {
+        e.preventDefault();
+        $(this).closest('.row').remove();
     });
 </script>
