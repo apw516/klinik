@@ -204,7 +204,7 @@ class rekamedisController extends Controller
             'pic' => auth()->user()->id,
             'id_klinik' => 1,
         ];
-        $k = model_ts_kunjungan::where('id',$dataSet['id_kunjungan'])->update($data_save);
+        $k = model_ts_kunjungan::where('id', $dataSet['id_kunjungan'])->update($data_save);
         $data2 = [
             'kode' => 200,
             'message' => 'data berhasil disimpan'
@@ -236,8 +236,13 @@ class rekamedisController extends Controller
             )
             ->first();
         $hasillab = model_hasil_lab::where('kode_kunjungan', $id)->first();
-        $layanan = db::select('select * from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.status_layanan != 3 and b.status_layanan != 3', [$id]);
-
+        $layanan = DB::table('ts_layanan_header as a')
+            ->join('ts_layanan_detail as b', 'a.id', '=', 'b.id_header')
+            ->leftJoin('mt_barang_np_medika as c', 'b.kode_barang', '=', 'c.id')
+            ->where('a.id_kunjungan', $id)
+            ->where('a.status_layanan', '!=', 3)
+            ->where('b.status_layanan', '!=', 3)
+            ->get();
         return view('Rekamedis.detailkunjungan', compact([
             'data',
             'id',
@@ -258,7 +263,13 @@ class rekamedisController extends Controller
             )
             ->first();
         $hasillab = model_hasil_lab::where('kode_kunjungan', $id)->first();
-        $layanan = db::select('select * from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.status_layanan != 3 and b.status_layanan != 3', [$id]);
+        $layanan = DB::table('ts_layanan_header as a')
+            ->join('ts_layanan_detail as b', 'a.id', '=', 'b.id_header')
+            ->leftJoin('mt_barang_np_medika as c', 'b.kode_barang', '=', 'c.id')
+            ->where('a.id_kunjungan', $id)
+            ->where('a.status_layanan', '!=', 3)
+            ->where('b.status_layanan', '!=', 3)
+            ->get();
         return view('Rekamedis.detailkunjungan_2', compact([
             'data',
             'id',

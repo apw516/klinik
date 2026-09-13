@@ -23,7 +23,7 @@
                         </td>
 
                         <td>
-                            <div class="fw-bold text-dark">{{ $d->nama_tarif ?? 'Layanan Tanpa Nama' }}</div>
+                            <div class="fw-bold text-dark">{{ $d->nama_tarif ?? $d->nama_display }}</div>
                             <small class="text-muted" style="font-size: 0.75rem;">ID Ref: #{{ $d->id }}</small>
                         </td>
 

@@ -139,7 +139,7 @@
             </div> --}}
         </div>
 
-        <h6 class="fw-bold text-secondary text-uppercase mb-3 d-flex align-items-center"
+        {{-- <h6 class="fw-bold text-secondary text-uppercase mb-3 d-flex align-items-center"
             style="font-size: 0.8rem; letter-spacing: 0.5px;">
             <i class="bi bi-file-earmark-medical-fill text-primary me-2"></i> Ringkasan Pemeriksaan SOAP
         </h6>
@@ -173,7 +173,7 @@
                 </div>
                 <div class="p-3 text-dark text-break fw-medium flex-grow-1">{{ $data->PLANNING ?: '-' }}</div>
             </div>
-        </div>
+        </div> --}}
         <div class="card border-0 shadow-sm mb-4">
             <div class="card-header bg-light py-3 d-flex align-items-center justify-content-between border-bottom">
                 <h6 class="m-0 fw-bold text-secondary">
@@ -203,11 +203,12 @@
                                     class="{{ $l->status_layanan == 3 ? 'table-light text-muted text-decoration-line-through' : '' }}">
                                     <td class="text-center fw-bold text-secondary">{{ $loop->iteration }}</td>
                                     <td>
-                                        <div class="fw-semibold text-dark">{{ $l->nama_tarif }}</div>
                                         @if ($l->kode_barang && $l->kode_barang != '0')
                                             <small class="text-muted d-block" style="font-size: 0.75rem;">
-                                                <i class="bi bi-box-seam me-1"></i>Kode: {{ $l->kode_barang }}
+                                                <i class="bi bi-box-seam me-1"></i>Kode: {{ $l->nama_display }}
                                             </small>
+                                        @else
+                                            <div class="fw-semibold text-dark">{{ $l->nama_tarif }}</div>
                                         @endif
                                     </td>
                                     <td class="text-center">

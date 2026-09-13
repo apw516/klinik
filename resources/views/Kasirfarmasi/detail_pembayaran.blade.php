@@ -65,7 +65,7 @@
                             <td>
                                 <div class="fw-semibold text-dark">
                                     @php
-                                        $namaLayananFull = $item->nama_tarif ?? 'Layanan Tidak Ditemukan';
+                                        $namaLayananFull = $item->nama_tarif ?? $item->nama_display;
                                         $kodeBarang = $item->kode_barang ?? '';
                                         // Jika kode_barang berawalan 'B' (case-insensitive)
                                         if ($kodeBarang != 0) {
@@ -85,11 +85,6 @@
 
                                     {{ $namaLayananTampil }}
                                 </div>
-                                @if ($item->kode_barang && $item->kode_barang != '0')
-                                    <small class="text-muted d-block ps-0" style="font-size: 0.75rem;">
-                                        <i class="bi bi-qr-code me-1"></i>Sediaan: {{ $item->kode_barang }}
-                                    </small>
-                                @endif
                             </td>
                             <td class="text-end fw-semibold text-secondary">
                                 Rp {{ number_format($item->harga_satuan ?? 0, 0, ',', '.') }}
@@ -156,7 +151,7 @@
         </div>
     </div>
 </div>
-
+<input hidden type="text" id="idheader" value="{{ $id }}">
 <script>
     function cetakNotaIni() {
         var isiNota = document.getElementById("areaCetakNota").innerHTML;
@@ -187,116 +182,20 @@
         }, 350);
     }
 
+  
+
     function cetakNotaThermal() {
-        var jendelaCetak = window.open('', '_blank', 'width=400,height=600');
+        idHeader = $('#idheader').val()
+        var urlPrint = "{{ url('/kasir/cetak-struk') }}/" + idHeader;
 
-        var htmlThermal = '<html><head><title>Thermal - {{ $idtrans }}</title>';
-        htmlThermal += '<style>';
-        htmlThermal += '@page { size: auto; margin: 0mm; }';
-        htmlThermal +=
-            'body { font-family: "Courier New", Courier, monospace; width: 280px; margin: 0 auto; padding: 10px; color: #000; font-size: 11px; line-height: 1.3; }';
-        htmlThermal += '.text-center { text-align: center; }';
-        htmlThermal += '.text-right { text-align: right; }';
-        htmlThermal += '.fw-bold { font-weight: bold; }';
-        htmlThermal += '.mb-1 { margin-bottom: 4px; }';
-        htmlThermal += '.mb-2 { margin-bottom: 8px; }';
-        htmlThermal += '.divider { border-top: 1px dashed #000; margin: 6px 0; }';
-        htmlThermal += '.item-table { width: 100%; border-collapse: collapse; }';
-        htmlThermal += '.item-table td { padding: 2px 0; vertical-align: top; }';
-        htmlThermal += '</style></head><body>';
+        // 2. Buka URL di tab/jendela baru
+        var win = window.open(urlPrint, '_blank');
 
-        // Header Klinik/Apotek
-        htmlThermal += '<div class="text-center">';
-        htmlThermal += '  <span class="fw-bold" style="font-size: 14px;">NP MEDIKA</span><br>';
-        htmlThermal +=
-            '  <span style="font-size: 10px;">Jalan Pangeran Sutajaya, Desa Gebang, Kecamatan Gebang, Kabupaten Cirebon, Jawa Barat 45191</span><br>';
-        htmlThermal += '</div>';
-
-        htmlThermal += '<div class="divider"></div>';
-
-        // Metadata Transaksi
-        htmlThermal += '<div>';
-        htmlThermal += '  ID   : {{ $idtrans }}<br>';
-        htmlThermal += '  Tgl  : {{ now()->translatedFormat('d/m/Y H:i') }}<br>';
-        htmlThermal += '  Kasir: {{ auth()->user()->nama ?? (auth()->user()->name ?? 'Petugas') }}<br>';
-        htmlThermal += '</div>';
-
-        htmlThermal += '<div class="divider"></div>';
-
-        // Loop Item Belanjaan
-        htmlThermal += '<table class="item-table">';
-        @php
-            $gTotal = 0;
-            $nomorItem = 1;
-        @endphp
-
-        @foreach ($data as $item)
-            @php
-                $hargaSatuan = $item->harga_satuan ?? 0;
-                $sub = $item->subtotal ?? 0;
-
-                if (($item->status_layanan ?? 0) == 3 || $hargaSatuan == 0 || $sub == 0) {
-                    continue;
-                }
-
-                $gTotal += $sub;
-
-                // Penyingkatan otomatis nama obat/layanan (dibatasi 25 karakter)
-                $namaLayananFull = $item->nama_tarif ?? 'Layanan';
-                $namaLayananSingkat = \Illuminate\Support\Str::limit($namaLayananFull, 25, '...');
-            @endphp
-
-            htmlThermal += '<tr>';
-            htmlThermal += '  <td colspan="2" class="fw-bold">{{ $nomorItem }}. {{ $namaLayananSingkat }}</td>';
-            htmlThermal += '</tr>';
-
-            htmlThermal += '<tr>';
-            htmlThermal +=
-                '  <td>   {{ number_format($item->jumlah ?? 0, 0, ',', '.') }} x Rp{{ number_format($hargaSatuan, 0, ',', '.') }}</td>';
-            htmlThermal += '  <td class="text-right">Rp{{ number_format($sub, 0, ',', '.') }}</td>';
-            htmlThermal += '</tr>';
-
-            @php $nomorItem++; @endphp
-        @endforeach
-        htmlThermal += '</table>';
-
-        htmlThermal += '<div class="divider"></div>';
-
-        // Ringkasan Pembayaran
-        htmlThermal += '<table class="item-table" style="font-size: 11px;">';
-        htmlThermal += '  <tr class="fw-bold">';
-        htmlThermal += '    <td>TOTAL BILL:</td>';
-        htmlThermal += '    <td class="text-right">Rp{{ number_format($gTotal, 0, ',', '.') }}</td>';
-        htmlThermal += '  </tr>';
-        htmlThermal += '  <tr>';
-        htmlThermal += '    <td>TUNAI/BAYAR:</td>';
-        htmlThermal += '    <td class="text-right">Rp{{ number_format($header[0]->bayar ?? 0, 0, ',', '.') }}</td>';
-        htmlThermal += '  </tr>';
-        htmlThermal += '  <tr class="fw-bold">';
-        htmlThermal += '    <td>KEMBALIAN:</td>';
-        htmlThermal +=
-            '    <td class="text-right">Rp{{ number_format($header[0]->kembalian ?? 0, 0, ',', '.') }}</td>';
-        htmlThermal += '  </tr>';
-        htmlThermal += '</table>';
-
-        htmlThermal += '<div class="divider"></div>';
-
-        // Footer Struk
-        htmlThermal += '<div class="text-center mb-2" style="font-size: 10px; margin-top: 10px;">';
-        htmlThermal += '  * Terima Kasih *<br>';
-        htmlThermal += '  Semoga Lekas Sembuh<br>';
-        htmlThermal += '  Bukti Pembayaran Elektronik Sah<br>';
-        htmlThermal += '</div>';
-
-        htmlThermal += '</body></html>';
-
-        jendelaCetak.document.write(htmlThermal);
-        jendelaCetak.document.close();
-
-        setTimeout(function() {
-            jendelaCetak.focus();
-            jendelaCetak.print();
-            jendelaCetak.close();
-        }, 250);
+        // 3. Fokuskan kursor ke tab baru tersebut (jika browser tidak memblokir)
+        if (win) {
+            win.focus();
+        } else {
+            alert('Gagal membuka tab baru. Mohon izinkan Pop-up pada browser Anda.');
+        }
     }
 </script>

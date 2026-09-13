@@ -17,7 +17,7 @@
                 {{-- <td>{{ $d->kode_layanan_header }}</td> --}}
                 <td>{{ \Carbon\Carbon::parse($d->tgl_layanan)->locale('id')->settings(['formatFunction' => 'translatedFormat'])->format('d F Y') }}
                 </td>
-                <td>{{ $d->nama_tarif }}</td>
+                <td>{{ $d->nama_tarif }} {{ $d->nama_display}} ( {{ $d->golongan_obat }})</td>
                 <td>{{ $d->jumlah }}</td>
                 <td>Rp {{ number_format($d->harga_satuan, 0, ',', '.') }}</td>
                 <td>Rp {{ number_format($d->subtotal, 0, ',', '.') }}</td>

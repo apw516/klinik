@@ -107,14 +107,14 @@
                         <p>Data Order Obat Pasien</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif  class="nav-item">
+                <li hidden @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif  class="nav-item">
                     <a href="{{ route('indexkartustokobat') }}"
                         class="nav-link @if ($menu == 'indexkartustokobat') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
                         <p>Kartu Stok Obat</p>
                     </a>
                 </li>
-                <li @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif  class="nav-item">
+                <li hidden @if(auth()->user()->hak_akses == 3 || auth()->user()->hak_akses == 2 ) hidden @endif  class="nav-item">
                     <a href="{{ route('indexstokpersediaan') }}"
                         class="nav-link @if ($menu == 'indexstokpersediaan') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>
@@ -143,7 +143,7 @@
                         <p>Data Nama Generik</p>
                     </a>
                 </li>
-                <li class="nav-item">
+                <li hidden class="nav-item">
                     <a href="{{ route('indexdataicd10') }}"
                         class="nav-link @if ($menu == 'indexdataicd10') active @endif">
                         <i class="nav-icon bi bi-file-bar-graph-fill"></i>

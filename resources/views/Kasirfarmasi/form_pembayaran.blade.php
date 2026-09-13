@@ -85,7 +85,7 @@
 </div>
 <!-- Modal -->
 <div class="modal fade" id="modaladdtindakan" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Tambah Tindakan</h1>
@@ -95,17 +95,17 @@
                 <table id="tabeltarif" class="table table-sm table-hover" style="font-size:14px">
                     <thead>
                         <th>Nama Tarif</th>
-                        <th>Jenis</th>
+                        {{-- <th>Jenis</th> --}}
                         <th>Tarif</th>
                     </thead>
                     <tbody>
                         @foreach ($tarif as $t)
                             <tr class="pilihtarif" idtarif="{{ $t->id }}"
-                                harga1="Rp. {{ number_format($t->tarif_1, 0, ',', '.') }}"
-                                harga2="{{ $t->tarif_1 }}" nama="{{ $t->nama_tarif }}">
+                                harga1="Rp. {{ number_format($t->harga, 0, ',', '.') }}"
+                                harga2="{{ $t->harga }}" nama="{{ $t->nama_tarif }}">
                                 <td>{{ $t->nama_tarif }}</td>
-                                <td>{{ $t->jenis_tarif }}</td>
-                                <td>Rp {{ number_format($t->tarif_1, 0, ',', '.') }}</td>
+                                {{-- <td>{{ $t->jenis_tarif }}</td> --}}
+                                <td>Rp {{ number_format($t->harga, 0, ',', '.') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -140,17 +140,19 @@
                 <table id="tabelstok" class="table table-sm tabel-bordered table-hover">
                     <thead>
                         <th>Nama Barang</th>
-                        <th>Stok</th>
-                        <th>Aturan pakai</th>
+                        <th>Harga Normal</th>
+                        <th>Harga Tebus</th>
+                        <th>Golongan</th>
                     </thead>
                     <tbody>
                         @foreach ($mt_barang as $item)
-                            <tr class="pilihobat" kode_barang="{{ $item->kode_barang }}"
-                                nama_barang="{{ $item->nama_barang }}" stok={{ $item->stok_global }}
+                            <tr class="pilihobat" kode_barang="{{ $item->id }}"
+                                nama_barang="{{ $item->nama_barang }}" stok={{ $item->stok }}
                                 aturan_pakai="{{ $item->aturan_pakai }}">
                                 <td>{{ $item->nama_barang }}</td>
-                                <td>{{ $item->stok_global }}</td>
-                                <td>{{ $item->stok_global }}</td>
+                                <td>{{ $item->harga_normal }}</td>
+                                <td>{{ $item->harga_tebus }}</td>
+                                <td>{{ $item->golongan_obat }}</td>
                                 {{-- <td>{{ $item->stok_sekarang}}</td> --}}
                             </tr>
                         @endforeach
@@ -389,6 +391,7 @@
         var kode_barang = $(this).attr('kode_barang');
         var nama_barang = $(this).attr('nama_barang');
         var stok = $(this).attr('stok');
+        var aturan_pakai = $(this).attr('aturan_pakai');
         var wrapper = $(".draftbillingobat");
 
         // HTML template menggunakan Backtick (``) agar kode rapi dan tidak pusing dengan string concatenation (+)
@@ -451,14 +454,14 @@
             <!-- Kolom Keterangan Tambahan -->
             <div class="form-group col-md-2">
                 <label class="fw-bold mb-1">Keterangan</label>
-                <input type="text" class="form-control form-control-sm text-xs" name="keterangan_obat" placeholder="Contoh: masukan pesan atau catatan ...">
+                <input type="text" class="form-control form-control-sm text-xs" name="keterangan_obat" placeholder="Contoh: masukan pesan atau catatan ..." value="${aturan_pakai}">
             </div>
 
             <!-- Paket Status -->
             <div class="form-group col-md-1 text-center">
                 <label class="fw-bold mb-1 d-block">Paket?</label>
                 <div class="form-check form-switch d-inline-block mt-1">
-                    <input class="form-check-input check-paket" type="checkbox" name="is_paket" value="1" checked>
+                    <input class="form-check-input check-paket" type="checkbox" name="is_paket" value="1">
                     <input type="hidden" class="status-paket-val" name="status_paket" value="0">
                 </div>
             </div>

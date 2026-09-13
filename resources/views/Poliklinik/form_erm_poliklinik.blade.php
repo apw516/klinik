@@ -13,7 +13,7 @@
     <div class="card-header mt-2">Info Pasien</div>
     <div class="card-body">
         <div class="row">
-            <div class="col-md-3">
+            <div class="col-md-4">
                 <table class="table table-sm table-boredered">
                     <tr>
                         <td>Nomor Identitas</td>
@@ -47,11 +47,11 @@
                     </tr>
                 </table>
             </div>
-            <div class="col-md-9">
+            <div class="col-md-8">
                 <div class="card">
                     <div class="card-header">Riwayat Kunjungan</div>
                     <div class="card-body">
-                        <table id="tabelriwayat" class="table table-sm table-bordered text-center table-hover">
+                        <table style="font-size:12px" id="tabelriwayat" class="table table-sm table-bordered text-center table-hover">
                             <thead>
                                 <th width="20%">Tanggal masuk | Kunjungan</th>
                                 <th width="16%">Unit</th>
@@ -71,7 +71,7 @@
                                         <td>
                                             {{ $t->SUBJECT }}
                                             <br>{{ $t->OBJECT }} <br>Diagnosa : {{ $t->kodediagnosa }}-
-                                            {{ $t->namadiagnosa }} , {{ $t->ASSESMENT }},{{ $t->PLANNING }}
+                                            {{ $t->namadiagnosa }} , {{ $t->ASSESMENT }}
                                             <span class="badge text-bg-secondary pilihriwayat"
                                                 subject="{{ $t->SUBJECT }}" object="{{ $t->OBJECT }}"
                                                 assesmen="{{ $t->ASSESMENT }}" planning="{{ $t->PLANNING }}"
@@ -105,7 +105,6 @@
                             <div class="row g-3 mb-4 p-4 bg-white rounded-3 shadow-sm border">
                                 <div class="col-12">
                                     <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-md-5">
-
                                         <div class="col">
                                             <div class="d-flex align-items-center p-2 rounded-2 bg-light h-100">
                                                 <div class="bg-primary text-white rounded-circle me-3 d-flex align-items-center justify-content-center shadow-sm"
@@ -278,7 +277,7 @@
                                 @csrf <input hidden type="text" value="{{ $idkunjungan }}" name="idkunjungan"
                                     id="idkunjungan">
                                 <div class="row g-4">
-                                    <div class="col-md-6 col-lg-4">
+                                    <div class="col-md-6 col-lg-3">
                                         <div
                                             class="form-group-soap p-3 rounded-3 border-start border-primary border-4 bg-white shadow-sm h-100">
                                             <label for="subject"
@@ -295,7 +294,7 @@ Keluhan Utama : {{ $dk[0]->keluhan_utama }}
 </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-lg-4">
+                                    <div class="col-md-6 col-lg-3">
                                         <div
                                             class="form-group-soap p-3 rounded-3 border-start border-success border-4 bg-white shadow-sm h-100">
                                             <label for="object"
@@ -315,7 +314,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
 </textarea>
                                         </div>
                                     </div>
-                                    <div class="col-md-6 col-lg-4">
+                                    <div class="col-md-6 col-lg-3">
                                         <div
                                             class="form-group-soap p-3 rounded-3 border-start border-warning border-4 bg-white shadow-sm h-100">
                                             <label for="assesmen"
@@ -324,15 +323,14 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                                 <i class="bi bi-clipboard-pulse fs-5 text-muted opacity-50"></i>
                                             </label>
                                             <div class="mb-2 position-relative">
-                                                <label for="namadiagnosa" class="form-label">Nama Diagnosa ICD -
-                                                    10</label>
+                                                <label for="namadiagnosa" class="form-label">Diagnosa</label>
                                                 <input type="text" class="form-control mb-3" id="namadiagnosa"
                                                     name="namadiagnosa"
                                                     placeholder="Ketik nama atau kode diagnosa ..."
                                                     value="{{ $dk[0]->namadiagnosa }}">
                                             </div>
 
-                                            <div class="mb-3">
+                                            <div hidden class="mb-3">
                                                 <label for="kodediagnosa" class="form-label">Kode Diagnosa ICD -
                                                     10</label>
                                                 <input type="text" class="form-control mb-3" id="kodediagnosa"
@@ -343,7 +341,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                                 placeholder="Ketik keterangan assesmen lain jika ada ... ">{{ $dk[0]->ASSESMENT }}</textarea>
                                         </div>
                                     </div>
-                                    <div hidden class="col-md-6 col-lg-3">
+                                    <div class="col-md-6 col-lg-3">
                                         <div
                                             class="form-group-soap p-3 rounded-3 border-start border-info border-4 bg-white shadow-sm h-100">
                                             <label for="planning"
@@ -364,7 +362,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                         class="form-group-soap p-3 rounded-3 border-start border-info border-4 bg-white shadow-sm h-100">
                         <label for="planning"
                             class="form-label fw-bold text-info text-uppercase d-flex align-items-center justify-content-between">
-                            4. Planning (P)
+                            Resep Obat
                             <i class="bi bi-journal-medical fs-5 text-muted opacity-50"></i>
                         </label>
                         <div class="card">
@@ -384,11 +382,11 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                                             class="form-control form-control-sm text-xs"
                                                             name="namabarang" value="{{ $d->nama_tarif }}">
                                                         <input hidden readonly type="text" name="kodebarang"
-                                                            value="{{ $d->kode_barang}}">
+                                                            value="{{ $d->kode_barang }}">
                                                         <input hidden readonly type="text" name="harga2"
                                                             value="">
                                                         <input hidden readonly type="text" name="kode_kunjungan"
-                                                            value="{{ $d->id_kunjungan}}">
+                                                            value="{{ $d->id_kunjungan }}">
                                                     </div>
 
                                                     <!-- Stok -->
@@ -411,7 +409,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                                             ? array_map('trim', explode(',', $d->aturan_pakai))
                                                             : [];
                                                     @endphp
-                                                   
+
                                                     <div class="form-group col-md-4">
                                                         <label class="fw-bold mb-1 d-block">Aturan Pakai</label>
                                                         <div
@@ -476,7 +474,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                                             class="form-control form-control-sm text-xs"
                                                             name="keterangan_obat"
                                                             placeholder="Contoh: masukan pesan atau catatan ..."
-                                                            value="{{ $d->keterangan }}">
+                                                            value="{{ $d->signa }}">
                                                     </div>
 
                                                     <!-- Paket Status -->
@@ -550,7 +548,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
 </div>
 <!-- Modal -->
 <div class="modal fade" id="modaltarif" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Silahkan Pilih Tarif Pelayanan</h1>
@@ -560,17 +558,17 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                 <table id="tabeltarif" class="table table-sm table-hover" style="font-size:14px">
                     <thead>
                         <th>Nama Tarif</th>
-                        <th>Jenis</th>
+                        {{-- <th>Jenis</th> --}}
                         <th>Tarif</th>
                     </thead>
                     <tbody>
                         @foreach ($tarif as $t)
                             <tr class="pilihtarif" idtarif="{{ $t->id }}"
-                                harga1="Rp. {{ number_format($t->tarif_1, 0, ',', '.') }}"
-                                harga2="{{ $t->tarif_1 }}" nama="{{ $t->nama_tarif }}">
+                                harga1="Rp. {{ number_format($t->harga, 0, ',', '.') }}"
+                                harga2="{{ $t->harga }}" nama="{{ $t->nama_tarif }}">
                                 <td>{{ $t->nama_tarif }}</td>
-                                <td>{{ $t->jenis_tarif }}</td>
-                                <td>Rp {{ number_format($t->tarif_1, 0, ',', '.') }}</td>
+                                {{-- <td>{{ $t->jenis_tarif }}</td> --}}
+                                <td>Rp {{ number_format($t->harga, 0, ',', '.') }}</td>
                             </tr>
                         @endforeach
                     </tbody>
@@ -584,7 +582,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
 </div>
 <!-- Modal -->
 <div class="modal fade" id="modalobat" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
+    <div class="modal-dialog modal-lg">
         <div class="modal-content">
             <div class="modal-header">
                 <h1 class="modal-title fs-5" id="exampleModalLabel">Silahkan Pilih Obat</h1>
@@ -594,17 +592,19 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                 <table id="tabelstok" class="table table-sm tabel-bordered table-hover">
                     <thead>
                         <th>Nama Barang</th>
-                        <th>Stok</th>
-                        <th>Aturan pakai</th>
+                        <th>Harga Normal</th>
+                        <th>Harga Tebus</th>
+                        <th>Golongan</th>
                     </thead>
                     <tbody>
                         @foreach ($mt_barang as $item)
-                            <tr class="pilihobat" kode_barang="{{ $item->kode_barang }}"
-                                nama_barang="{{ $item->nama_barang }}" stok={{ $item->stok_global }}
-                                aturan_pakai="{{ $item->aturan_pakai }}">
+                            <tr class="pilihobat" kode_barang="{{ $item->id }}"
+                                nama_barang="{{ $item->nama_barang }}" stok={{ $item->stok }}
+                                aturan_pakai="{{ $item->aturan_pakai }}" golobat="{{$item->golongan_obat}}">
                                 <td>{{ $item->nama_barang }}</td>
-                                <td>{{ $item->stok_global }}</td>
-                                <td>{{ $item->stok_global }}</td>
+                                <td>Rp {{ number_format($item->harga_normal, 2, ',', '.') }}</td>
+                                <td>Rp {{ number_format($item->harga_tebus, 2, ',', '.') }}</td>
+                                <td>{{ $item->golongan_obat }}</td>
                                 {{-- <td>{{ $item->stok_sekarang}}</td> --}}
                             </tr>
                         @endforeach
@@ -789,13 +789,15 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
         var kode_barang = $(this).attr('kode_barang');
         var nama_barang = $(this).attr('nama_barang');
         var stok = $(this).attr('stok');
+        var aturan_pakai = $(this).attr('aturan_pakai');
+        var golobat = $(this).attr('golobat');
         var wrapper = $(".draftbillingobat");
 
         // HTML template menggunakan Backtick (``) agar kode rapi dan tidak pusing dengan string concatenation (+)
         var htmlRow = `
         <div class="row text-xs align-items-center mb-2 border-bottom pb-2">
             <!-- Nama & Kode Barang -->
-            <div class="form-group col-md-2">
+            <div class="form-group col-md-3">
                 <label class="fw-bold mb-1">Nama Obat</label>
                 <input readonly type="text" class="form-control form-control-sm text-xs" name="namabarang" value="${nama_barang}">
                 <input hidden readonly type="text" name="kodebarang" value="${kode_barang}">
@@ -804,7 +806,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
             </div>
 
             <!-- Stok -->
-            <div class="form-group col-md-1">
+            <div hidden class="form-group col-md-1">
                 <label class="fw-bold mb-1">Stok</label>
                 <input readonly type="text" class="form-control form-control-sm text-xs text-center" name="stok" value="${stok}">
             </div>
@@ -852,14 +854,17 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
             <!-- Kolom Keterangan Tambahan -->
             <div class="form-group col-md-2">
                 <label class="fw-bold mb-1">Keterangan</label>
-                <input type="text" class="form-control form-control-sm text-xs" name="keterangan_obat" placeholder="Contoh: masukan pesan atau catatan ...">
+                <input type="text" class="form-control form-control-sm text-xs" value="${aturan_pakai}" name="keterangan_obat" placeholder="Contoh: masukan pesan atau catatan ...">
             </div>
-
             <!-- Paket Status -->
             <div class="form-group col-md-1 text-center">
+                <label class="fw-bold mb-1 d-block">gol</label>
+                  <input readonly type="text" class="form-control form-control-sm text-xs" value="${golobat}" name="gol_obat" placeholder="Contoh: masukan pesan atau catatan ...">
+            </div>
+            <div hidden class="form-group col-md-1 text-center">
                 <label class="fw-bold mb-1 d-block">Paket?</label>
                 <div class="form-check form-switch d-inline-block mt-1">
-                    <input class="form-check-input check-paket" type="checkbox" name="is_paket" value="1" checked>
+                    <input class="form-check-input check-paket" type="checkbox" name="is_paket" value="1">
                     <input type="hidden" class="status-paket-val" name="status_paket" value="0">
                 </div>
             </div>

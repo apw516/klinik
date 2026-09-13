@@ -24,12 +24,12 @@
             <li class="list-group-item py-3 px-4 obat-item" data-kode="{{ $d->kode_barang }}">
                 <div class="row align-items-center">
                     <div class="col-md-4">
-                        <h6 class="mb-1 fw-bold text-dark nama-barang-text">{{ $d->nama_barang }}</h6>
+                        <h6 class="mb-1 fw-bold text-dark nama-barang-text">{{ $d->nama_display }}</h6>
                         <small class="text-muted d-block">
-                            KODE: <span class="fw-semibold text-secondary">{{ $d->kode_barang }}</span>
+                            {{-- KODE: <span class="fw-semibold text-secondary">{{ $d->kode_barang }}</span> --}}
                         </small>
                         <input type="hidden" name="kodebarang[]" value="{{ $d->kode_barang }}">
-                        <input type="hidden" name="namabarang[]" value="{{ $d->nama_barang }}">
+                        <input type="hidden" name="namabarang[]" value="{{ $d->nama_display }}">
                         <input type="hidden" name="id_detail[]" value="{{ $d->id_detail }}">
                         <input type="hidden" name="id_header[]" value="{{ $d->id_header }}">
                     </div>
@@ -58,7 +58,7 @@
                             </span>
                         </div>
                         <button type="button" class="btn btn-sm btn-link text-danger p-0 h-auto btn-hapus-obat"
-                            title="Hapus Obat" data-iddetail="{{ $d->id_detail }}" data-nama="{{ $d->nama_barang }}"
+                            title="Hapus Obat" data-iddetail="{{ $d->id_detail }}" data-nama="{{ $d->nama_display }}"
                             data-idheader="{{ $d->id_header }}"> <!-- Ditambahkan ini -->
                             <i class="bi bi-trash3-fill fs-6"></i> Hapus
                         </button>
@@ -88,7 +88,7 @@
             e.preventDefault();
             // 1. Ambil data dari atribut data- di baris tr yang diklik
             var kode_barang = $(this).data('kode');
-            var nama_barang = $(this).data('nama');
+            var nama_display = $(this).data('nama');
             var stok_global = parseInt($(this).data('stok')) || 0;
             var aturan_pakai = $(this).data('aturan') || '-';
             // 2. Validasi: Cek apakah obat sudah ada di dalam draf list resep
@@ -102,7 +102,7 @@
             if (sudahAda) {
                 Swal.fire({
                     title: "Sudah Ada",
-                    text: nama_barang + " sudah masuk di dalam draf list resep!",
+                    text: nama_display + " sudah masuk di dalam draf list resep!",
                     icon: "warning",
                     confirmButtonColor: "#3085d6"
                 });
@@ -117,10 +117,10 @@
             <li class="list-group-item py-3 px-4 obat-item" data-kode="${kode_barang}">
                 <div class="row align-items-center">
                     <div class="col-md-4">
-                        <h6 class="mb-1 fw-bold text-dark nama-barang-text">${nama_barang}</h6>
+                        <h6 class="mb-1 fw-bold text-dark nama-barang-text">${nama_display}</h6>
                         <small class="text-muted d-block">KODE: <span class="fw-semibold text-secondary">${kode_barang}</span></small>
                         <input type="hidden" name="kodebarang[]" value="${kode_barang}">
-                        <input type="hidden" name="namabarang[]" value="${nama_barang}">
+                        <input type="hidden" name="namabarang[]" value="${nama_display}">
                         <input type="hidden" name="iddetail[]" value="0">
                         <input type="hidden" name="idheader[]" value="0">
                     </div>
@@ -162,7 +162,7 @@
             // 7. Tampilkan notifikasi toast/alert singkat
             Swal.fire({
                 title: "Ditambahkan!",
-                text: nama_barang + " berhasil masuk ke draf resep.",
+                text: nama_display + " berhasil masuk ke draf resep.",
                 icon: "success",
                 timer: 1000,
                 showConfirmButton: false

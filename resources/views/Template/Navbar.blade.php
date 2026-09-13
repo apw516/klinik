@@ -83,7 +83,7 @@
                 </a>
                 <ul class="dropdown-menu dropdown-menu-lg dropdown-menu-end">
                     <li class="user-header text-bg-primary">
-                        <img src="./public/admin/dist/assets/img/user2-160x160.jpg" class="rounded-circle shadow"
+                        <img src="./public/img/userlogo.jpg" class="rounded-circle shadow"
                             alt="User Image" />
                         <p>
                             {{ auth()->user()->nama }}
@@ -93,7 +93,7 @@
                     <li class="user-body"></li>
                     <li class="user-footer">
                         <a href="#" class="btn btn-default btn-flat">Profile</a>
-                        <a href="#" class="btn btn-default btn-flat float-end">Sign out</a>
+                        <a href="#" class="btn btn-default btn-flat float-end" onclick="logout()">Sign out</a>
                     </li>
                 </ul>
             </li>

@@ -24,14 +24,14 @@
                      </thead>
                      <tbody class="text-xs">
                          @foreach ($mt_barang as $item)
-                             <tr class="btn-pilih-barang" style="cursor: pointer;" data-kode="{{ $item->kode_barang }}"
-                                 data-nama="{{ $item->nama_barang }}" data-stok="{{ $item->stok_global }}"
+                             <tr class="btn-pilih-barang" style="cursor: pointer;" data-kode="{{ $item->id }}"
+                                 data-nama="{{ $item->nama_barang }}" data-stok="{{ $item->stok }}"
                                  data-aturan="{{ $item->aturan_pakai ?? 'Sesudah Makan' }}">
                                  <td class="fw-semibold text-dark">{{ $item->nama_barang }}</td>
                                  <td class="text-center">
                                      <span
-                                         class="badge {{ $item->stok_global > 10 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} px-2 py-1">
-                                         {{ $item->stok_global }}
+                                         class="badge {{ $item->stok > 10 ? 'bg-success-subtle text-success' : 'bg-danger-subtle text-danger' }} px-2 py-1">
+                                         {{ $item->stok }}
                                      </span>
                                  </td>
                                  <td class="text-muted">{{ $item->aturan_pakai ?? '-' }}</td>
