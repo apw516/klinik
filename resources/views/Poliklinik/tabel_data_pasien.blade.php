@@ -12,12 +12,16 @@
     </thead>
     <tbody>
         @foreach ($data as $item)
-            <tr>
+            <tr class="">
                 <td>{{ $item->nomor_antrian }}</td>
                 <td>{{ \Carbon\Carbon::parse($item->tgl_masuk)->locale('id')->translatedFormat('d F Y') }}</td>
                 <td>{{ $item->nomor_rm }}</td>
                 <td>{{ $item->nama_pasien }}</td>
-                <td>{{ $item->nama_unit }}</td>
+                <td>@if($item->jenis_kunjungan == 3) 
+                    
+                   <h5><span class="badge text-bg-warning">PASIEN TEBUS OBAT</span></h5>
+                    
+                    @else {{ $item->nama_unit }} @endif</td>
                 <td>{{ $item->nama_dokter }}</td>
                 <td>{{ $item->keluhan_utama }}</td>
                 <td>

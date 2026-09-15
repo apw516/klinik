@@ -139,6 +139,7 @@
                                     <option value="0">Silahkan Pilih</option>
                                     <option value="1" selected>Rawat Jalan</option>
                                     <option value="2">Rawat Inap</option>
+                                    <option value="3">Tebus Obat</option>
                                 </select>
                             </div>
                         </div>

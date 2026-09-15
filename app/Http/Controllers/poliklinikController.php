@@ -30,7 +30,7 @@ class poliklinikController extends Controller
     {
         $tanggalawal = $request->tanggalawal;
         $tanggalakhir = $request->tanggalakhir;
-        $data = db::select('select a.*,b.nomor_antrian,d.nama_pasien,c.nama_unit,e.nama_lengkap as nama_dokter from ts_kunjungan a 
+        $data = db::select('select a.*,b.nomor_antrian,d.nama_pasien,c.nama_unit,e.nama_lengkap as nama_dokter ,a.status_kunjungan from ts_kunjungan a 
         left join ts_antrian_pasien b on a.id = b.id_kunjungan 
         left join master_unit c on a.unit_tujuan = c.id 
         left join master_pasien d on a.nomor_rm = d.nomor_rm
@@ -49,13 +49,34 @@ class poliklinikController extends Controller
         $data_kunjungan = DB::table('ts_kunjungan as k')
             ->leftJoin('master_pegawai as p', 'k.dokter', '=', 'p.id')
             ->leftJoin('master_unit as u', 'k.unit_tujuan', '=', 'u.id')
-            ->select('k.*', 'p.nama_lengkap as nama_dokter', 'u.nama_unit')
+            ->select('k.*', 'p.nama_lengkap as nama_dokter', 'u.nama_unit', 'k.jenis_kunjungan')
             ->where('k.nomor_rm', $nomor_rm)
             ->orderBy('k.id', 'desc')
             ->get();
         $tarif = db::select('select * from mt_tarif_np_medika');
         $mt_barang = db::select('select * from mt_barang_np_medika');
-        $dataobat = db::select('select * ,b.keterangan as keterangan_obat from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.keterangan = ? and b.status_layanan != 3', [$idkunjungan, 'OBAT']);
+        // $dataobat = db::select('select * ,b.keterangan as keterangan_obat from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.keterangan = ? and b.status_layanan != 3', [$idkunjungan, 'OBAT']);
+
+        // $last_order = db::select('select * ,b.keterangan as keterangan_obat from ts_layanan_header a inner join ts_layanan_detail b on a.id = b.id_header where a.id_kunjungan = ? and a.keterangan = ? and b.status_layanan != 3', [$idkunjungan, 'OBAT']);
+
+        // 1. Cari ID kunjungan obat terakhir untuk RM tersebut
+        $maxKunjunganId = DB::table('ts_kunjungan as k')
+            ->join('ts_layanan_header as h', 'k.id', '=', 'h.id_kunjungan')
+            ->where('k.nomor_rm', $nomor_rm)
+            ->where('h.keterangan', 'OBAT')
+            ->max('k.id'); // atau ->max('h.id_kunjungan')
+
+        // 2. Ambil detail order obatnya
+        $dataobat = DB::table('ts_layanan_header as a')
+            ->select('a.*', 'b.keterangan as keterangan_obat', 'c.nomor_rm', 'b.nama_tarif', 'b.kode_barang', 'b.jumlah', 'b.signa', 'b.status_paket', 'd.golongan_obat')
+            ->join('ts_layanan_detail as b', 'a.id', '=', 'b.id_header')
+            ->join('ts_kunjungan as c', 'c.id', '=', 'a.id_kunjungan')
+            ->join('mt_barang_np_medika as d', 'b.kode_barang', '=', 'd.id')
+            ->where('a.id_kunjungan', $maxKunjunganId)
+            ->where('a.keterangan', 'OBAT')
+            ->where('b.status_layanan', '!=', 3)
+            ->get();
+        // dd($dataobat);
         return view('Poliklinik.form_erm_poliklinik', compact([
             'mt_pasien',
             'data_kunjungan',
@@ -92,6 +113,15 @@ class poliklinikController extends Controller
             $dataSet3[$index3] = $value3;
             if ($index3 == 'status_paket') {
                 $arrayobat[] = $dataSet3;
+            }
+        }
+        if (count($arrayobat) > 0) {
+            if (count($arrayobat) <= 3) {
+                $kondisi = 1;
+            } elseif (count($arrayobat) == 4) {
+                $kondisi = 2;
+            } elseif (count($arrayobat) > 4) {
+                $kondisi = 3;
             }
         }
         $planning = '';
@@ -203,11 +233,15 @@ class poliklinikController extends Controller
             if ($jlhobatorder > 0) {
                 $h = model_ts_layanan_header::create($data_header);
                 $total_tagihan = 0;
+                $obatke = 0;
                 foreach ($arrayobat as $index => $b) {
                     if ($b['kode_kunjungan'] != $idkunjungan) {
+                        $obatke = $obatke + 1;
                         $paket = data_get($b, 'is_paket', 0) ? 1 : 0;
                         // 2. Ambil data master barang
-                        $mt_barang = DB::select('select id, nama_barang, harga_normal FROM mt_barang_np_medika where id = ?', [$b['kodebarang']]);
+                        $mt_barang = DB::select('select id, nama_barang, harga_normal,harga_tebus FROM mt_barang_np_medika where id = ?', [$b['kodebarang']]);
+                        if ($data_kunjungan[0]->jenis_kunjungan == 3) {
+                        }
                         if (empty($mt_barang)) {
                             continue; // Lewati jika kode barang tidak ditemukan di master
                         }
@@ -253,7 +287,18 @@ class poliklinikController extends Controller
                         $subtotal = $harga * $b['qty'];
                         $aturanPakaiString = !empty($checkboxObatIni) ? implode(', ', $checkboxObatIni) : '-';
                         $keteranganObat = $b['keterangan_obat'];
-
+                        if ($data_kunjungan[0]->jenis_kunjungan == 3) {
+                            if ($kondisi == 1) {
+                                $harga = $barangMaster->harga_tebus;
+                            } elseif ($kondisi == 2) {
+                                $harga = $barangMaster->harga_tebus;
+                            } elseif ($kondisi == 3) {
+                                $harga = $barangMaster->harga_tebus;
+                                if ($obatke > 4) {
+                                    $harga = $barangMaster->harga_normal;
+                                }
+                            }
+                        }
                         $data_detail = [
                             'id_header'       => $h->id,
                             'kode_barang'     => $b['kodebarang'],
@@ -271,6 +316,7 @@ class poliklinikController extends Controller
                         $total_tagihan = $total_tagihan + $subtotal;
                     }
                 }
+                // dd($obatke);
                 // Update nilai akumulasi di header layanan pasien
                 model_ts_layanan_header::where('id', $h->id)->update(['total_tagihan' => $total_tagihan, 'status_layanan' => 1]);
             }

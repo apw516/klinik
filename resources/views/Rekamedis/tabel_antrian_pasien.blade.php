@@ -6,6 +6,7 @@
         <th>Nomor RM</th>
         <th>Nama Pasien</th>
         <th>Alamat</th>
+        <th>Jenis Kunjungan</th>
         <th>Unit Tujuan</th>
         <th>Status</th>
         <th></th>
@@ -19,6 +20,7 @@
                 <td>{{ $item->nomor_rm }}</td>
                 <td>{{ $item->nama_pasien }}</td>
                 <td>{{ $item->alamat_ktp }} / {{ $item->alamat_domisili }}</td>
+                <td>@if($item->jenis_kunjungan == 1) Rawat jalan @elseif($item->jenis_kunjungan == 2) Rawat Inap @elseif($item->jenis_kunjungan == 3) Tebus Obat @endif</td>
                 <td>{{ $item->nama_unit }}</td>
                 <td>
                     @if ($item->status == 1)

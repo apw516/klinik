@@ -426,7 +426,8 @@ class rekamedisController extends Controller
         $data = model_ts_antrian::whereRaw('DATE(tgl_antri) = ?', [$tanggal])
             ->join('master_unit', 'ts_antrian_pasien.unit', '=', 'master_unit.id')
             ->join('master_pasien', 'ts_antrian_pasien.nomor_rm', '=', 'master_pasien.nomor_rm')
-            ->select('ts_antrian_pasien.*', 'master_unit.nama_unit', 'master_pasien.nama_pasien', 'master_pasien.alamat_ktp', 'master_pasien.alamat_domisili') // Ambil semua kolom antrian + nama unit
+            ->join('ts_kunjungan', 'ts_antrian_pasien.id_kunjungan', '=', 'ts_kunjungan.id')
+            ->select('ts_antrian_pasien.*', 'master_unit.nama_unit', 'master_pasien.nama_pasien', 'master_pasien.alamat_ktp', 'master_pasien.alamat_domisili','ts_kunjungan.jenis_kunjungan') // Ambil semua kolom antrian + nama unit
             ->orderBy('ts_antrian_pasien.nomor_urut', 'asc')
             ->get();
         return view('Rekamedis.tabel_antrian_pasien', compact([

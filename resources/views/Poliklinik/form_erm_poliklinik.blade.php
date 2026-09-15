@@ -51,7 +51,8 @@
                 <div class="card">
                     <div class="card-header">Riwayat Kunjungan</div>
                     <div class="card-body">
-                        <table style="font-size:12px" id="tabelriwayat" class="table table-sm table-bordered text-center table-hover">
+                        <table style="font-size:12px" id="tabelriwayat"
+                            class="table table-sm table-bordered text-center table-hover">
                             <thead>
                                 <th width="20%">Tanggal masuk | Kunjungan</th>
                                 <th width="16%">Unit</th>
@@ -97,11 +98,17 @@
                 <div class="card-header">Form Hasil Pemeriksaan</div>
                 <div class="card-body">
                     <div class="card shadow-sm border-0 mt-3">
-                        <div class="card-header bg-white border-0 pt-3 pb-0 mb-4">
+                        @if ($dk[0]->jenis_kunjungan == 3)
+                            <div class="alert alert-warning" role="alert">
+                                Pasien tebus obat !
+                            </div>
+                        @endif
+                        <div @if ($dk[0]->jenis_kunjungan == 3) hidden @endif
+                            class="card-header bg-white border-0 pt-3 pb-0 mb-4">
                             <h6 class="card-title text-uppercase text-muted fw-bold mb-0">Hasil Pemeriksaan Awal (TTV)
                             </h6>
                         </div>
-                        <div class="card-body">
+                        <div @if ($dk[0]->jenis_kunjungan == 3) hidden @endif class="card-body">
                             <div class="row g-3 mb-4 p-4 bg-white rounded-3 shadow-sm border">
                                 <div class="col-12">
                                     <div class="row g-3 row-cols-1 row-cols-sm-2 row-cols-md-5">
@@ -376,7 +383,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                             @foreach ($dataobat as $d)
                                                 <div class="row text-xs align-items-center mb-2 border-bottom pb-2">
                                                     <!-- Nama & Kode Barang -->
-                                                    <div class="form-group col-md-2">
+                                                    <div class="form-group col-md-3">
                                                         <label class="fw-bold mb-1">Nama Obat</label>
                                                         <input readonly type="text"
                                                             class="form-control form-control-sm text-xs"
@@ -390,7 +397,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                                     </div>
 
                                                     <!-- Stok -->
-                                                    <div class="form-group col-md-1">
+                                                    <div hidden class="form-group col-md-1">
                                                         <label class="fw-bold mb-1">Stok</label>
                                                         <input readonly type="text"
                                                             class="form-control form-control-sm text-xs text-center"
@@ -479,6 +486,13 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
 
                                                     <!-- Paket Status -->
                                                     <div class="form-group col-md-1 text-center">
+                                                        <label class="fw-bold mb-1 d-block">gol</label>
+                                                        <input readonly type="text"
+                                                            class="form-control form-control-sm text-xs"
+                                                            value="{{ $d->golongan_obat }}" name="gol_obat"
+                                                            placeholder="Contoh: masukan pesan atau catatan ...">
+                                                    </div>
+                                                    <div hidden class="form-group col-md-1 text-center">
                                                         <label class="fw-bold mb-1 d-block">Paket?</label>
                                                         <div class="form-check form-switch d-inline-block mt-1">
                                                             <input class="form-check-input check-paket"
@@ -600,7 +614,7 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                         @foreach ($mt_barang as $item)
                             <tr class="pilihobat" kode_barang="{{ $item->id }}"
                                 nama_barang="{{ $item->nama_barang }}" stok={{ $item->stok }}
-                                aturan_pakai="{{ $item->aturan_pakai }}" golobat="{{$item->golongan_obat}}">
+                                aturan_pakai="{{ $item->aturan_pakai }}" golobat="{{ $item->golongan_obat }}">
                                 <td>{{ $item->nama_barang }}</td>
                                 <td>Rp {{ number_format($item->harga_normal, 2, ',', '.') }}</td>
                                 <td>Rp {{ number_format($item->harga_tebus, 2, ',', '.') }}</td>
