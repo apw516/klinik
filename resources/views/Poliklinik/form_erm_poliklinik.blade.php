@@ -606,8 +606,8 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                 <table id="tabelstok" class="table table-sm tabel-bordered table-hover">
                     <thead>
                         <th>Nama Barang</th>
-                        <th>Harga Normal</th>
-                        <th>Harga Tebus</th>
+                        <th hidden>Harga Normal</th>
+                        <th hidden>Harga Tebus</th>
                         <th>Golongan</th>
                     </thead>
                     <tbody>
@@ -616,8 +616,8 @@ Saturasi Oksigen : {{ $dk[0]->saturasi_oksigen }} % @else{{ $dk[0]->OBJECT }}
                                 nama_barang="{{ $item->nama_barang }}" stok={{ $item->stok }}
                                 aturan_pakai="{{ $item->aturan_pakai }}" golobat="{{ $item->golongan_obat }}">
                                 <td>{{ $item->nama_barang }}</td>
-                                <td>Rp {{ number_format($item->harga_normal, 2, ',', '.') }}</td>
-                                <td>Rp {{ number_format($item->harga_tebus, 2, ',', '.') }}</td>
+                                <td hidden >Rp {{ number_format($item->harga_normal, 2, ',', '.') }}</td>
+                                <td hidden >Rp {{ number_format($item->harga_tebus, 2, ',', '.') }}</td>
                                 <td>{{ $item->golongan_obat }}</td>
                                 {{-- <td>{{ $item->stok_sekarang}}</td> --}}
                             </tr>

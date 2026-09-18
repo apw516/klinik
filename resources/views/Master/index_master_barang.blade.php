@@ -27,27 +27,31 @@
                         <thead>
                             <th>Kode Barang</th>
                             <th>Nama Barang</th>
-                            <th>Nama Generik</th>
-                            <th>Nama Pabrik</th>
-                            <th>Jenis Barang</th>
-                            <th>Kategori</th>
-                            <th>Satuan</th>
-                            <th>Isi konversi</th>
+                            {{-- <th>Nama Generik</th>
+                            <th>Nama Pabrik</th> --}}
+                            {{-- <th>Jenis Barang</th> --}}
+                            <th>Display</th>
+                            <th>Aturan Pakai</th>
+                            <th>Golongan</th>
+                            <th>Harga Normal</th>
+                            <th>Harga Tebus</th>
                             <th>Stok Sekarang</th>
                             <th></th>
                         </thead>
                         <tbody>
                             @foreach ($data as $d)
                                 <tr>
-                                    <td>{{ $d->kode_barang }}</td>
+                                    <td>{{ $d->id }}</td>
                                     <td>{{ $d->nama_barang }}</td>
-                                    <td>{{ $d->nama_generik }}</td>
-                                    <td>{{ $d->nama_pabrik }}</td>
-                                    <td>{{ $d->jenis_barang }}</td>
-                                    <td>{{ $d->kategori_obat }}</td>
-                                    <td>{{ $d->satuan_besar }} , {{ $d->satuan_sedang }} , {{ $d->satuan_kecil }}</td>
-                                    <td>{{ $d->isi_konversi }}</td>
-                                    <td>{{ $d->stok_global }}</td>
+                                    {{-- <td>{{ $d->nama_generik }}</td>
+                                    <td>{{ $d->nama_pabrik }}</td> --}}
+                                    {{-- <td>{{ $d->jenis_barang }}</td> --}}
+                                    <td>{{ $d->nama_display }}</td>
+                                    <td>{{ $d->aturan_pakai }}</td>
+                                    <td>{{ $d->golongan_obat }}</td>
+                                    <td>{{ $d->harga_normal }}</td>
+                                    <td>{{ $d->harga_tebus }}</td>
+                                    <td>{{ $d->stok }}</td>
                                     <td class="text-center">
                                         <button class="btn btn-sm btn-warning editmasterbarang"
                                             idbarang="{{ $d->id }}" data-bs-toggle="modal"
@@ -77,87 +81,38 @@
                     <div class="modal-body" style="max-height: 75vh; overflow-y: auto;">
                         <div class="row g-3">
                             <div class="col-md-8">
-                                <label for="nama_barang" class="form-label small fw-bold text-secondary">Nama Komersial /
-                                    Barang</label>
+                                <label for="nama_barang" class="form-label small fw-bold text-secondary">Nama Barang</label>
                                 <input type="text" class="form-control" id="nama_barang" name="nama_barang"
                                     placeholder="Contoh: Amoxicillin 500mg" required>
                             </div>
 
                             <div class="col-md-6">
-                                <label for="nama_generik" class="form-label small fw-bold text-secondary">Nama Generik
-                                    (Kandungan)</label>
-                                <input type="text" class="form-control" id="nama_generik" name="nama_generik"
-                                    placeholder="Contoh: Amoxicillin Trihydrate">
+                                <label for="nama_generik" class="form-label small fw-bold text-secondary">Nama Display</label>
+                                <input type="text" class="form-control" id="nama_display" name="nama_display"
+                                    placeholder="Contoh: PCT">
                             </div>
 
                             <div class="col-md-6">
-                                <label for="nama_pabrik" class="form-label small fw-bold text-secondary">Nama Pabrik /
-                                    Produsen</label>
-                                <input type="text" class="form-control" id="nama_pabrik" name="nama_pabrik"
-                                    placeholder="Contoh: Kimia Farma / Sanbe">
+                                <label for="nama_pabrik" class="form-label small fw-bold text-secondary">Harga Jual Normal</label>
+                                <input type="text" class="form-control" id="harga_normal" name="harga_normal"
+                                    placeholder="Contoh: 10000">
                             </div>
-
-                            <hr class="my-2 text-muted">
-
-                            <div class="col-md-6">
-                                <label for="jenis_barang" class="form-label small fw-bold text-secondary">Jenis
-                                    Barang</label>
-                                <select class="form-select" id="jenis_barang" name="jenis_barang" required>
-                                    <option value="Obat" selected>Obat</option>
-                                    <option value="Alkes">Alat Kesehatan (Alkes)</option>
-                                    <option value="BHP">Bahan Habis Pakai (BHP)</option>
-                                </select>
-                            </div>
-
-                            <div class="col-md-6">
-                                <label for="kategori_obat" class="form-label small fw-bold text-secondary">Kategori Regulasi
-                                    Obat</label>
-                                <select class="form-select" id="kategori_obat" name="kategori_obat" required>
-                                    <option value="Bebas">Obat Bebas (Hijau)</option>
-                                    <option value="Bebas Terbatas">Obat Bebas Terbatas (Biru)</option>
-                                    <option value="Keras">Obat Keras (Merah / K)</option>
-                                    <option value="Psikotropika">Psikotropika</option>
-                                    <option value="Narkotika">Narkotika</option>
-                                    <option value="Non-Obat">Non-Obat / Alkes</option>
-                                </select>
-                            </div>
-
-                            <hr class="my-2 text-muted">
-
                             <div class="col-md-4">
-                                <label for="satuan_besar" class="form-label small fw-bold text-secondary">Satuan Besar
-                                    (Pembelian)</label>
-                                <input type="text" class="form-control" id="satuan_besar" name="satuan_besar"
-                                    placeholder="Contoh: Box / Karton" required>
+                                <label for="satuan_besar" class="form-label small fw-bold text-secondary">Harga Tebus</label>
+                                <input type="text" class="form-control" id="harga_tebus" name="harga_tebus"
+                                    placeholder="Contoh: 10000" required>
+                            </div>
+                            <div class="col-md-4">
+                                <label for="satuan_sedang" class="form-label small fw-bold text-secondary">Aturan Pakai</label>
+                                <input type="text" class="form-control" id="aturan_pakai" name="aturan_pakai"
+                                    placeholder=" contoh : 3x1">
                             </div>
 
                             <div class="col-md-4">
-                                <label for="satuan_sedang" class="form-label small fw-bold text-secondary">Satuan Sedang
-                                    (Opsional)</label>
-                                <input type="text" class="form-control" id="satuan_sedang" name="satuan_sedang"
-                                    placeholder="Contoh: Strip / Botol">
-                            </div>
-
-                            <div class="col-md-4">
-                                <label for="satuan_kecil" class="form-label small fw-bold text-secondary">Satuan Kecil
-                                    (Eceran/Resep)</label>
+                                <label for="satuan_kecil" class="form-label small fw-bold text-secondary">Golongan Obat</label>
                                 <input type="text" class="form-control" id="satuan_kecil" name="satuan_kecil"
-                                    placeholder="Contoh: Tablet / Pcs" required>
+                                    placeholder="Contoh: A" required>
                             </div>
-
-                            <div class="col-6">
-                                <label for="isi_konversi" class="form-label small fw-bold text-secondary">Bentuk Sediaan
-                                    Satuan</label>
-                                <input type="text" class="form-control" id="bentuk_sediaan" name="bentuk_sediaan"
-                                    placeholder="Contoh: inject atau tablet" required>
-                            </div>
-                            <div class="col-6">
-                                <label for="isi_konversi" class="form-label small fw-bold text-secondary">Isi Konversi
-                                    Satuan</label>
-                                <input type="text" class="form-control" id="isi_konversi" name="isi_konversi"
-                                    placeholder="Contoh: 1 box berisi 100 tablet, maka isi dengan angka 100" required>
-                            </div>
-
                         </div>
                     </div>
                     <div class="modal-footer">
@@ -182,15 +137,13 @@
                     <div class="v_edit">
 
                     </div>
-
-
                 </div>
                 <div class="modal-footer">
                     <button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Batal</button>
                     <button type="button" id="btnSimpanEditBarang" class="btn btn-primary">
                         <i class="bi bi-save me-1"></i> Simpan Edit Barang
                     </button>
-                </div>>
+                </div>
             </div>
         </div>
     </div>

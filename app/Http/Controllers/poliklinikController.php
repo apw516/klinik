@@ -250,7 +250,7 @@ class poliklinikController extends Controller
                             $harga = 0;
                             $status_paket = 'YA';
                         } else {
-                            $harga = $barangMaster->harga_normal;
+                            $harga = $barangMaster->harga_tebus;
                             $status_paket = 'TIDAK';
                         }
                         if (empty($b['sebelum_makan'])) {

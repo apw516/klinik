@@ -240,14 +240,7 @@ class dataMasterController extends Controller
         $datenow = Carbon::now()->format('Y-m-d');
         $data = [
             'nama_tarif' => strtoupper($request->namatarif),
-            'jenis_tarif' => $request->jenis_tarif,
-            'tarif_1' => $request->tarif,
-            'tarif_2' => $request->tarif,
-            'tarif_3' => $request->tarif,
-            'status' => 1,
-            'tgl_entry' => $datenow,
-            'id_klinik' => 1,
-            'pic' => auth()->user()->id
+            'harga' => $request->tarif
         ];
         model_master_tarif::create($data);
         $data2 = [
@@ -261,7 +254,7 @@ class dataMasterController extends Controller
     {
         $menu_sub = 'indexmasterbarang';
         $menu = 'indexmasterbarang';
-        $data = db::select('select * from mt_barang');
+        $data = db::select('select * from mt_barang_np_medika');
         return view('Master.index_master_barang', compact([
             'menu',
             'data',
@@ -311,7 +304,7 @@ class dataMasterController extends Controller
     {
         $menu_sub = 'indexdatatarifpelayanan';
         $menu = 'indexdatatarifpelayanan';
-        $data = db::select('select *,fc_nama_klinik(id_klinik) as nama_klinik from master_tarif_pelayanan');
+        $data = db::select('select * from mt_tarif_np_medika');
         return view('Master.index_data_tarif_pelayanan', compact([
             'menu',
             'data',
@@ -819,21 +812,14 @@ class dataMasterController extends Controller
     }
     public function barangstore(Request $request)
     {
-        try {
-            DB::table('mt_barang')->insert([
-                'kode_barang'   => $this->generateKodeBarang(), // Memastikan kode selalu Kapital
+        try {         
+            DB::table('mt_barang_np_medika')->insert([
                 'nama_barang'   => $request->nama_barang,
-                'nama_generik'  => $request->nama_generik,
-                'nama_pabrik'   => $request->nama_pabrik,
-                'jenis_barang'  => $request->jenis_barang,
-                'kategori_obat' => $request->kategori_obat,
-                'satuan_besar'  => $request->satuan_besar,
-                'satuan_sedang' => $request->satuan_sedang,
-                'satuan_kecil'  => $request->satuan_kecil,
-                'isi_konversi'  => $request->isi_konversi,
-                'bentuk_sediaan'  => $request->bentuk_sediaan,
-                'created_at'    => now(),
-                'updated_at'    => now(),
+                'harga_normal'  => $request->harga_normal,
+                'harga_tebus'   => $request->harga_tebus,
+                'aturan_pakai'  => $request->aturan_pakai,
+                'nama_display' => $request->nama_display,
+                'golongan_obat'  => $request->satuan_kecil
             ]);
             // Kembalikan response sukses (Ditangkap oleh success: function(response) di AJAX)
             return response()->json([
@@ -856,23 +842,16 @@ class dataMasterController extends Controller
             $value =  $nama['value'];
             $dataSet[$index] = $value;
         }
-        // dd($data);
         try {
-            DB::table('mt_barang')
+            DB::table('mt_barang_np_medika')
                 ->where('id', $dataSet['id_barang']) // Tentukan ID data barang yang ingin diubah
                 ->update([
                     'nama_barang'    => $dataSet['nama_barang'],
-                    'nama_generik'   => $dataSet['nama_generik'],
-                    'nama_pabrik'    => $dataSet['nama_pabrik'],
-                    'jenis_barang'   => $dataSet['jenis_barang'],
-                    'kategori_obat'  => $dataSet['kategori_obat'],
-                    'satuan_besar'   => $dataSet['satuan_besar'],
-                    'satuan_sedang'  => $dataSet['satuan_sedang'],
-                    'satuan_kecil'   => $dataSet['satuan_kecil'],
-                    'isi_konversi'   => $dataSet['isi_konversi'],
-                    'bentuk_sediaan' => $dataSet['bentuk_sediaan'],
-                    'harga_jual' => $dataSet['harga_jual'],
-                    'updated_at'     => now(), // Cukup updated_at saja saat update
+                    'harga_normal'    => $dataSet['satuan_besar'],
+                    'harga_tebus'    => $dataSet['satuan_sedang'],
+                    'aturan_pakai'    => $dataSet['bentuk_sediaan'],
+                    'nama_display'    => $dataSet['nama_generik'],
+                    'golongan_obat'    => $dataSet['satuan_kecil'],
                 ]);
             // Kembalikan response sukses (Ditangkap oleh success: function(response) di AJAX)
             return response()->json([

@@ -10,6 +10,6 @@ class model_master_tarif extends Model
     use HasFactory;
     const UPDATED_AT = null;
     const CREATED_AT = null;
-    protected $table = 'master_tarif_pelayanan';
+    protected $table = 'mt_tarif_np_medika';
     protected $guarded = [];
 }

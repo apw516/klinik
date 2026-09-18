@@ -1,43 +1,57 @@
 <table class="table table-sm table-bordered table-hover">
     <thead>
-        <th>Nama Tarif</th>
-        <th>Jumlah</th>
-        <th>Tarif</th>
-        <th>Aturan pakai</th>
-        <th>Status Layanan</th>
-        <th>Status Pembayaran</th>
-        <th></th>
+        <tr>
+            <th>Nama Tarif</th>
+            <th>Jumlah</th>
+            <th>Tarif</th>
+            <th>Aturan pakai</th>
+            <th>Status Layanan</th>
+            <th>Status Pembayaran</th>
+            <th></th>
+        </tr>
     </thead>
     <tbody>
+        @php $grandTotal = 0; @endphp
         @foreach ($layanan as $l)
+            @php 
+                $subtotal = $l->jumlah * $l->harga_satuan;
+                $grandTotal += $subtotal;
+            @endphp
             <tr>
                 <td>{{ $l->nama_tarif }}</td>
                 <td>{{ $l->jumlah }}</td>
                 <td>Rp {{ number_format($l->harga_satuan, 0, ',', '.') }}</td>
-                <td>{{ $l->aturan_pakai}} @if($l->signa != '') ( {{ $l->signa }} ) @endif</td>
+                <td>{{ $l->aturan_pakai }} @if($l->signa != '') ( {{ $l->signa }} ) @endif</td>
                 <td>
                     @if ($l->status_layanan == 1)
-                        OK
+                        <span class="badge bg-warning text-dark">OK</span>
                     @elseif($l->status_layanan == 2)
-                        Selesai
+                        <span class="badge bg-success">Selesai</span>
                     @else
-                        Retur
+                        <span class="badge bg-danger">Retur</span>
                     @endif
                 </td>
                 <td>
                     @if ($l->status_bayar == 0)
-                        Belum bayar
+                        <span class="badge bg-secondary">Belum bayar</span>
                     @else
-                        Sudah dibayar
+                        <span class="badge bg-primary">Sudah dibayar</span>
                     @endif
                 </td>
-                <td>
-                    <button @if ($l->status_bayar == 1) disabled @endif class="btn btn-danger btn-sm returlayanan" iddetail="{{ $l->iddetail}}" nama="{{ $l->nama_tarif}}"><i
-                            class="bi bi-arrow-clockwise"></i></button>
+                <td class="text-center">
+                    <button @if ($l->status_bayar == 1) disabled @endif class="btn btn-danger btn-sm returlayanan" iddetail="{{ $l->iddetail }}" nama="{{ $l->nama_tarif }}">
+                        <i class="bi bi-arrow-clockwise"></i>
+                    </button>
                 </td>
             </tr>
         @endforeach
     </tbody>
+    <tfoot>
+        <tr class="fw-bold table-light">
+            <td colspan="2" class="text-end">Total Keseluruhan:</td>
+            <td colspan="5">Rp {{ number_format($grandTotal, 0, ',', '.') }}</td>
+        </tr>
+    </tfoot>
 </table>
 <script>
     $(".returlayanan").on('click', function(event) {

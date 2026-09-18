@@ -28,32 +28,15 @@
                         <thead>
                             <th>ID</th>
                             <th>Nama Tarif</th>
-                            <th>Jenis Tarif</th>
-                            <th>Tarif 1</th>
-                            <th>Tarif 2</th>
-                            <th>Tarif 3</th>
-                            <th>Status</th>
-                            <th>Tanggal Entry</th>
-                            <th>Klinik</th>
+                            <th>Harga</th>
+                            
                         </thead>
                         <tbody>
                             @foreach ($data as $d)
                                 <tr>
                                     <td>{{ $d->id }}</td>
                                     <td>{{ $d->nama_tarif }}</td>
-                                    <td>{{ $d->jenis_tarif }}</td>
-                                    <td> Rp. {{ number_format($d->tarif_1, 0, ',', '.') }}</td>
-                                    <td> Rp. {{ number_format($d->tarif_2, 0, ',', '.') }}</td>
-                                    <td> Rp. {{ number_format($d->tarif_3, 0, ',', '.') }}</td>
-                                    <td>
-                                        @if ($d->status == 1)
-                                            Aktif
-                                        @else
-                                            Tidak Aktif
-                                        @endif
-                                    </td>
-                                    <td>{{ $d->tgl_entry }}</td>
-                                    <td>{{ $d->nama_klinik }}</td>
+                                    <td>{{ $d->harga }}</td>
                                 </tr>
                             @endforeach
                         </tbody>
@@ -85,15 +68,6 @@
                                 aria-describedby="emailHelp">
                             <input hidden type="text" class="form-control inputmaskasli" id="tarifasli" name="tarifasli"
                                 aria-describedby="emailHelp">
-                        </div>
-                        <div class="mb-3">
-                            <label for="exampleInputEmail1" class="form-label">Jenis Tarif</label>
-                            <select class="form-select" aria-label="Default select example" id="jenis_tarif"
-                                name="jenis_tarif">
-                                <option selected value="0">Silahkan Pilih</option>
-                                <option value="RAWAT JALAN">Rawat Jalan</option>
-                                <option value="RAWAT INAP">Rawat Inap</option>
-                            </select>
                         </div>
                     </form>
                 </div>
@@ -134,7 +108,6 @@
                     _token: "{{ csrf_token() }}",
                     namatarif: namatarif,
                     tarif: tarif,
-                    jenis_tarif: jenis_tarif
                 },
                 url: '{{ route('simpantarifbaru') }}',
                 error: function() {
