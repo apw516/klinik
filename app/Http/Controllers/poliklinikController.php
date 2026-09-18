@@ -333,10 +333,12 @@ class poliklinikController extends Controller
         $id = $request->idkunjungan;
         $layanan = DB::table('ts_layanan_header as a')
             ->join('ts_layanan_detail as b', 'b.id_header', '=', 'a.id')
+            ->leftJoin('mt_barang_np_medika as c', 'b.kode_barang', '=', 'c.id')
             ->select(
                 'b.*',
                 'a.*',
-                'b.id as iddetail'
+                'b.id as iddetail',
+                'c.nama_display'
             )
             ->where('a.id_kunjungan', $id)
             ->where('b.status_layanan', 1)
