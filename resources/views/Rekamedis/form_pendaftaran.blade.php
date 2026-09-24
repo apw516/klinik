@@ -422,7 +422,7 @@
             if (result.isConfirmed) {
                 status = $('#status_kunjungan').val()
                 id = $('#idkunjungan').val()
-                keluhanutama = $('#keluhanutama').val()
+                keluhanutama = $('#keluhanutamaedit').val()
                 spinner = $('#loader')
                 spinner.show();
                 $.ajax({
