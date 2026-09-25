@@ -72,7 +72,9 @@ Route::post('simpanstokpersediaan', [dataMasterController::class, 'simpanstokper
 Route::post('simpantarifbaru', [dataMasterController::class, 'simpantarifbaru'])->name('simpantarifbaru');
 Route::post('simpaneditpersediaan', [dataMasterController::class, 'simpaneditpersediaan'])->name('simpaneditpersediaan');
 Route::post('stok-obat/proses-retur', [dataMasterController::class, 'returstokpersediaan'])->name('stok-obat/proses-retur');
-
+Route::post('/tarif/simpan', [dataMasterController::class, 'simpanTarifBaru'])->name('simpantarifbaru');
+Route::post('/tarif/update', [dataMasterController::class, 'updateTarif'])->name('updatetarif');
+Route::post('/tarif/hapus', [dataMasterController::class, 'hapusTarif'])->name('hapustarif');
 
 Route::get('/indexdaftarpelayanan', [rekamedisController::class, 'indexdaftarpelayanan'])->name('indexdaftarpelayanan');
 Route::get('/indexriwayatpendaftaran', [rekamedisController::class, 'indexriwayatpendaftaran'])->name('indexriwayatpendaftaran');

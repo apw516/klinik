@@ -250,6 +250,30 @@ class dataMasterController extends Controller
         echo json_encode($data2);
         die;
     }
+    public function updateTarif(Request $request)
+    {
+        try {
+            $tarif = model_master_tarif::findOrFail($request->id);
+            $tarif->nama_tarif = $request->namatarif;
+            $tarif->harga = $request->tarif;
+            $tarif->save();
+
+            return response()->json(['kode' => 200, 'message' => 'Data tarif berhasil diubah']);
+        } catch (\Exception $e) {
+            return response()->json(['kode' => 500, 'message' => 'Gagal mengubah data: ' . $e->getMessage()]);
+        }
+    }
+
+    // Hapus Data
+    public function hapusTarif(Request $request)
+    {
+        try {
+            model_master_tarif::destroy($request->id);
+            return response()->json(['kode' => 200, 'message' => 'Data tarif berhasil dihapus']);
+        } catch (\Exception $e) {
+            return response()->json(['kode' => 500, 'message' => 'Gagal menghapus data: ' . $e->getMessage()]);
+        }
+    }
     public function indexmasterbarang()
     {
         $menu_sub = 'indexmasterbarang';
@@ -812,7 +836,7 @@ class dataMasterController extends Controller
     }
     public function barangstore(Request $request)
     {
-        try {         
+        try {
             DB::table('mt_barang_np_medika')->insert([
                 'nama_barang'   => $request->nama_barang,
                 'harga_normal'  => $request->harga_normal,
